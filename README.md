@@ -3,7 +3,24 @@
 Bản dựng giao diện (prototype chạy được trên trình duyệt) theo
 **ĐẶC TẢ GIAO DIỆN SẢN PHẨM VÉ MÁY BAY · Bookese.com v1.0** (07/08/2026).
 
-Mở bằng cách bấm đúp vào `index.html`. Không cần cài đặt gì.
+### 👉 Xem trực tiếp: **https://thuongluu2603.github.io/bookese-ve-may-bay-prototype/**
+
+| Màn hình | Đường dẫn |
+|---|---|
+| M1 · Tìm kiếm | [index.html](https://thuongluu2603.github.io/bookese-ve-may-bay-prototype/index.html) |
+| M2 + M3 · Kết quả và chọn hạng vé | [ket-qua.html](https://thuongluu2603.github.io/bookese-ve-may-bay-prototype/ket-qua.html) |
+| M4 · Thanh toán | [thanh-toan.html](https://thuongluu2603.github.io/bookese-ve-may-bay-prototype/thanh-toan.html) |
+| M5 · Xác nhận | [xac-nhan.html](https://thuongluu2603.github.io/bookese-ve-may-bay-prototype/xac-nhan.html) |
+| M6 · Lịch sử đặt chỗ | [lich-su.html](https://thuongluu2603.github.io/bookese-ve-may-bay-prototype/lich-su.html) |
+| M7 · Quản lý đơn (nội bộ) | [van-hanh.html](https://thuongluu2603.github.io/bookese-ve-may-bay-prototype/van-hanh.html) |
+| Hệ thống thiết kế | [he-thong-thiet-ke.html](https://thuongluu2603.github.io/bookese-ve-may-bay-prototype/he-thong-thiet-ke.html) |
+
+Chạy tại máy: tải kho về rồi bấm đúp vào `index.html`. Không cần cài đặt gì.
+
+> ⚠️ **Đây là bản dựng giao diện, không phải sản phẩm thật.** Toàn bộ chuyến bay,
+> giá vé, mã đặt chỗ, tên khách trong này đều là dữ liệu giả để minh họa. Không có
+> kết nối tới hệ thống thật, không gọi API nhà cung cấp, không nhận thanh toán.
+> Tên nhà cung cấp và các hạn mức nội bộ đã được lược bỏ khỏi bản công khai này.
 
 ---
 
