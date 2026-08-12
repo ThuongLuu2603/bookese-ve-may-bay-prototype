@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M2 + M3 · Kết quả tìm kiếm — Bookese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<style>
+  .searchstrip { background: linear-gradient(100deg, rgba(8,77,197,.94), rgba(0,100,253,.74)), #0B4EA2; padding: 0 0 24px; }
+  .minisearch { background: #fff; border-radius: var(--r-surface); box-shadow: var(--shadow-search); padding: 12px 16px;
+                display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 12px; align-items: center; }
+  .sortbar { display: flex; align-items: center; gap: 12px; padding: 16px 0; flex-wrap: wrap; }
+  .results { background: #fff; border-radius: var(--r-base); overflow: hidden; }
+  .stream { padding: 16px 24px; border-top: 1px solid var(--c-border); display: flex; align-items: center; gap: 10px;
+            font-size: 14px; color: var(--c-text-label); }
+  .listnote { padding: 14px 24px; border-top: 1px solid var(--c-border); font-size: 14px; color: var(--c-text-label); }
+  @media (max-width: 1023px) {
+    .layout-results { grid-template-columns: minmax(0, 1fr); }
+    .filters { display: none; position: static; max-height: none; }
+    .filters.is-open { display: block; }
+    .minisearch { grid-template-columns: 1fr; }
+    .results { background: transparent; }
+  }
+</style>
+</head>
+<body class="has-mobilebar">
+
+<header data-header></header>
+
+<!-- ============================================================
+     M2 — KẾT QUẢ TÌM KIẾM (§9)  ·  M3 — CHỌN HẠNG VÉ (§10)
+     M3 KHÔNG phải trang riêng — nó mở rộng NGAY TRONG DÒNG kết quả.
+     ============================================================ -->
+<div class="searchstrip">
+  <div class="container">
+    <nav class="breadcrumb" style="color:rgba(255,255,255,.85)">
+      <a href="index.html" style="color:rgba(255,255,255,.85)">Trang chủ</a> ›
+      <a href="index.html" style="color:rgba(255,255,255,.85)">Vé máy bay</a> ›
+      <span style="color:#fff">Kết quả tìm kiếm</span>
+    </nav>
+    <form class="minisearch" onsubmit="return false">
+      <button class="sfield" type="button"><span aria-hidden="true">🛫</span><span class="sfield__val">Hà Nội (HAN)</span></button>
+      <button class="sfield" type="button"><span aria-hidden="true">🛬</span><span class="sfield__val">TP. Hồ Chí Minh (SGN)</span></button>
+      <button class="sfield" type="button"><span aria-hidden="true">📅</span><span class="sfield__val">T5, 20 tháng 8</span></button>
+      <button class="sfield" type="button"><span aria-hidden="true">👤</span><span class="sfield__val">3 khách</span></button>
+      <button class="btn btn--primary" type="submit">Tìm</button>
+    </form>
+  </div>
+</div>
+
+<main class="container" style="padding-top:24px;padding-bottom:48px">
+  <div class="layout-results">
+
+    <!-- ===== BỘ LỌC 320px (§9.6) — [DÙNG LẠI §4.1-4] ===== -->
+    <aside class="filters" id="filters" aria-label="Bộ lọc">
+      <div class="fgroup">
+        <div class="fgroup__title">Bộ lọc <button class="btn btn--link" type="button" id="clearAll" style="font-size:13px">Bỏ tất cả lựa chọn</button></div>
+        <p class="text-label-large-regular" style="margin:0">Bộ lọc và sắp xếp xử lý ngay trên trình duyệt — không tải lại trang.</p>
+      </div>
+
+      <div class="fgroup">
+        <div class="fgroup__title">Ngân sách của bạn</div>
+        <div class="fgroup__list" data-fgroup="budget">
+          <label class="check"><input type="checkbox" value="0-1000000"> Dưới VND 1.000.000 <button class="only-btn" type="button">Lọc riêng</button><span class="check__count">1</span></label>
+          <label class="check"><input type="checkbox" value="1000000-1300000"> VND 1.000.000 – 1.300.000 <button class="only-btn" type="button">Lọc riêng</button><span class="check__count">4</span></label>
+          <label class="check"><input type="checkbox" value="1300000-1600000"> VND 1.300.000 – 1.600.000 <button class="only-btn" type="button">Lọc riêng</button><span class="check__count">1</span></label>
+          <label class="check"><input type="checkbox" value="1600000-99999999"> Trên VND 1.600.000 <button class="only-btn" type="button">Lọc riêng</button><span class="check__count">0</span></label>
+        </div>
+        <p class="text-label-large-regular" style="margin:8px 0 0">Tính trên giá mỗi khách, đã gồm thuế và phí.</p>
+      </div>
+
+      <div class="fgroup">
+        <div class="fgroup__title">Điểm dừng</div>
+        <div class="fgroup__list" data-fgroup="stops">
+          <label class="check"><input type="checkbox" value="0"> Bay thẳng <button class="only-btn" type="button">Lọc riêng</button><span class="check__count">5</span></label>
+          <label class="check"><input type="checkbox" value="1"> 1 điểm dừng <button class="only-btn" type="button">Lọc riêng</button><span class="check__count">1</span></label>
+        </div>
+      </div>
+
+      <div class="fgroup">
+        <div class="fgroup__title">Hãng hàng không</div>
+        <div class="fgroup__list" data-fgroup="airline" id="fAirlines"></div>
+      </div>
+
+      <div class="fgroup">
+        <!-- 🔴 §9.6 — khi khứ hồi, giờ khởi hành TÁCH RIÊNG TỪNG CHIỀU -->
+        <div class="fgroup__title">Giờ khởi hành · chiều đi</div>
+        <div class="fgroup__list" data-fgroup="depart">
+          <label class="check"><input type="checkbox" value="0-6"> 00:00 – 05:59 <span class="check__count">0</span></label>
+          <label class="check"><input type="checkbox" value="6-12"> 06:00 – 11:59 <span class="check__count">3</span></label>
+          <label class="check"><input type="checkbox" value="12-18"> 12:00 – 17:59 <span class="check__count">2</span></label>
+          <label class="check"><input type="checkbox" value="18-24"> 18:00 – 23:59 <span class="check__count">1</span></label>
+        </div>
+      </div>
+
+      <div class="fgroup">
+        <div class="fgroup__title">Thời gian bay</div>
+        <div class="fgroup__list" data-fgroup="dur">
+          <label class="check"><input type="checkbox" value="0-150"> Dưới 2h30' <span class="check__count">5</span></label>
+          <label class="check"><input type="checkbox" value="150-240"> 2h30' – 4h00' <span class="check__count">0</span></label>
+          <label class="check"><input type="checkbox" value="240-360"> 4h00' – 6h00' <span class="check__count">1</span></label>
+          <label class="check"><input type="checkbox" value="360-9999"> Trên 6h00' <span class="check__count">0</span></label>
+        </div>
+      </div>
+
+      <div class="fgroup">
+        <div class="fgroup__title">Hành lý</div>
+        <div class="fgroup__list" data-fgroup="bag">
+          <!-- ⚠️ RB17 — hành lý là CHUỖI TỰ DO và có thể rỗng.
+               KHÔNG thiết kế thanh trượt lọc theo số kg. -->
+          <label class="check"><input type="checkbox" value="checked"> Chỉ hiện vé có hành lý ký gửi <span class="check__count">3</span></label>
+        </div>
+      </div>
+
+      <div class="fgroup">
+        <div class="fgroup__title">Hoàn / đổi</div>
+        <div class="fgroup__list" data-fgroup="refund">
+          <label class="check"><input type="checkbox" value="changeable"> Chỉ hiện vé đổi được <span class="check__count">3</span></label>
+        </div>
+      </div>
+
+      <div class="fgroup">
+        <div class="fgroup__title">Hạng ghế</div>
+        <div class="fgroup__list" data-fgroup="cabin">
+          <label class="check"><input type="checkbox" value="Y" checked> Phổ thông <span class="check__count">6</span></label>
+          <label class="check"><input type="checkbox" value="W"> Phổ thông đặc biệt <span class="check__count">0</span></label>
+          <label class="check"><input type="checkbox" value="C"> Thương gia <span class="check__count">0</span></label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== CỘT KẾT QUẢ ===== -->
+    <section>
+      <!-- ===== §9.9 · THANH CHỈ BÁO CHIỀU — [MỚI 14] =====
+           🔴 Bắt buộc có. Dính khi cuộn, ngay dưới hộp tìm kiếm.
+           Đã chọn: dấu tích #20BA46 · Đang chọn: chấm đặc #0064FD · Chưa tới: vòng rỗng #9494A4 -->
+      <div class="legbar" id="legBar"></div>
+
+      <h1 class="page-title" id="pageTitle">Hà Nội → TP. Hồ Chí Minh</h1>
+      <p class="text-body-small-regular u-text-label" style="margin:0 0 8px" id="pageSub">
+        T5, 20 tháng 8 · khứ hồi · 3 khách (2 người lớn, 1 trẻ em) · Phổ thông
+      </p>
+
+      <!-- §9.9 — dòng thu gọn của chiều đã chọn + dải nhắc chọn chiều còn lại -->
+      <div id="legChosen"></div>
+
+      <!-- §9.7 · [MỚI 3] Dải giá 7 ngày lân cận -->
+      <div class="card card--pad" style="padding:16px;margin-bottom:16px">
+        <p class="text-body-small-medium u-text-secondary" style="margin:0 0 10px">Giá thấp nhất cho 1 khách, chưa gồm phí dịch vụ</p>
+        <div class="daystrip" id="daystrip"></div>
+      </div>
+
+      <div class="sortbar">
+        <label class="text-body-small-semibold" for="sort" style="margin:0">Sắp xếp theo:</label>
+        <select class="select" id="sort" style="width:230px">
+          <option value="price">Giá thấp nhất</option>
+          <option value="dep">Giờ khởi hành sớm nhất</option>
+          <option value="arr">Giờ hạ cánh sớm nhất</option>
+          <option value="dur">Thời gian bay ngắn nhất</option>
+          <option value="stops">Ít điểm dừng nhất</option>
+        </select>
+        <span class="text-body-small-regular u-text-label" id="countLbl" style="margin-left:auto"></span>
+      </div>
+
+      <!-- Chỉ dùng khi trình bày — chứng minh §10.4.1 / RB18 -->
+      <p class="callmeter" id="condMeter" style="margin:0 0 12px">
+        Prototype · lượt gọi <b>0</b> — cấp 0–3 (xem giá, đổi hạng vé, mở panel chi tiết) đều
+        <b>0 lượt</b>; chỉ mở <b>Điều kiện vé</b> mới tốn, và tốn <b>1 lượt cho mỗi hạng vé</b>
+      </p>
+
+      <div class="results" id="results"></div>
+    </section>
+  </div>
+</main>
+
+<!-- Thanh dính đáy điện thoại (§9.3) — NỀN ĐẶC, không trong suốt -->
+<div class="mobilebar" id="mbFilter">
+  <button class="btn btn--secondary" type="button" style="flex:1;min-width:0" onclick="document.getElementById('filters').classList.toggle('is-open')">⚙ Bộ lọc</button>
+  <button class="btn btn--secondary" type="button" style="flex:1;min-width:0">↕ Sắp xếp</button>
+  <a class="btn btn--secondary" href="index.html" style="flex:1;min-width:0">🔍 Tìm</a>
+</div>
+
+<!-- §9.9 · THANH DÍNH ĐÁY 76px — hiện TỪ KHI chọn xong chiều đi.
+     Trái: "Đã chọn N/2 chuyến" + giá tạm tính. Phải: nút Tiếp tục, vô hiệu tới khi đủ hai chiều.
+     🔴 Chỉ gọi kiểm tra giá MỘT LẦN sau khi chọn đủ hai chiều, không gọi sau mỗi chiều. -->
+<div class="tripbar u-hidden" id="tripBar">
+  <div class="container tripbar__in">
+    <div>
+      <div class="tripbar__n" data-trip-count></div>
+      <div class="tripbar__p" data-trip-price></div>
+    </div>
+    <button class="btn btn--primary" type="button" id="tripNext" disabled>Tiếp tục</button>
+  </div>
+</div>
+
+<!-- ===== §17.3 · HỘP THOẠI GIÁ ĐÃ THAY ĐỔI =====
+     🔴 Hai nút PHẢI cùng kích thước, cùng độ nổi bật. Không được làm nút
+     "Tiếp tục với giá mới" to hơn / đậm hơn / thuận tay hơn. -->
+<div class="overlay" id="dlgPrice" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgPriceT">
+    <div class="dialog__head">
+      <span class="dialog__title" id="dlgPriceT">Giá vé vừa thay đổi</span>
+      <button class="btn btn--icon dialog__x" type="button" data-close aria-label="Đóng">✕</button>
+    </div>
+    <div class="dialog__body">
+      <div class="sum-row"><span class="sum-row__k">Giá bạn đã xem</span><span class="sum-row__v" id="pOld"></span></div>
+      <div class="sum-row"><span class="sum-row__k">Giá hiện tại</span><span class="sum-row__v" id="pNew"></span></div>
+      <hr class="u-divider" style="margin:8px 0">
+      <div class="sum-row"><span class="sum-row__k">Chênh lệch</span><span class="sum-row__v u-text-error" id="pDiff"></span></div>
+      <p class="text-body-small-regular u-text-label" style="margin:16px 0 0">
+        Giá vé do hãng hàng không quy định và có thể thay đổi bất cứ lúc nào. Bạn được chọn tiếp tục hoặc tìm chuyến khác.
+      </p>
+    </div>
+    <div class="dialog__foot dialog__foot--equal">
+      <button class="btn btn--secondary" type="button" data-close>Tìm chuyến khác</button>
+      <button class="btn btn--secondary" type="button" onclick="location.href='thanh-toan.html'">Tiếp tục với giá mới</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== §10.4.7 · HỘP THOẠI ĐIỀU KIỆN VÉ =====
+     🔴 Tiêu đề phụ PHẢI ghi tên hạng vé — khách mở hai hạng liên tiếp mà không có tên
+     thì không biết đang đọc cái nào. Nội dung là VĂN BẢN TỰ DO, chiều cao thay đổi,
+     cuộn được bên trong. Trên điện thoại là tấm trượt từ đáy, cao tối đa 85%. -->
+<div class="overlay" id="dlgCond" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="condFare">
+    <div class="dialog__head">
+      <span>
+        <span class="dialog__title">Điều kiện giá vé</span>
+        <span class="text-body-small-semibold" style="display:block;color:var(--c-text)" id="condFare"></span>
+      </span>
+      <button class="btn btn--icon dialog__x" type="button" data-close aria-label="Đóng">✕</button>
+    </div>
+    <div class="dialog__body" id="condBody"></div>
+    <div class="dialog__foot"><button class="btn btn--secondary" type="button" data-close>Đóng</button></div>
+  </div>
+</div>
+
+<!-- ===== §9.8 · GIÁ HẾT HẠN ===== -->
+<div class="overlay" id="dlgExpired" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" style="max-width:440px">
+    <div class="dialog__body" style="text-align:center;padding-top:32px">
+      <div style="font-size:34px">⏱</div>
+      <h3 class="text-body-large-semibold" style="margin:8px 0">Giá đã hết hạn</h3>
+      <p class="text-body-small-regular u-text-label" style="margin:0 0 20px">
+        Kết quả này đã cũ. Chúng tôi sẽ tìm lại với đúng điều kiện bạn đã chọn và giữ nguyên bộ lọc.
+      </p>
+      <button class="btn btn--primary btn--block" type="button" data-close onclick="location.reload()">Tìm lại</button>
+    </div>
+  </div>
+</div>
+
+<div class="toaster"></div>
+
+<script src="assets/app.js"></script>
+<script src="assets/data.js"></script>
+<script>
+(function () {
+  BK.mountHeader('vmb');
+
+  /* Bối cảnh tìm kiếm của màn này */
+  var PAX = { adt: 2, chd: 1, inf: 0 };
+  var PAX_TOTAL = PAX.adt + PAX.chd + PAX.inf;
+  var TIER = { key: 'trav', label: 'Du khách', rate: 12000 };  /* xu nội địa / khách / chặng */
+  var A = BK.AIRLINES;
+
+  var legsOf = function (f) { return (f.stops || 0) + 1; };
+  var childBase = function (f) { return Math.round(f.base * 0.75); };
+
+  /* §10.4.3 · RB26 — HẠNG VÉ ĐANG CHỌN nằm ngay trên dòng kết quả.
+     Mặc định là hạng rẻ nhất; khách đổi hạng ngay tại dòng, KHÔNG tốn lượt gọi nào
+     vì toàn bộ dữ liệu hạng vé đã nằm trong kết quả tìm kiếm (§10.4.2 cấp 0–3). */
+  var SEL = {};
+  function curFare(f) { return (f.fares && f.fares.length) ? f.fares[SEL[f.id] || 0] : f; }
+
+  /* ==================================================================
+     §9.9 — KHỨ HỒI: CHỌN CHIỀU ĐI RỒI CHỌN CHIỀU VỀ (tuần tự)
+     Không dùng hai cột song song: ở 1280px mỗi cột chỉ còn ~620px, không đủ
+     cho dòng chuyến bay ở §9.4, và trên điện thoại thì không dựng được.
+     ================================================================== */
+  var LEGS = BK.TRIP_LEGS;
+  var POOL = { go: BK.FLIGHTS, back: BK.FLIGHTS_BACK };
+  var curLeg = 0;                       /* chỉ số chặng đang chọn */
+  var picked = [null, null];            /* {f, fareIdx} cho từng chặng */
+
+  function legPool() { return POOL[LEGS[curLeg].id]; }
+  function pickedTotal() {
+    return picked.reduce(function (s, p) { return s + (p ? perAdult(p.f.fares[p.fareIdx] || p.f) : 0); }, 0);
+  }
+  function pickedCount() { return picked.filter(Boolean).length; }
+
+  /* §9.4.2 · RB30 — hãng BÁN VÉ quyết định tên và logo; hãng KHAI THÁC chỉ là ghi chú.
+     Pacific Airlines bán dưới tên Vietnam Airlines, số hiệu mang mã VN.
+     🔴 Dòng ghi chú BẮT BUỘC khi hai hãng khác nhau; ẩn hẳn khi trùng. */
+  function operatorNote(f) {
+    return f.operatedBy ? '<span class="opnote">(điều hành bởi ' + f.operatedBy + ')</span>' : '';
+  }
+  var perAdult = function (x) { return x.base + x.tax; };          /* GIÁ CHO MỘT KHÁCH (RB9) */
+  /* Cùng một chuyến, mỗi hạng vé có điều kiện hoàn khác nhau (§10.4.1) */
+  function fareRefundable(x) { return !!(x.refund && /^Hoàn được/.test(x.refund)); }
+
+  /* -------- Bảng tách chi tiết giá (§9.5) — [DÙNG LẠI §4.1-5] -------- */
+  /* `fare` (tuỳ chọn) = một dòng trong bảng hạng vé — tooltip phải tính theo
+     đúng mức giá của dòng đó, không phải giá thấp nhất của chuyến. */
+  function pricePopup(f, fare) {
+    var src = fare || f;
+    var legs = legsOf(f);
+    var fee = BK.SERVICE_FEE_DOMESTIC * legs;                     /* §1.1 */
+    var airportTax = src.tax - fee;                               /* phần thuế + phí sân bay */
+    var adtFare = src.base * PAX.adt;
+    var chdFare = Math.round(src.base * 0.75) * PAX.chd;
+    var taxTotal = airportTax * PAX_TOTAL;
+    var feeTotal = fee * PAX_TOTAL;
+    var grand = adtFare + chdFare + taxTotal + feeTotal;
+    var coins = TIER.rate * PAX_TOTAL * legs;
+
+    return '<div class="pricepop">' +
+      '<button class="pricepop__btn" type="button" aria-label="Xem chi tiết giá">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01" stroke-linecap="round"/></svg>' +
+      '</button>' +
+      '<div class="pricepop__panel" hidden>' +
+        '<div class="pp-title">Chi tiết giá</div>' +
+        '<div class="pp-sub">Đã bao gồm thuế và phí</div>' +
+        '<hr class="pp-hr">' +
+        '<div class="pp-title">Giá vé</div>' +
+        '<div class="pp-row"><span>Người lớn × ' + PAX.adt + '</span><span>' + BK.money(adtFare) + '</span></div>' +
+        (PAX.chd ? '<div class="pp-row"><span>Trẻ em × ' + PAX.chd + '</span><span>' + BK.money(chdFare) + '</span></div>' : '') +
+        '<hr class="pp-hr">' +
+        '<div class="pp-row"><span>Thuế &amp; phí</span><span>' + BK.money(taxTotal + feeTotal) + '</span></div>' +
+        '<div class="pp-row pp-row--sub"><span>Thuế và phí sân bay</span><span>' + BK.money(taxTotal) + '</span></div>' +
+        /* §5.2 — phí dịch vụ CHỈ tách thành dòng riêng ở đây, không ở màn bán hàng (RB10) */
+        '<div class="pp-row pp-row--sub"><span>Phí dịch vụ Bookese</span><span>' + BK.money(feeTotal) + '</span></div>' +
+        '<hr class="pp-hr">' +
+        '<div class="pp-row pp-row--total"><span>TỔNG (' + PAX_TOTAL + ' khách)</span><span>' + BK.money(grand) + '</span></div>' +
+        /* §5.4 — khối xu: NGOÀI khối tính tiền, sau đường kẻ, không dấu trừ (RB12) */
+        '<div class="coin">' +
+          '<div class="coin__title"><span aria-hidden="true">🪙</span> Xu nhận sau chuyến bay</div>' +
+          '<div class="coin__meta">Hạng ' + TIER.label + '</div>' +
+          '<div class="coin__meta">' + BK.coin(TIER.rate).replace(' Xu','') + ' × ' + PAX_TOTAL + ' khách × ' + legs + ' chặng</div>' +
+          '<div class="coin__value">' + BK.coin(coins) + '</div>' +
+        '</div>' +
+        '<p class="pp-foot">Giá vé và thuế phí sân bay do hãng hàng không quy định, Bookese thu hộ. Phí dịch vụ là khoản duy nhất Bookese thu.</p>' +
+      '</div></div>';
+  }
+
+  /* -------- §9.4 · DÒNG CHUYẾN BAY (thành phần dùng nhiều nhất) -------- */
+  /* Hành lý theo ĐÚNG hạng vé đang chọn — đổi hạng thì dòng này đổi theo */
+  function baggageLine(f) {
+    var x = curFare(f);
+    var cabin = x.cabin ? '🎒 Xách tay ' + x.cabin : '<span class="fl-amen__unknown">🎒 Hãng chưa công bố</span>';
+    var checked;
+    /* 🔴 §16.3 — hai trạng thái rỗng KHÁC NHAU: "không có" ≠ "không biết" */
+    if (x.checked === null)      checked = '<span class="fl-amen__unknown">🧳 Hãng chưa công bố</span>';
+    else if (x.checked === 0)    checked = '<span class="fl-amen__none">🧳 Không kèm hành lý ký gửi</span>';
+    else                         checked = '🧳 Ký gửi ' + x.checked;
+    return cabin + ' <span class="fl-amen__sep">·</span> ' + checked;
+  }
+
+  /* §10.3 — Tên hạng vé, ba trạng thái. Thiết kế phải chịu được cả ba. */
+  function fareNameLine(f) {
+    var lb = BK.fareLabel(f.al, curFare(f).code);
+    if (lb.state === 'none') return '';                    /* không có cả mã → bỏ dòng, thuộc tính bên dưới tự nói */
+    return '<span class="fare-name-line">' + lb.text + '</span>';
+  }
+
+  /* ==================================================================
+     §9.4.1 · RB29 — HUY HIỆU TRÊN DÒNG CHUYẾN BAY  [MỚI 16]
+     🔴 Toàn bộ tính từ TẬP KẾT QUẢ HIỆN CÓ — không tốn thêm lượt gọi nào.
+     🔴 Tính lại sau mỗi lần đổi hạng vé và sau mỗi lần lọc lại danh sách.
+     🔴 §21-25, §21-26 — cấm bảy loại nhãn áp lực giả (xem trang hệ thống thiết kế).
+     ================================================================== */
+  var BADGE = {};                        /* id chuyến → huy hiệu nhóm A */
+  var minutes = function (d) { var m = /(\d+)h(\d+)/.exec(d); return m ? +m[1] * 60 + +m[2] : 999; };
+  function slotOf(dep) {
+    var h = +dep.slice(0, 2);
+    return h < 6 ? 'buổi đêm' : h < 12 ? 'buổi sáng' : h < 18 ? 'buổi chiều' : 'buổi tối';
+  }
+
+  /* Tính lại toàn bộ huy hiệu nhóm A trên TẬP ĐANG HIỂN THỊ */
+  function recalcBadges(list) {
+    BADGE = {};
+    var live = list.filter(function (f) { return !f.soldout; });
+    if (!live.length) return;
+    var price = function (f) { return perAdult(curFare(f)); };
+    var prices = live.map(price), durs = live.map(function (f) { return minutes(f.dur); });
+    var pMin = Math.min.apply(null, prices), pMax = Math.max.apply(null, prices);
+    var dMin = Math.min.apply(null, durs),   dMax = Math.max.apply(null, durs);
+    var sorted = prices.slice().sort(function (a, b) { return a - b; });
+    var median = sorted[Math.floor(sorted.length / 2)];
+    var weekLow = Math.min.apply(null, [-3, -2, -1, 0, 1, 2, 3].map(function (i) {
+      var d = new Date(2026, 7, 20); d.setDate(d.getDate() + i); return BK.priceOfDay(d);
+    }));
+
+    /* Điểm "Đáng chọn nhất" — chỉ dùng dữ liệu đã có */
+    var score = live.map(function (f) {
+      var np = pMax === pMin ? 1 : 1 - (price(f) - pMin) / (pMax - pMin);
+      var nd = dMax === dMin ? 1 : 1 - (minutes(f.dur) - dMin) / (dMax - dMin);
+      return { f: f, s: 0.5 * np + 0.3 * nd + 0.1 * (f.stops === 0 ? 1 : 0) + 0.1 * (curFare(f).checked ? 1 : 0) };
+    }).sort(function (a, b) { return b.s - a.s; });
+    /* Chỉ gắn khi hơn chuyến thứ hai ít nhất 5% — sát nút thì nhãn không nói lên điều gì */
+    var best = (score.length > 1 && score[0].s >= score[1].s * 1.05) ? score[0].f.id : null;
+
+    /* 🔴 "Rẻ nhất" gắn cho ĐÚNG MỘT chuyến — đồng giá thì lấy chuyến khởi hành sớm nhất */
+    var cheapest = live.filter(function (f) { return price(f) === pMin; })
+      .sort(function (a, b) { return a.dep.localeCompare(b.dep); })[0];
+    var fastest = live.filter(function (f) { return minutes(f.dur) === dMin; })
+      .sort(function (a, b) { return a.dep.localeCompare(b.dep); })[0];
+
+    /* Rẻ nhất trong khung giờ của chính nó */
+    var slotMin = {};
+    live.forEach(function (f) {
+      var s = slotOf(f.dep);
+      if (slotMin[s] === undefined || price(f) < slotMin[s]) slotMin[s] = price(f);
+    });
+
+    live.forEach(function (f) {
+      /* Xét theo THỨ TỰ ƯU TIÊN, gắn cái đầu tiên đúng rồi DỪNG — tối đa 1 huy hiệu */
+      if (f === cheapest)                     { BADGE[f.id] = { t: '🏷 Rẻ nhất', c: 'ok' }; return; }
+      if (f === fastest)                      { BADGE[f.id] = { t: '⚡ Nhanh nhất', c: 'info' }; return; }
+      if (price(f) <= weekLow)                { BADGE[f.id] = { t: '📉 Thấp nhất 7 ngày', c: 'ok' }; return; }
+      if (price(f) === slotMin[slotOf(f.dep)]){ BADGE[f.id] = { t: '🏷 Rẻ nhất ' + slotOf(f.dep), c: 'ok' }; return; }
+      var pct = Math.floor((1 - price(f) / median) * 100 / 5) * 5;
+      if (pct >= 10)                          { BADGE[f.id] = { t: '💰 Rẻ hơn trung bình ' + pct + '%', c: 'ok' }; return; }
+      if (f.id === best)                      { BADGE[f.id] = { t: '⭐ Đáng chọn nhất', c: 'warn' }; return; }
+    });
+  }
+
+  function badgeA(f) {
+    var b = BADGE[f.id];
+    /* §9.4.3 — cao 20px, bo 4px, chữ 12/600, nối tiếp tên hãng, cách 8px */
+    return b ? '<span class="bdg bdg--' + b.c + '">' + b.t + '</span>' : '';
+  }
+
+  /* §9.4.8 nhóm B — 🔴 KHÔNG dựng thành chip riêng nữa. Ký gửi, hoàn vé và số chỗ
+     đã nằm sẵn trong chuỗi thuộc tính hàng 3 và ở hàng 1, chỉ khác màu chữ. */
+  var LOGGED_IN = true;
+
+  /* §10.4.4 — Bảng nổi "Thông tin hạng vé". Nội dung ĐỔI THEO hạng đang chọn.
+     🔴 Câu miễn trừ BẮT BUỘC có: đây là dữ liệu tóm tắt, không phải điều kiện vé chính thức. */
+  /* 🔴 §21-33 — BỎ HẲN hàng sáu biểu tượng tiện ích khỏi dòng kết quả: nó tốn 28px
+     mỗi dòng để nói lại đúng thứ hàng 3 đã viết bằng chữ, mà lại không đọc được.
+     Bảng nổi vẫn giữ, nay mở bằng cách bấm TÊN HẠNG VÉ ở hàng 3 (§9.4.4). */
+  function amenPopup(f) {
+    var cf = curFare(f);
+    var chk = cf.checked === null ? '<span class="fl-amen__unknown">Hãng chưa công bố</span>'
+            : cf.checked === 0 ? '<span class="fl-amen__none">0 kg</span>' : cf.checked;
+    return '<span class="amen">' +
+      '<span class="amen__pop" hidden>' +
+        '<div class="amen__head">Thông tin hạng vé<button class="btn btn--icon" type="button" data-amen-close aria-label="Đóng" style="width:24px;height:24px;margin-left:auto">✕</button></div>' +
+        '<div class="amen__sec">Hành lý miễn cước</div>' +
+        '<div class="amen__box">🧳 Ký gửi: <b>' + chk + '</b></div>' +
+        '<div class="amen__box">💼 Xách tay: <b>' + (cf.cabin || '—') + '</b></div>' +
+        /* Hoàn/đổi lấy theo ĐÚNG hạng vé đang chọn — mỗi hạng một điều kiện khác nhau (§10.4.1) */
+        '<div class="amen__sec">Hoàn, đổi vé</div>' +
+        '<div class="amen__box' + (fareRefundable(cf) ? '' : ' amen__box--err') + '">' +
+          (cf.refund || (f.refundable ? 'Hoàn được' : 'Vé không hoàn')) + '</div>' +
+        '<p class="amen__note">⚠ Thông tin trên chỉ mang tính tham khảo, có thể thay đổi theo điều kiện vé. Xem điều kiện vé đầy đủ để biết chính xác.</p>' +
+        /* Lối DUY NHẤT từ bảng nổi sang toàn văn — và là chỗ tốn 1 lượt gọi */
+        '<button class="btn btn--secondary btn--block" type="button" data-cond="' + f.id + '|' + (SEL[f.id] || 0) + '">Xem điều kiện vé đầy đủ</button>' +
+      '</span></span>';
+  }
+
+  /* §10.4.3 — Danh sách hạng vé thả xuống từ giá. Đổi hạng = 0 lượt gọi. */
+  function farePickList(f) {
+    return '<div class="farelist" hidden>' + f.fares.map(function (x, i) {
+      var lb = BK.fareLabel(f.al, x.code);
+      var nm = lb.state === 'none' ? x.attrs : (lb.state === 'mapped' ? lb.text.replace(/\s*\(.*\)$/, '') : 'Hạng ' + x.code);
+      return '<button type="button" class="fareopt' + (i === (SEL[f.id] || 0) ? ' fareopt--on' : '') + '" data-fareopt="' + i + '">' +
+        '<span class="fareopt__l"><b>' + nm + '</b>' +
+          (x.code ? '<span>Hạng chỗ: ' + x.code + '</span>' : '<span>' + x.attrs + '</span>') + '</span>' +
+        '<span class="fareopt__r"><b>' + BK.money(perAdult(x)) + '</b>' +
+          '<span' + (x.seats <= 5 ? ' class="u-text-error"' : '') + '>Còn ' + x.seats + ' chỗ</span></span>' +
+      '</button>';
+    }).join('') + '</div>';
+  }
+
+  /* ==================================================================
+     §9.4 · RB36 — DÒNG CHUYẾN BAY: BA HÀNG, CAO ~108px
+     Bản trước xếp mọi thứ thành khối chồng nhau, ra dòng cao ~570px — màn 1080px
+     chỉ thấy hai chuyến, 50 kết quả là cuộn 25 lần. Bản này gói lại còn 108px,
+     thấy 5–6 chuyến mỗi màn hình. Không mất thông tin nào: tám thứ được gói lại,
+     hai thứ chuyển sang chỗ nói kỹ hơn (§9.4.2).
+       Hàng 1 (20px) logo 32 · hãng · số hiệu · tàu bay · huy hiệu · số chỗ
+       Hàng 2 (36px) giờ đi — dải thời lượng — giờ đến · giá bên phải
+       Hàng 3 (20px) hạng vé · hành lý · hoàn vé · xu · nút Chọn bên phải
+     ================================================================== */
+  function shortCraft(c) { return String(c).replace(/Airbus |Boeing /g, ''); }
+
+  function flightHTML(f) {
+    var al = A[f.al];
+    var cf = curFare(f);
+    var stopTxt = f.stops === 0 ? 'bay thẳng' : f.stops + ' điểm dừng · ' + f.stopAt;
+    var lb = BK.fareLabel(f.al, cf.code);
+    var fareName = lb.state === 'none' ? cf.attrs : lb.text;
+
+    /* Nhóm B (§9.4.8) — 🔴 KHÔNG dựng thành chip. Chúng nằm sẵn trong chuỗi
+       thuộc tính ở hàng 3, chỉ khác màu chữ. */
+    var chk = cf.checked === null ? '<span class="fl-amen__unknown">🧳 chưa công bố</span>'
+            : cf.checked === 0 ? '🧳 —'
+            : '<span class="u-bag">🧳 ' + cf.checked + '</span>';
+
+    return '<article class="fr' + (f.soldout ? ' fr--soldout' : '') + '" data-id="' + f.id + '">' +
+      '<div class="fr__main"' + (f.soldout ? '' : ' data-openpanel') + '>' +
+        /* 🔴 §21-35 — logo 32px ở CỘT TRÁI, KHÔNG dựng khối màu đặc 82px */
+        '<span class="fr__logo" style="background:' + al.color + '">' + al.short + '</span>' +
+        '<div class="fr__col">' +
+
+        /* ---------- HÀNG 1 ---------- */
+        '<div class="fr__r1' + (f.operatedBy ? ' fr__r1--op' : '') + '">' +
+          '<span class="fr__who">' +
+            /* §9.4.5 — điện thoại rút gọn tên hãng, CSS ẩn phần " Airlines" */
+            '<b>' + al.name.replace(/ (Airlines|Air|Airways)$/, '<i class="fr__alsuffix"> $1</i>') + '</b>' +
+            '<span class="fr__meta"> · ' + f.no + ' · <span class="fr__craft">' + shortCraft(f.craft) + '</span></span>' +
+            /* §9.4.9 · RB30 — chỉ khi hai hãng khác nhau */
+            (f.operatedBy ? '<span class="fr__op">(điều hành bởi ' + f.operatedBy + ')</span>' : '') +
+          '</span>' +
+          /* §9.4.8 nhóm A — tối đa MỘT huy hiệu, nối tiếp tên hãng cùng hàng */
+          (f.soldout ? '' : badgeA(f)) +
+          /* 🔴 §21-36 — CHỈ hiện số chỗ khi ≤ 5. "Còn 32 chỗ" là nhiễu. */
+          (f.soldout ? '<span class="fr__seats">Hết chỗ</span>'
+                     : (cf.seats <= 5 ? '<span class="fr__seats">Còn ' + cf.seats + ' chỗ</span>' : '')) +
+        '</div>' +
+
+        /* ---------- HÀNG 2 ---------- */
+        '<div class="fr__r2">' +
+          '<span class="fr__t"><b>' + f.dep + '</b><span>' + f.from + '</span></span>' +
+          '<span class="fr__mid">' +
+            '<span class="fr__dur">' + f.dur + ' ✈ ' + stopTxt + '</span>' +
+            '<span class="fr__line"></span>' +
+          '</span>' +
+          '<span class="fr__t fr__t--to"><b>' + f.arr +
+            (f.nextDay ? '<i class="plus1">+1</i>' : '') + '</b><span>' + f.to + '</span></span>' +
+
+          '<span class="fr__price">' +
+            (f.soldout || f.fares.length < 2
+              ? '<span class="fr__amt">' + BK.money(perAdult(cf)) + '</span>'
+              : '<button class="fr__amtbtn" type="button" data-farepick>' +
+                  '<span class="fr__amt">' + BK.money(perAdult(cf)) + '</span>' +
+                  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6" stroke-linecap="round"/></svg>' +
+                '</button>') +
+            /* §9.4.2-7 — "Đã bao gồm thuế và phí" rút thành "· gồm thuế" cùng dòng */
+            '<span class="fr__per">/khách · gồm thuế' + pricePopup(f, cf) + '</span>' +
+            (f.soldout || f.fares.length < 2 ? '' : farePickList(f)) +
+          '</span>' +
+        '</div>' +
+
+        /* ---------- HÀNG 3 ---------- */
+        '<div class="fr__r3">' +
+          '<span class="fr__attrs">' +
+            /* Bấm tên hạng vé mở bảng nổi "Thông tin hạng vé" (§9.4.4) */
+            (lb.state === 'none' ? '' : '<button class="fr__fare" type="button" data-amen>' + fareName + '</button> · ') +
+            '🎒 ' + (cf.cabin || '—') + ' · ' + chk + ' · ' +
+            (fareRefundable(cf) ? '<span>Hoàn được</span>' : '<span class="u-norefund">Không hoàn</span>') +
+            (LOGGED_IN ? ' <span class="coinchip">🪙 +' + TIER.rate.toLocaleString('vi-VN') + ' Xu</span>' : '') +
+            amenPopup(f) +
+          '</span>' +
+          (f.soldout
+            ? '<button class="btn btn--secondary fr__cta" type="button" disabled>Hết chỗ</button>'
+            : '<button class="btn btn--primary fr__cta" type="button" data-selectleg>Chọn</button>') +
+          /* 🔴 §21-34 — bỏ hẳn thanh "Xem hành trình và các hạng vé", chỉ còn mũi ⌄ */
+          (f.soldout ? '' : '<span class="fr__chev">⌄</span>') +
+        '</div>' +
+        '</div>' +
+      '</div>' +
+
+      (f.soldout ? '' : '<div class="flight__panel u-hidden" data-panel></div>') +
+    '</article>';
+  }
+
+
+  /* -------- §10 · M3 — panel CHỌN HẠNG VÉ mở ngay trong dòng -------- */
+  function farePanelHTML(f) {
+    /* §10.3 Quy tắc gộp — các mức có CÙNG TÊN HẠNG VÉ và CÙNG hành lý ký gửi
+       gộp thành một dòng, lấy giá thấp nhất. Hiển thị tối đa 3 dòng;
+       "Xem tất cả các mức giá" mở danh sách đầy đủ, mỗi dòng có mã riêng.
+       (Ở prototype dữ liệu mẫu đã gộp sẵn nên chỉ cắt 3 dòng.) */
+    var rows = f.fares.slice(0, 3).map(function (x, i) {
+      var chk = x.checked === null ? '<span class="fl-amen__unknown">Hãng chưa công bố</span>'
+              : x.checked === 0 ? '<span class="fl-amen__none">Không kèm ký gửi</span>'
+              : 'Ký gửi ' + x.checked;
+      /* §10.3 · RB16 — cột đầu là TÊN HẠNG VÉ dựng từ bảng ánh xạ, ba trạng thái.
+         Dòng mô tả thuộc tính chỉ hiện khi thiếu tên ánh xạ. */
+      var lb = BK.fareLabel(f.al, x.code);
+      var nameCell = lb.state === 'mapped'
+        ? lb.text
+        : lb.state === 'code'
+          ? lb.text + '<span class="fare-name__attrs">' + x.attrs + '</span>'
+          : '<span class="fare-name__attrs" style="margin-top:0">' + x.attrs + '</span>';
+      /* 🔴 §10.4.5 · RB25 — MỖI DÒNG một liên kết Điều kiện vé, đặt ngay dưới tên hạng.
+         §21-19 cấm khối điều kiện vé chung ở đáy panel: mỗi hạng có điều kiện khác nhau. */
+      nameCell += '<button class="condlink" type="button" data-cond="' + f.id + '|' + i + '">' +
+        '<span data-condicon>ⓘ</span> Điều kiện vé<span data-condtick></span></button>';
+      var isSel = i === (SEL[f.id] || 0);
+      return '<tr' + (isSel ? ' class="fare-row--on"' : '') + '>' +
+        '<td class="fare-name" data-th="Hạng vé">' + nameCell + '</td>' +
+        '<td data-th="Hành lý">🎒 ' + x.cabin + '<br>🧳 ' + chk + '</td>' +
+        '<td data-th="Hoàn / đổi">' + x.refund + '</td>' +
+        '<td data-th="Còn lại">Còn ' + x.seats + ' chỗ</td>' +
+        '<td class="fare-price" data-th="Giá 1 khách">' +
+          /* §5.2 điều kiện 1 — bảng tách chi tiết LUÔN MỞ ĐƯỢC TỪ MỌI CHỖ CÓ GIÁ.
+             §4.1-5 liệt kê tooltip dùng ở M2 · M3 · M4, nên bảng hạng vé (M3) cũng phải có ⓘ. */
+          '<div style="display:flex;align-items:center;gap:2px">' +
+            '<span class="price price--table">' + BK.money(x.base + x.tax) + '</span>' +
+            pricePopup(f, x) +
+          '</div>' +
+          '<div class="price__note">Đã bao gồm thuế và phí</div>' +
+          /* §10.4.5 — hạng ĐANG CHỌN là dòng đầu, nút thành "Đã chọn" vô hiệu */
+          (isSel
+            ? '<button class="btn btn--secondary" type="button" data-selectleg style="margin-top:10px;height:40px;min-width:100px">Chọn chuyến</button>'
+            : '<button class="btn btn--primary" type="button" data-usefare="' + i + '" style="margin-top:10px;height:40px;min-width:100px">Chọn</button>') +
+        '</td></tr>';
+    }).join('');
+
+    return '<div class="band">HÀNH TRÌNH CHI TIẾT</div>' +
+      '<div class="card" style="padding:0 16px">' +
+        '<div class="itin">' +
+          '<span class="itin__t">' + f.dep + '</span>' +
+          '<span><b>' + f.from + '</b> · ' + (f.terminalFrom || 'Nhà ga chính') + '</span>' +
+          '<span class="itin__date">T5, 20 tháng 8</span>' +
+          '<span class="itin__rail"></span>' +
+          '<span class="itin__mid">' + f.dur + ' · ' + f.no + ' · ' + f.craft +
+            /* §9.4.2 · RB30 — ghi chú hãng khai thác, cùng cách nói ở mọi màn hình */
+            (f.operatedBy ? '<br><span class="opnote">(điều hành bởi ' + f.operatedBy + ')</span>' : '') +
+            (f.stops ? '<br>Nối chuyến tại ' + f.stopAt + ' · chờ ' + f.layover : '') + '</span>' +
+          '<span></span>' +
+          '<span class="itin__t">' + f.arr + (f.nextDay ? '<span class="plus1">+1</span>' : '') + '</span>' +
+          '<span><b>' + f.to + '</b> · ' + (f.terminalTo || 'Nhà ga chính') + '</span>' +
+          '<span class="itin__date">T5, 20 tháng 8' + (f.nextDay ? ' (+1)' : '') + '</span>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="band" style="margin-top:16px">CHỌN HẠNG VÉ</div>' +
+      '<table class="fare-table">' +
+        '<thead><tr>' +
+          '<th>Hạng vé</th><th>Hành lý</th><th>Hoàn / đổi</th><th>Còn lại</th><th class="fare-price">Giá 1 khách</th>' +
+        '</tr></thead><tbody>' + rows + '</tbody>' +
+      '</table>' +
+
+      (f.fares.length > 3 ? '<div style="text-align:center;margin-top:12px"><button class="btn btn--secondary" type="button">Xem tất cả các mức giá</button></div>' : '') +
+
+      /* 🔴 §21-19 · RB25 — KHÔNG có khối điều kiện vé chung ở đáy panel.
+         Mỗi hạng vé có điều kiện khác nhau; liên kết nằm trong từng dòng ở trên. */
+      '';
+  }
+
+  /* §10.4.8 quy tắc 2 — ĐỆM THEO PHIÊN, khoá theo "{mã chuyến}|{chỉ số hạng vé}".
+     ⚠️ Đính chính bản trước: một lượt gọi phủ hết các CHẶNG, nhưng chỉ của MỘT HẠNG VÉ.
+     Xem điều kiện của ba hạng cùng một chuyến là BA lượt. */
+  var CONDITION_CACHE = {};
+  var condCalls = 0, condFail = false;
+
+  function bumpCond() {
+    condCalls++;
+    var el = document.getElementById('condMeter');
+    if (el) el.querySelector('b').textContent = condCalls;
+  }
+
+  /* §10.4.7 — Hộp thoại điều kiện vé, KHÔNG phải khối gấp mở trong trang */
+  function openCondDialog(key) {
+    var parts = key.split('|');
+    var f = legPool().filter(function (x) { return x.id === parts[0]; })[0];
+    var fare = f.fares[+parts[1]] || f;
+    var lb = BK.fareLabel(f.al, fare.code);
+
+    /* 🔴 Tiêu đề phụ PHẢI ghi tên hạng vé — mở hai hạng liên tiếp mà không có tên
+       thì khách không biết đang đọc cái nào. */
+    document.getElementById('condFare').textContent =
+      lb.state === 'none' ? fare.attrs : lb.text;
+    var body = document.getElementById('condBody');
+    BK.openDialog('#dlgCond');
+
+    if (CONDITION_CACHE[key]) { body.innerHTML = CONDITION_CACHE[key]; return; }   /* 0 lượt */
+
+    body.innerHTML = '<div class="skel skel--line"></div><div class="skel skel--line" style="width:88%"></div><div class="skel skel--line" style="width:64%"></div>';
+    bumpCond();
+    setTimeout(function () {
+      if (condFail) {
+        condFail = false;
+        body.innerHTML = '<div class="notice notice--error" style="align-items:center">' +
+          '<span>Không tải được điều kiện vé. Gọi 078 222 1131 để được tư vấn trước khi đặt.</span>' +
+          '<button class="btn btn--secondary" type="button" data-cond="' + key + '" style="margin-left:auto">Thử lại</button></div>';
+        return;
+      }
+      /* §10.4.8 quy tắc 3 — MỘT lượt gọi gộp mọi CHẶNG của cùng một hạng vé */
+      var html = LEGS_OF_TRIP.map(function (leg) {
+        return '<div class="cond-leg">Chặng bay ' + leg + '</div><div class="freetext">' + CONDITION_TEXT + '</div>';
+      }).join('');
+      CONDITION_CACHE[key] = html;
+      body.innerHTML = html;
+      /* Đã xem rồi → liên kết đổi thành "Điều kiện vé ✓" màu #43434B */
+      document.querySelectorAll('[data-cond="' + key + '"]').forEach(function (b) {
+        if (!b.classList.contains('condlink')) return;
+        b.classList.add('condlink--seen');
+        var t = b.querySelector('[data-condtick]'); if (t) t.textContent = ' ✓';
+      });
+    }, 1400);
+  }
+
+  var LEGS_OF_TRIP = ['HAN → SGN'];   /* khứ hồi / đa chặng: thêm chặng vào đây */
+
+  var CONDITION_TEXT =
+    '<p><b>Hoàn vé:</b> Vé không được hoàn trong mọi trường hợp, kể cả trước giờ khởi hành. ' +
+    'Thuế và phí sân bay được hoàn lại theo quy định của hãng sau khi trừ chi phí xử lý.</p>' +
+    '<p><b>Đổi chuyến:</b> Được đổi sang chuyến khác cùng hành trình, phí đổi 360.000đ mỗi khách mỗi chặng, ' +
+    'cộng chênh lệch giá vé nếu có. Yêu cầu đổi phải gửi trước giờ khởi hành ít nhất 3 giờ.</p>' +
+    '<p><b>Hành lý:</b> Mỗi khách được mang 1 kiện xách tay tối đa 10kg, kích thước không quá 56×36×23cm, ' +
+    'và 1 kiện ký gửi 23kg. Hành lý quá cước tính phí tại sân bay theo biểu giá của hãng.</p>' +
+    '<p><b>Trẻ em và em bé:</b> Em bé dưới 2 tuổi không có ghế riêng và không được hưởng tiêu chuẩn hành lý ký gửi.</p>' +
+    '<p class="u-text-faint">Nội dung điều kiện vé do hãng hàng không cung cấp. Bookese hiển thị nguyên trạng.</p>';
+
+  /* -------- Vẽ danh sách -------- */
+  var host = document.getElementById('results');
+  var VISIBLE = legPool().slice();
+
+  function sortList(list, by) {
+    var c = {
+      price: function (a, b) { return perAdult(curFare(a)) - perAdult(curFare(b)); },
+      dep:   function (a, b) { return a.dep.localeCompare(b.dep); },
+      arr:   function (a, b) { return a.arr.localeCompare(b.arr); },
+      dur:   function (a, b) { return parseInt(a.dur) - parseInt(b.dur); },
+      stops: function (a, b) { return a.stops - b.stops; }
+    }[by];
+    return list.slice().sort(c);
+  }
+
+  function draw(list, opts) {
+    opts = opts || {};
+    /* 🔴 §9.4.1 — huy hiệu tính lại trên TẬP KẾT QUẢ SAU KHI LỌC.
+       Giữ nhãn cũ trên tập mới là nói sai (§21 điều cấm số 7 của nhóm nhãn). */
+    recalcBadges(list);
+    document.getElementById('countLbl').textContent = list.length + ' chuyến bay';
+    if (!list.length) {
+      /* §16.2 — hai trạng thái rỗng khác nhau cho hai nguyên nhân khác nhau */
+      host.innerHTML = opts.filtered
+        ? '<div class="empty"><div class="empty__art">🔎</div>' +
+            '<div class="empty__title">Không có chuyến nào khớp bộ lọc</div>' +
+            '<p class="empty__sub">Bỏ bớt điều kiện để xem thêm lựa chọn</p>' +
+            '<button class="btn btn--primary" type="button" onclick="document.getElementById(\'clearAll\').click()">Bỏ tất cả lựa chọn</button></div>'
+        : '<div class="empty"><div class="empty__art">🛫</div>' +
+            '<div class="empty__title">Không có chuyến bay phù hợp</div>' +
+            '<p class="empty__sub">Thử đổi ngày bay hoặc bỏ bớt bộ lọc</p>' +
+            '<button class="btn btn--primary" type="button" onclick="location.reload()">Xem ngày lân cận</button></div>';
+      return;
+    }
+    host.innerHTML = list.map(flightHTML).join('') +
+      (opts.stream ? '<div class="stream"><span class="spinner spinner--dark"></span> Đang tìm Vietjet Air…<span style="margin-left:auto">' + list.length + ' kết quả</span></div>' : '') +
+      /* §9.8 — một hãng lỗi: ghi chú nhỏ cuối danh sách, không chặn cả trang */
+      (opts.airlineError ? '<p class="listnote">Không lấy được kết quả từ Bamboo Airways. Các hãng khác vẫn hiển thị đầy đủ.</p>' : '');
+  }
+
+  /* -------- Bộ lọc hãng bay (§9.6 · kèm logo và "Giá từ") -------- */
+  (function () {
+    var seen = {};
+    legPool().forEach(function (f) {
+      if (!seen[f.al] || perAdult(curFare(f)) < seen[f.al]) seen[f.al] = perAdult(curFare(f));
+    });
+    document.getElementById('fAirlines').innerHTML = Object.keys(seen).map(function (k) {
+      return '<label class="check"><input type="checkbox" value="' + k + '">' +
+        '<span style="display:flex;align-items:center;gap:8px;flex:1">' +
+          '<span class="airline__logo" style="width:24px;height:24px;font-size:10px;background:' + A[k].color + '">' + A[k].short + '</span>' +
+          '<span>' + A[k].name + '<br><span class="text-label-large-regular">Giá từ ' + BK.money(seen[k]) + '</span></span>' +
+        '</span><button class="only-btn" type="button">Lọc riêng</button></label>';
+    }).join('');
+  })();
+
+  function applyFilters() {
+    var picked = function (g) {
+      return Array.prototype.slice.call(document.querySelectorAll('[data-fgroup="' + g + '"] input:checked')).map(function (i) { return i.value; });
+    };
+    var al = picked('airline'), st = picked('stops'), bag = picked('bag'), rf = picked('refund'), bud = picked('budget');
+    var out = legPool().filter(function (f) {
+      if (al.length && al.indexOf(f.al) < 0) return false;
+      if (st.length && st.indexOf(String(f.stops)) < 0) return false;
+      if (bag.length && !(f.checked)) return false;
+      if (rf.length && !f.changeable) return false;
+      if (bud.length) {
+        var p = perAdult(curFare(f));
+        var ok = bud.some(function (r) { var a = r.split('-'); return p >= +a[0] && p < +a[1]; });
+        if (!ok) return false;
+      }
+      return true;
+    });
+    VISIBLE = out;
+    draw(sortList(out, document.getElementById('sort').value), { filtered: true });
+  }
+
+  document.getElementById('filters').addEventListener('change', applyFilters);
+  document.getElementById('filters').addEventListener('click', function (e) {
+    var b = e.target.closest('.only-btn'); if (!b) return;
+    e.preventDefault();
+    var group = b.closest('[data-fgroup]');
+    group.querySelectorAll('input').forEach(function (i) { i.checked = false; });
+    b.closest('.check').querySelector('input').checked = true;
+    applyFilters();
+  });
+  document.getElementById('clearAll').addEventListener('click', function () {
+    document.querySelectorAll('#filters input[type="checkbox"]').forEach(function (i) { i.checked = false; });
+    applyFilters();
+  });
+  document.getElementById('sort').addEventListener('change', function () {
+    draw(sortList(VISIBLE, this.value), {});
+  });
+
+  /* §10.4.3 — đổi hạng vé: vẽ lại đúng dòng đó, giữ nguyên panel nếu đang mở.
+     🔴 KHÔNG tải lại, KHÔNG gọi lượt nào (đã đo trên trang đối tác: 0 lượt). */
+  function useFare(art, idx) {
+    var f = legPool().filter(function (x) { return x.id === art.getAttribute('data-id'); })[0];
+    SEL[f.id] = idx;
+    /* 🔴 §9.4.1 — đổi sang hạng đắt hơn thì nhãn "Rẻ nhất" phải BIẾN MẤT */
+    recalcBadges(legPool());
+    var wasOpen = art.querySelector('[data-panel]') && !art.querySelector('[data-panel]').classList.contains('u-hidden');
+    var fresh = document.createElement('div');
+    fresh.innerHTML = flightHTML(f);
+    var node = fresh.firstChild;
+    art.replaceWith(node);
+    if (wasOpen) {
+      var p = node.querySelector('[data-panel]');
+      p.innerHTML = farePanelHTML(f);
+      p.classList.remove('u-hidden');
+      node.classList.add('fr--open');
+      markSeenLinks(p);
+    }
+  }
+
+  /* Liên kết của hạng đã xem điều kiện → "Điều kiện vé ✓" màu #43434B */
+  function markSeenLinks(root) {
+    (root || document).querySelectorAll('.condlink[data-cond]').forEach(function (b) {
+      if (!CONDITION_CACHE[b.getAttribute('data-cond')]) return;
+      b.classList.add('condlink--seen');
+      var t = b.querySelector('[data-condtick]'); if (t) t.textContent = ' ✓';
+    });
+  }
+
+  /* Bấm ra ngoài thì đóng danh sách hạng vé và bảng nổi tiện ích */
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.fr__price, .farelist')) document.querySelectorAll('.farelist').forEach(function (l) { l.hidden = true; });
+    if (!e.target.closest('[data-amen], .amen__pop')) document.querySelectorAll('.amen__pop').forEach(function (p) { p.hidden = true; });
+  });
+
+  /* -------- Mở panel hạng vé (M3) -------- */
+  host.addEventListener('click', function (e) {
+    /* §9.4.4 — 🔴 CẢ DÒNG bấm được để mở panel chi tiết.
+       Bốn vùng con (nút Chọn · giá có ▾ · biểu tượng ⓘ · tên hạng vé) tự chặn
+       sự kiện lan lên dòng cha, nếu không bấm Chọn sẽ vừa đặt vừa bung panel. */
+    var t = e.target.closest('[data-openpanel]');
+    if (t && !e.target.closest('[data-selectleg],[data-farepick],[data-amen],.pricepop,.farelist,.amen__pop')) {
+      var art = t.closest('.fr');
+      var panel = art.querySelector('[data-panel]');
+      var f = legPool().filter(function (x) { return x.id === art.getAttribute('data-id'); })[0];
+      var opening = panel.classList.contains('u-hidden');
+      if (opening) {
+        /* 🔴 §10.7 — MỞ PANEL CHI TIẾT = 0 LƯỢT GỌI. */
+        panel.innerHTML = farePanelHTML(f);
+        panel.classList.remove('u-hidden');
+        art.classList.add('fr--open');
+        markSeenLinks(panel);
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        panel.classList.add('u-hidden');
+        art.classList.remove('fr--open');
+      }
+      return;
+    }
+
+    /* §10.4.3 — bấm vào GIÁ: mở danh sách hạng vé. 0 lượt gọi. */
+    var fp = e.target.closest('[data-farepick]');
+    if (fp) {
+      var list = fp.closest('.fr__price').querySelector('.farelist');
+      var willOpen = list.hidden;
+      document.querySelectorAll('.farelist').forEach(function (l) { l.hidden = true; });
+      list.hidden = !willOpen;
+      e.stopPropagation();
+      return;
+    }
+
+    /* §10.4.3 — chọn một hạng: giá đổi NGAY, danh sách đóng lại, KHÔNG gọi lượt nào */
+    var opt = e.target.closest('[data-fareopt]');
+    if (opt) { useFare(opt.closest('.fr'), +opt.getAttribute('data-fareopt')); return; }
+    var uf = e.target.closest('[data-usefare]');
+    if (uf) { useFare(uf.closest('.fr'), +uf.getAttribute('data-usefare')); return; }
+
+    /* §10.4.4 — bảng nổi "Thông tin hạng vé". 0 lượt gọi. */
+    var ab = e.target.closest('[data-amen]');
+    if (ab) {
+      var pop = ab.parentElement.querySelector('.amen__pop');
+      var open = pop.hidden;
+      document.querySelectorAll('.amen__pop').forEach(function (p) { p.hidden = true; });
+      pop.hidden = !open;
+      e.stopPropagation();
+      return;
+    }
+    if (e.target.closest('[data-amen-close]')) {
+      e.target.closest('.amen__pop').hidden = true; return;
+    }
+
+    /* §10.4.7 — liên kết Điều kiện vé của MỘT hạng vé: đây là chỗ tốn 1 lượt gọi */
+    var cl = e.target.closest('[data-cond]');
+    if (cl) { openCondDialog(cl.getAttribute('data-cond')); return; }
+
+    /* §10.6 — bấm "Chọn": kiểm tra lại giá và chỗ (1–3 giây).
+       🔴 Trạng thái chờ đặt TRÊN CHÍNH NÚT, không chuyển màn hình tải toàn trang. */
+    var pick = e.target.closest('[data-pick]');
+    if (pick) {
+      var old = +pick.getAttribute('data-pick');
+      var txt = pick.innerHTML;
+      pick.classList.add('btn--busy');
+      pick.style.minWidth = '190px';
+      pick.innerHTML = '<span class="spinner"></span> Đang kiểm tra giá và chỗ…';
+      setTimeout(function () {
+        pick.classList.remove('btn--busy'); pick.style.minWidth = ''; pick.innerHTML = txt;
+        if (window.__forcePriceChange) {
+          var neu = old + 140000;
+          document.getElementById('pOld').textContent = BK.money(old);
+          document.getElementById('pNew').textContent = BK.money(neu);
+          document.getElementById('pDiff').textContent = '+ ' + BK.money(140000);
+          BK.openDialog('#dlgPrice');
+          return;
+        }
+        location.href = 'thanh-toan.html';
+      }, 1600);
+      return;
+    }
+
+    /* §9.9 — CHỌN CHUYẾN CHO CHẶNG ĐANG XEM.
+       🔴 Chỉ gọi kiểm tra giá MỘT LẦN sau khi chọn đủ hai chiều, không gọi sau mỗi chiều. */
+    var sel = e.target.closest('[data-selectleg]');
+    if (sel) {
+      var art2 = sel.closest('.fr');
+      var f2 = legPool().filter(function (x) { return x.id === art2.getAttribute('data-id'); })[0];
+      picked[curLeg] = { f: f2, fareIdx: SEL[f2.id] || 0 };
+      if (curLeg < LEGS.length - 1 && !picked[curLeg + 1]) curLeg++;   /* tự sang chặng tiếp theo */
+      renderLeg();
+    }
+  });
+
+  /* ---------- §9.9 · Thanh chỉ báo chiều · dòng thu gọn · thanh dính đáy ---------- */
+  function renderLegBar() {
+    document.getElementById('legBar').innerHTML = LEGS.map(function (lg, i) {
+      var st = picked[i] ? 'done' : (i === curLeg ? 'now' : 'todo');
+      var mark = st === 'done' ? '✓' : st === 'now' ? '●' : '○';
+      return '<button type="button" class="legstep legstep--' + st + '" data-gotoleg="' + i + '">' +
+        '<span class="legstep__m">' + mark + '</span>' +
+        '<span><b>' + lg.label + '</b><span>' + lg.route + '</span><span>' + lg.date + '</span></span>' +
+      '</button>';
+    }).join('');
+  }
+
+  function chosenRowHTML(i) {
+    var p = picked[i]; if (!p) return '';
+    var f = p.f, x = f.fares[p.fareIdx] || f, al = A[f.al];
+    var lb = BK.fareLabel(f.al, x.code);
+    return '<div class="legpicked">' +
+      '<span class="legpicked__tick">✓</span>' +
+      '<span class="airline__logo" style="width:32px;height:32px;font-size:11px;background:' + al.color + '">' + al.short + '</span>' +
+      '<span class="legpicked__b"><b>' + LEGS[i].label + ' đã chọn</b>' +
+        '<span>' + al.name + ' · ' + f.no + ' · ' + f.dep + '–' + f.arr +
+        (f.operatedBy ? ' · <i>điều hành bởi ' + f.operatedBy + '</i>' : '') + '</span>' +
+        '<span>' + (lb.state === 'none' ? x.attrs : lb.text) + ' · <b>' + BK.money(perAdult(x)) + '</b> /khách</span>' +
+      '</span>' +
+      /* 🔴 Bấm Đổi → quay lại danh sách chặng đó; chặng còn lại GIỮ NGUYÊN lựa chọn */
+      '<button class="btn btn--secondary" type="button" data-gotoleg="' + i + '" style="min-width:72px">Đổi</button>' +
+    '</div>';
+  }
+
+  function renderLeg() {
+    renderLegBar();
+
+    var box = document.getElementById('legChosen');
+    box.innerHTML = LEGS.map(function (lg, i) { return i === curLeg ? '' : chosenRowHTML(i); }).join('') +
+      /* Dải nhắc — dùng lại dải tiêu đề của bảng phòng (#D6EEFF + viền #83D5FF) */
+      (picked[curLeg] ? '' : '<div class="band" style="margin:12px 0 16px">ⓘ Chọn chuyến bay ' +
+        LEGS[curLeg].label.toLowerCase() + ' · ' + LEGS[curLeg].route + ' · ' + LEGS[curLeg].date + '</div>');
+
+    document.getElementById('pageTitle').textContent = LEGS[curLeg].city;
+    document.getElementById('pageSub').textContent =
+      LEGS[curLeg].date + ' · khứ hồi · 3 khách (2 người lớn, 1 trẻ em) · Phổ thông';
+
+    /* 🔴 Bộ lọc áp RIÊNG cho chặng đang chọn — lọc chiều về không làm mất lựa chọn chiều đi */
+    applyFilters();
+
+    /* Thanh dính đáy: hiện TỪ KHI chọn xong chặng đầu tiên */
+    var bar = document.getElementById('tripBar');
+    var n = pickedCount();
+    bar.classList.toggle('u-hidden', n === 0);
+    document.body.classList.toggle('has-tripbar', n > 0);
+    bar.querySelector('[data-trip-count]').textContent = 'Đã chọn ' + n + '/' + LEGS.length + ' chuyến';
+    bar.querySelector('[data-trip-price]').innerHTML =
+      (n === LEGS.length ? 'Tổng ' : 'Tạm tính ') + '<b>' + BK.money(pickedTotal()) + '</b> /khách' +
+      (n === LEGS.length ? ' × 3 khách' : '');
+    document.getElementById('tripNext').disabled = n < LEGS.length;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.addEventListener('click', function (e) {
+    var g = e.target.closest('[data-gotoleg]'); if (!g) return;
+    curLeg = +g.getAttribute('data-gotoleg');
+    renderLeg();
+  });
+
+  /* Chỉ tới đây mới kiểm tra giá — MỘT LẦN cho cả hành trình (§9.9) */
+  document.getElementById('tripNext').addEventListener('click', function () {
+    var b = this;
+    b.classList.add('btn--busy');
+    b.innerHTML = '<span class="spinner"></span> Đang kiểm tra giá và chỗ…';
+    setTimeout(function () { location.href = 'thanh-toan.html'; }, 1600);
+  });
+
+  /* -------- Dải giá 7 ngày (§9.7) -------- */
+  (function () {
+    var center = new Date(2026, 7, 20);
+    var html = '';
+    for (var i = -3; i <= 3; i++) {
+      var d = new Date(center); d.setDate(d.getDate() + i);
+      html += '<button type="button" class="dayslot' + (i === 0 ? ' dayslot--active' : '') + '">' +
+        '<span class="dayslot__d">' + BK.dateShort(d) + '</span>' +
+        '<span class="dayslot__p">' + BK.moneyShort(BK.priceOfDay(d)) + '</span></button>';
+    }
+    document.getElementById('daystrip').innerHTML = html;
+  })();
+
+  /* -------- Khởi động: §9.8 kết quả về THEO LUỒNG, hiện dần -------- */
+  renderLegBar();
+
+  function streamIn() {
+    var sorted = sortList(legPool(), 'price');
+    var n = 2;
+    draw(sorted.slice(0, n), { stream: true });
+    var id = setInterval(function () {
+      n += 2;
+      if (n >= sorted.length) {
+        clearInterval(id);
+        draw(sorted, { airlineError: true });
+      } else {
+        draw(sorted.slice(0, n), { stream: true });
+      }
+    }, 900);
+  }
+  streamIn();
+
+  /* -------- Chuyển trạng thái để trình bày (§9.8 · bảy trạng thái) -------- */
+  BK.onProtoState = function (id) {
+    window.__forcePriceChange = false;
+    if (id === 'stream')   { streamIn(); }
+    if (id === 'normal')   { draw(sortList(legPool(), 'price'), {}); }
+    if (id === 'alerr')    { draw(sortList(legPool(), 'price'), { airlineError: true }); }
+    if (id === 'empty')    { draw([], {}); }
+    if (id === 'fempty')   { draw([], { filtered: true }); }
+    if (id === 'expired')  { BK.openDialog('#dlgExpired'); }
+    if (id === 'pchange')  { window.__forcePriceChange = true; BK.toast('Đã bật mô phỏng "giá thay đổi" — mở một chuyến và bấm Chọn'); }
+    if (id === 'condfail') { condFail = true; BK.toast('Đã bật mô phỏng lỗi — mở một chuyến và bấm "Xem điều kiện vé"'); }
+    if (id === 'restore')  { BK.toast('Khôi phục nguyên trạng: giữ bộ lọc và vị trí cuộn'); }
+  };
+  BK.mountProto([
+    { id: 'stream',  label: 'Đang tìm' },
+    { id: 'normal',  label: 'Đủ kết quả' },
+    { id: 'alerr',   label: 'Một hãng lỗi' },
+    { id: 'empty',   label: 'Không có chuyến' },
+    { id: 'fempty',  label: 'Lọc hết kết quả' },
+    { id: 'expired', label: 'Giá hết hạn' },
+    { id: 'pchange', label: 'Giá đã đổi' },
+    { id: 'condfail', label: 'Điều kiện vé lỗi' },
+    { id: 'restore', label: 'Quay lại từ M4' }
+  ]);
+})();
+</script>
+</body>
+</html>

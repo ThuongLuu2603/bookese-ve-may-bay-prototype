@@ -1,0 +1,1337 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M4 · Thanh toán — Bookese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<style>
+  .chosen { display: flex; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--c-border); }
+  .chosen:last-child { border-bottom: 0; }
+  .chosen__b { flex: 1; min-width: 0; font-size: 14px; line-height: 1.6; }
+  .svcrow { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--c-border); }
+  .svcrow:last-child { border-bottom: 0; }
+  .paymethod { border: 1px solid var(--c-border); border-radius: var(--r-base); padding: 14px 16px; margin-bottom: 10px; }
+  .paymethod--on { border-color: var(--c-text); }
+  @media (max-width: 767px) { .svcrow { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header data-header></header>
+
+<!-- ============================================================
+     M4 — THANH TOÁN (§11)
+     🔴 MỘT TRANG DUY NHẤT · bốn khối gấp mở · mặc định MỞ HẾT
+     RB2: KHÔNG có thanh tiến trình, không số bước, không dấu tích.
+     ============================================================ -->
+<main class="container" style="padding-top:24px;padding-bottom:64px">
+  <h1 class="page-title" style="margin-bottom:16px">Hoàn tất đặt vé</h1>
+
+  <div class="layout-checkout">
+    <div>
+
+      <!-- §11.9 · Đồng hồ giữ chỗ — [MỚI 4] -->
+      <div class="holdbar" id="holdbar">
+        <div class="holdbar__top">
+          <span aria-hidden="true">⏱</span>
+          <span>Mã đặt chỗ <b>ABCDEF</b> · Vui lòng thanh toán trước <b data-hold-until>22:47</b></span>
+          <span class="holdbar__left">còn <b data-hold-left>10:00</b></span>
+        </div>
+        <div class="holdbar__bar"><div class="holdbar__fill" style="width:100%"></div></div>
+      </div>
+
+      <!-- §11.4 · Cảnh báo bay trong 24 giờ (bật ở trạng thái tương ứng) -->
+      <div class="notice notice--warn u-hidden" id="warn24" style="margin-bottom:16px">
+        <span aria-hidden="true">⚠️</span>
+        <span><b>Chuyến bay khởi hành trong 24 giờ.</b> Đặt chỗ sẽ không được giữ — bạn cần hoàn tất thanh toán ngay để có vé. Vui lòng kiểm tra kỹ thông tin trước khi tiếp tục.</span>
+      </div>
+
+      <!-- ===================== ① CHUYẾN BAY ĐÃ CHỌN (§11.3) ===================== -->
+      <section class="acc" data-open="true">
+        <button class="acc__head" type="button">
+          <span class="acc__title">Chuyến bay đã chọn</span>
+          <span class="acc__chev" aria-hidden="true">▲</span>
+        </button>
+        <div class="acc__body">
+          <div class="chosen">
+            <span class="airline__logo" style="background:#1B3A6B">VN</span>
+            <div class="chosen__b">
+              <b>Chiều đi · Hà Nội → TP. Hồ Chí Minh</b><br>
+              T5, 20 tháng 8 · 07:00 – 09:10 · 2h10'<br>
+              Vietnam Airlines · VN213 · Airbus A321<br>
+              <!-- §10.3 · vị trí 3/6 — tên hạng vé dưới số hiệu chuyến và loại tàu bay -->
+              <span class="fare-name-line">Phổ thông tiết kiệm (T)</span> · Bay thẳng<br>
+              <span class="u-text-secondary">🎒 Xách tay 10kg · 🧳 Ký gửi 23kg</span><br>
+              <span class="fl-amen__norefund">Không hoàn</span><br>
+              <!-- 🔴 RB27 · §21-24 — MỖI CHẶNG phải hiện giá của riêng chặng đó.
+                   Không có nó thì khách không đối chiếu được với thứ vừa chọn ở M2,
+                   và với khứ hồi thì không biết chặng nào đắt chặng nào rẻ. -->
+              <span class="legprice">VND 1.252.181</span> <span class="price__per">/khách</span>
+            </div>
+            <!-- Nút Đổi đưa về M2 với bộ lọc và vị trí cuộn GIỮ NGUYÊN (§11.3) -->
+            <a class="btn btn--secondary" href="ket-qua.html" style="min-width:72px;align-self:flex-start">Đổi</a>
+          </div>
+          <div class="chosen">
+            <span class="airline__logo" style="background:#008C4A">VU</span>
+            <div class="chosen__b">
+              <b>Chiều về · TP. Hồ Chí Minh → Hà Nội</b><br>
+              T7, 22 tháng 8 · 05:35 – 07:50 · 2h15'<br>
+              <span data-leg2-airline>Vietravel Airlines · VU302 · Airbus A321</span><br>
+              <!-- §9.4.2 · RB30 — dòng này chỉ hiện khi hãng khai thác KHÁC hãng bán vé.
+                   Chuyến mẫu VU302 không phải liên danh nên ẩn hẳn, đúng quy tắc.
+                   Bấm trạng thái "Chặng liên danh" ở thanh Prototype để xem khi có. -->
+              <span class="opnote u-hidden" data-leg2-op></span>
+              <span class="fare-name-line" data-leg2-fare>Eco (E)</span> · Bay thẳng<br>
+              <span class="u-text-secondary">🎒 Xách tay 7kg · <span class="fl-amen__none">🧳 Không kèm hành lý ký gửi</span></span><br>
+              <span class="fl-amen__norefund">Không hoàn</span><br>
+              <span class="legprice">VND 438.400</span> <span class="price__per">/khách</span>
+            </div>
+            <a class="btn btn--secondary" href="ket-qua.html" style="min-width:72px;align-self:flex-start">Đổi</a>
+          </div>
+
+          <!-- §11.3 — hai dòng cộng dồn. Một chiều thì ẩn hai dòng này.
+               🔴 Con số phải KHỚP TUYỆT ĐỐI với dòng "Giá vé" ở cột tóm tắt (§11.8). -->
+          <div class="legsum">
+            <div class="legsum__row"><span>Giá vé cả hành trình</span>
+              <span><b>VND 1.690.581</b> <span class="price__per">/khách</span></span></div>
+            <div class="legsum__row legsum__row--x"><span>× 3 khách</span><span>VND 5.071.743</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== ② THÔNG TIN HÀNH KHÁCH (§11.4) ===================== -->
+      <section class="acc" data-open="true" id="blockPax">
+        <button class="acc__head" type="button">
+          <span>
+            <span class="acc__title">Thông tin hành khách</span>
+            <span class="acc__sub">Vui lòng nhập chính xác theo giấy tờ tùy thân</span>
+          </span>
+          <span class="acc__chev" aria-hidden="true">▲</span>
+        </button>
+        <div class="acc__body">
+
+          <!-- §11.4-1 · Lời mời đăng nhập, KHÔNG PHẢI RÀO CHẮN -->
+          <div class="notice notice--tip" style="margin-bottom:16px">
+            <span aria-hidden="true">✦</span>
+            <span>Đã có tài khoản Bookese? <a href="#">Đăng nhập để điền nhanh và nhận xu sau chuyến bay</a> — hoặc tiếp tục đặt không cần tài khoản.</span>
+          </div>
+
+          <!-- 🔴 §11.4 · RB28 — Thẻ hành khách là LƯỚI BA CỘT, BA HÀNG.
+               §21-23 cấm lồng khối gấp mở bên trong thẻ: thẻ đã là một khối rồi.
+               Ba thẻ dựng từ JS (hàm paxCard) để mọi hành khách cùng một bố cục. -->
+          <div id="paxCards"></div>
+
+          <!-- Thông tin liên hệ -->
+          <h3 class="text-body-large-semibold" style="margin:24px 0 16px">Thông tin liên hệ</h3>
+          <div class="field" style="margin-bottom:16px">
+            <label class="field__label req" for="cname">Họ và Tên</label>
+            <input class="input" id="cname" placeholder="Nhập họ và tên">
+            <!-- 🔴 §11.4 · CHỈ được chứa chữ cái — kiểm tra NGAY KHI NHẬP -->
+            <span class="field__error u-hidden" id="cnameErr">Họ tên chỉ được chứa chữ cái</span>
+          </div>
+          <div class="form-grid" style="grid-template-columns:140px 1fr 1fr">
+            <div class="field">
+              <label class="field__label req" for="cc">Mã vùng</label>
+              <select class="select" id="cc"><option>🇻🇳 +84</option><option>+1</option><option>+65</option><option>+81</option></select>
+            </div>
+            <div class="field">
+              <label class="field__label req" for="cphone">Số điện thoại</label>
+              <input class="input" id="cphone" inputmode="tel" placeholder="Nhập số điện thoại">
+            </div>
+            <div class="field">
+              <label class="field__label req" for="cmail">Email</label>
+              <input class="input" id="cmail" type="email" placeholder="Nhập email của bạn">
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:16px">
+            <label class="field__label" for="req">Yêu cầu đặc biệt</label>
+            <div class="textarea-wrap">
+              <textarea class="textarea" id="req" maxlength="500" placeholder="Nhập nội dung (không bắt buộc)"></textarea>
+              <span class="charcount">0 / 500</span>
+            </div>
+            <span class="field__hint" style="font-size:14px">Các yêu cầu đặc biệt không đảm bảo sẽ được đáp ứng — tuy nhiên hãng sẽ cố gắng hết sức.</span>
+          </div>
+
+          <!-- §11.4-8 · [MỚI 10] Khối hóa đơn ĐÓNG SẴN -->
+          <div class="disclosure" data-open="false" style="margin-top:20px">
+            <label class="check" style="margin-bottom:0">
+              <input type="checkbox" id="wantInvoice"> Yêu cầu xuất hóa đơn
+            </label>
+            <div class="disclosure__body" id="invoiceBody" style="display:none">
+              <p class="notice notice--tip" style="margin:12px 0">
+                <span aria-hidden="true">ⓘ</span>
+                <span>Bookese xuất hóa đơn cho phần phí dịch vụ. Hóa đơn tiền vé do hãng hàng không phát hành.</span>
+              </p>
+              <div class="form-grid">
+                <div class="field"><label class="field__label req" for="iname">Tên đơn vị / cá nhân</label><input class="input" id="iname"></div>
+                <div class="field"><label class="field__label req" for="itax">Mã số thuế</label><input class="input" id="itax"></div>
+                <div class="field" style="grid-column:1/-1"><label class="field__label req" for="iaddr">Địa chỉ</label><input class="input" id="iaddr"></div>
+                <div class="field" style="grid-column:1/-1"><label class="field__label req" for="iemail">Email nhận hóa đơn</label><input class="input" id="iemail" type="email"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🔴 §11.4-7 · RB15 — ô đồng ý xử lý dữ liệu cá nhân RIÊNG BIỆT, KHÔNG TÍCH SẴN.
+               Theo luật, im lặng không được coi là đồng ý. -->
+          <label class="check" style="margin-top:16px">
+            <input type="checkbox" id="dataConsent">
+            <span>Tôi đồng ý cho Bookese xử lý dữ liệu cá nhân của hành khách để thực hiện đặt vé <span style="color:var(--c-error)">*</span></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- ===================== ③ DỊCH VỤ THÊM (§11.5 · §11.6) =====================
+           🔴 RB19 — Mỗi lần hỏi nhà cung cấp về hành lý / ghế / suất ăn đều TỐN MỘT
+           LƯỢT GỌI CÓ PHÍ. Khối mở sẵn như ba khối kia nhưng CHƯA GỌI GÌ; ba nút bên
+           phải là ba "công tắc" gọi dữ liệu. Chi phí = 0 cho tới khi khách chủ động bấm.
+           🔴 RB20 — Mọi dịch vụ phải chọn được cho TỪNG hành khách: ma trận
+           hành khách × chiều bay, kèm ô "áp dụng cho tất cả".
+           ========================================================================= -->
+      <section class="acc" data-open="true" id="blockSvc">
+        <button class="acc__head" type="button">
+          <span>
+            <span class="acc__title">Dịch vụ thêm</span>
+            <span class="acc__sub">Đặt trước rẻ hơn mua tại sân bay</span>
+          </span>
+          <span class="acc__chev" aria-hidden="true">▲</span>
+        </button>
+        <div class="acc__body">
+
+          <!-- §11.5.2 · ĐÃ CÓ SẴN TRONG VÉ — lấy từ dữ liệu tìm kiếm, MIỄN PHÍ về kỹ thuật -->
+          <div class="text-body-small-semibold" style="color:var(--c-text);margin-bottom:8px">
+            ĐÃ CÓ SẴN TRONG VÉ — không phải mua thêm
+          </div>
+          <div class="included">
+            <div class="included__row">
+              <span class="included__dir">Chiều đi &nbsp;HAN → SGN</span>
+              <span>🎒 Xách tay 10kg · 🧳 Ký gửi 23kg</span>
+            </div>
+            <div class="included__row">
+              <span class="included__dir">Chiều về &nbsp;SGN → HAN</span>
+              <span>🎒 Xách tay 7kg · <span class="fl-amen__none">🧳 Không kèm ký gửi</span></span>
+            </div>
+            <p class="text-label-large-regular" style="margin:6px 0 0;text-align:right">(áp dụng cho mỗi hành khách)</p>
+          </div>
+
+          <!-- ===== Ba công tắc gọi dữ liệu ===== -->
+          <div class="svc-switch" data-svcblock="bag">
+            <div class="svc-switch__head">
+              <span class="svc-switch__icon" aria-hidden="true">🧳</span>
+              <span class="svc-switch__t">
+                <b>Hành lý ký gửi mua thêm</b>
+                <span class="svc-switch__sub">Từ 15kg đến 32kg tùy hãng</span>
+              </span>
+              <span class="svc-switch__sum u-hidden" data-sum></span>
+              <button class="btn btn--secondary" type="button" data-load="bag">Xem gói hành lý</button>
+            </div>
+            <div class="svc-switch__body u-hidden" data-body></div>
+          </div>
+
+          <div class="svc-switch" data-svcblock="seat">
+            <div class="svc-switch__head">
+              <span class="svc-switch__icon" aria-hidden="true">💺</span>
+              <span class="svc-switch__t">
+                <b>Chỗ ngồi</b>
+                <span class="svc-switch__sub">Chọn trước để ngồi cạnh người thân</span>
+              </span>
+              <span class="svc-switch__sum u-hidden" data-sum></span>
+              <button class="btn btn--secondary" type="button" data-load="seat">Chọn ghế</button>
+            </div>
+          </div>
+
+          <div class="svc-switch" data-svcblock="svc">
+            <div class="svc-switch__head">
+              <span class="svc-switch__icon" aria-hidden="true">🍽</span>
+              <span class="svc-switch__t">
+                <b>Suất ăn và dịch vụ khác</b>
+                <span class="svc-switch__sub">Suất ăn đặc biệt · xe lăn · ưu tiên làm thủ tục</span>
+              </span>
+              <span class="svc-switch__sum u-hidden" data-sum></span>
+              <button class="btn btn--secondary" type="button" data-load="svc">Xem dịch vụ</button>
+            </div>
+            <div class="svc-switch__body u-hidden" data-body></div>
+          </div>
+
+          <!-- §11.5 · Nút bỏ qua CÙNG CỠ với nút tiếp tục — không ép mua -->
+          <div style="display:flex;gap:12px;margin-top:20px">
+            <button class="btn btn--secondary" type="button" style="height:48px;flex:1">Bỏ qua, tôi không cần</button>
+            <button class="btn btn--primary" type="button" style="flex:1">Tiếp tục</button>
+          </div>
+
+          <!-- Chỉ dùng khi trình bày — chứng minh RB19 · §11.6.2 -->
+          <p class="callmeter" id="callMeter">Prototype · lượt gọi dữ liệu nhà cung cấp đã dùng: <b>0</b> / tối đa 6</p>
+        </div>
+      </section>
+
+      <!-- ===================== ④ PHƯƠNG THỨC THANH TOÁN (§11.7) ===================== -->
+      <section class="acc" data-open="true" id="blockPay">
+        <button class="acc__head" type="button">
+          <span class="acc__title">Phương thức thanh toán</span>
+          <span class="acc__chev" aria-hidden="true">▲</span>
+        </button>
+        <div class="acc__body">
+          <!-- 🔴 Thứ tự này là QUYẾT ĐỊNH THƯƠNG MẠI, không phải thẩm mỹ.
+               34% khách VN trả bằng app ngân hàng · 21% ví · 18% thẻ. -->
+          <label class="paymethod paymethod--on check">
+            <input type="radio" name="pay" checked>
+            <span style="flex:1">
+              <b class="text-body-semibold">Mã QR / chuyển khoản ngân hàng</b><br>
+              <span class="text-body-small-regular u-text-label">Nhanh nhất · xác nhận 1–3 phút</span>
+              <span class="badge badge--warn" style="margin-left:6px">+5.000 Xu</span>
+            </span>
+          </label>
+          <label class="paymethod check">
+            <input type="radio" name="pay">
+            <span style="flex:1">
+              <b class="text-body-semibold">Ví điện tử</b><br>
+              <span class="text-body-small-regular u-text-label">MoMo · ZaloPay · VNPAY — xác nhận tức thì</span>
+            </span>
+          </label>
+          <label class="paymethod check">
+            <input type="radio" name="pay">
+            <span style="flex:1"><b class="text-body-semibold">Thẻ nội địa</b></span>
+          </label>
+          <label class="paymethod check">
+            <input type="radio" name="pay">
+            <span style="flex:1">
+              <b class="text-body-semibold">Thẻ quốc tế</b><br>
+              <span class="text-body-small-regular u-text-label">Cần xác thực 3-D Secure</span>
+            </span>
+          </label>
+
+          <p class="text-label-large-regular" style="margin:12px 0 20px">
+            ⚠️ Bookese không thu phụ phí theo phương thức thanh toán. Chênh lệch do Bookese hấp thụ.
+          </p>
+
+          <!-- [MỚI 9] Ô mã giảm giá -->
+          <div class="field" style="max-width:420px">
+            <label class="field__label" for="coupon">Mã giảm giá</label>
+            <div style="display:flex;gap:8px">
+              <input class="input" id="coupon" placeholder="Nhập mã giảm giá">
+              <button class="btn btn--secondary" type="button" style="height:52px;min-width:88px">Áp dụng</button>
+            </div>
+          </div>
+
+          <p class="text-body-small-regular u-text-label" style="margin:20px 0 0">
+            Bằng việc tiếp tục, bạn xác nhận thông tin hành khách đã nhập là chính xác theo giấy tờ tùy thân.
+            Vé đã xuất không hoàn, mọi thay đổi thực hiện theo điều kiện của hãng hàng không.
+          </p>
+          <p style="margin:12px 0 0"><a href="ket-qua.html">‹ Quay về bước trước</a></p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== CỘT TÓM TẮT KIỂU VÉ XÉ (§11.8 · RB3) ===================== -->
+    <aside class="summary">
+      <div class="summary-card summary-card--top">
+        <div class="text-body-large-semibold" style="margin-bottom:12px">Tóm tắt giá</div>
+        <!-- §10.3 · vị trí 4/6 — tên hạng vé dưới tên hãng, trong cột tóm tắt -->
+        <div style="padding-bottom:10px;margin-bottom:6px;border-bottom:1px solid var(--c-border)">
+          <div class="text-body-small-regular" style="color:var(--c-text)">Vietnam Airlines</div>
+          <div class="text-label-large-regular">Chiều đi · Phổ thông tiết kiệm (T)</div>
+          <div class="text-body-small-regular" style="color:var(--c-text);margin-top:6px">Vietravel Airlines</div>
+          <div class="text-label-large-regular">Chiều về · Eco (E)</div>
+        </div>
+        <div class="sum-row"><span class="sum-row__k">Hành khách</span><span class="sum-row__v">3 khách</span></div>
+        <div class="sum-row"><span class="sum-row__k">Giá vé</span><span class="sum-row__v">VND 5.071.743</span></div>
+        <!-- 🔴 RB10 · Dòng này ĐÃ GỒM phí dịch vụ Bookese. Không tách dòng riêng ở đây. -->
+        <div class="sum-row">
+          <span class="sum-row__k">Thuế &amp; phí</span>
+          <span class="sum-row__v" style="display:flex;align-items:center;gap:2px">VND 870.000
+            <span class="pricepop">
+              <button class="pricepop__btn" type="button" aria-label="Xem chi tiết thuế và phí">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01" stroke-linecap="round"/></svg>
+              </button>
+              <span class="pricepop__panel" hidden>
+                <span class="pp-title">Thuế &amp; phí</span>
+                <hr class="pp-hr">
+                <span class="pp-row"><span>Thuế và phí sân bay</span><span>VND 570.000</span></span>
+                <span class="pp-row"><span>Phí dịch vụ Bookese</span><span>VND 300.000</span></span>
+                <span class="pp-row pp-row--sub"><span>50.000 × 3 khách × 2 chặng</span><span></span></span>
+                <p class="pp-foot">Giá vé và thuế phí sân bay do hãng hàng không quy định, Bookese thu hộ. Phí dịch vụ là khoản duy nhất Bookese thu.</p>
+              </span>
+            </span>
+          </span>
+        </div>
+        <!-- 🔴 RB22 · §11.8 · §21-15 — Nhóm "Dịch vụ thêm" TÁCH BA DÒNG RIÊNG,
+             không gộp thành một. Khách vừa chọn ba thứ khác nhau ở khối ③; gộp lại
+             khiến họ không đối chiếu được và phải cuộn ngược lên kiểm tra.
+             Dòng bằng 0 ẩn hẳn; chưa chọn gì thì ẩn cả nhóm kể cả tiêu đề. -->
+        <div id="svcGroup" class="u-hidden">
+          <hr class="u-divider" style="margin:10px 0">
+          <div class="sum-group__t">Dịch vụ thêm</div>
+          <button class="sum-sub" type="button" data-goto="bag"  hidden><span>🧳 Hành lý ký gửi</span><span class="sum-sub__v"></span></button>
+          <button class="sum-sub" type="button" data-goto="seat" hidden><span>💺 Chỗ ngồi</span><span class="sum-sub__v"></span></button>
+          <button class="sum-sub" type="button" data-goto="svc"  hidden><span>🍽 Dịch vụ khác</span><span class="sum-sub__v"></span></button>
+        </div>
+      </div>
+
+      <!-- Hiệu ứng VÉ XÉ: đường đứt nét + hai hình tròn 20px màu nền trang -->
+      <div class="summary-tear">
+        <span class="summary-tear__c summary-tear__c--l"></span>
+        <span class="summary-tear__c summary-tear__c--r"></span>
+      </div>
+
+      <div class="summary-card summary-card--bot">
+        <div class="sum-total">
+          <span class="sum-total__k">Tổng giá</span>
+          <span class="sum-total__v" id="grandTotal">VND 6.247.400</span>
+        </div>
+        <div class="sum-note">Đã bao gồm thuế và phí</div>
+
+        <!-- §17.5 · Nhắc điều kiện vé TRƯỚC khi khách quyết định, không phải sau -->
+        <p class="text-label-large-regular" style="margin:10px 0 0;color:var(--c-error)">
+          Vé này không hoàn được. Đổi chuyến mất phí 360.000đ.
+        </p>
+
+        <!-- §5.4 · RB12 — khối xu NGOÀI khối tính tiền, sau đường kẻ, KHÔNG dấu trừ -->
+        <div class="coin">
+          <div class="coin__title"><span aria-hidden="true">🪙</span> Xu nhận sau chuyến bay</div>
+          <div class="coin__meta">Hạng Du khách</div>
+          <div class="coin__meta">12.000 × 3 khách × 2 chặng</div>
+          <div class="coin__value">72.000 Xu</div>
+        </div>
+
+        <label class="check" style="margin:16px 0">
+          <input type="checkbox" id="agree" data-gate="#btnPay">
+          <span class="u-text-secondary">Tôi đã đọc và đồng ý với <b style="color:var(--c-text)">Chính sách bảo mật</b> và <b style="color:var(--c-text)">Quy chế hoạt động của nền tảng</b></span>
+        </label>
+
+        <!-- Nút VÔ HIỆU cho tới khi tích ô đồng ý -->
+        <button class="btn btn--primary btn--block" type="button" id="btnPay" disabled>Thanh toán đặt chỗ</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- ===================== §11.5.5 · SƠ ĐỒ CHỖ NGỒI — CHỌN CHO TỪNG HÀNH KHÁCH =====
+     🔴 Dãy thẻ hành khách ở đầu hộp thoại là THÀNH PHẦN BẮT BUỘC. Không có nó thì
+     khách chạm vào ghế mà không biết đang chọn cho ai. [MỚI 13]
+     ============================================================================= -->
+<div class="overlay" id="dlgSeat" hidden>
+  <div class="dialog dialog--wide" role="dialog" aria-modal="true" aria-labelledby="seatT">
+    <div class="dialog__head">
+      <span class="dialog__title" id="seatT">Chọn chỗ ngồi</span>
+      <button class="btn btn--icon dialog__x" type="button" data-close aria-label="Đóng">✕</button>
+    </div>
+
+    <!-- Tab chiều bay — chuyển chiều MỚI tải sơ đồ chiều đó (§11.6.2) -->
+    <div class="dirtabs" id="seatDirTabs"></div>
+
+    <div class="dialog__body">
+      <div class="text-body-small-semibold" style="color:var(--c-text);margin-bottom:8px">Đang chọn ghế cho:</div>
+      <div class="paxchips" id="paxChips"></div>
+
+      <div class="seatmap" style="margin-top:16px">
+        <div>
+          <div class="text-body-small-semibold" style="text-align:center;margin-bottom:10px" id="cabinTitle">ECONOMY · Airbus A321</div>
+          <div class="seatmap__cabin" id="cabin"></div>
+        </div>
+        <div>
+          <div class="text-body-semibold" style="margin-bottom:10px">Đã chọn</div>
+          <div id="picked" class="text-body-small-regular u-text-faint" style="margin-bottom:16px">Chưa chọn ghế nào</div>
+          <div class="sum-total" style="margin-bottom:20px">
+            <span class="sum-total__k">Tổng ghế</span><span class="sum-total__v" id="seatTotal">VND 0</span>
+          </div>
+          <div class="text-body-small-semibold" style="margin-bottom:8px">ⓘ Chỉ dẫn</div>
+          <div class="legend" id="legend"></div>
+        </div>
+      </div>
+    </div>
+    <div class="dialog__foot">
+      <button class="btn btn--secondary" type="button" data-close>Hủy</button>
+      <button class="btn btn--primary" type="button" id="seatOk">Xác nhận chọn ghế</button>
+    </div>
+  </div>
+</div>
+
+<!-- Ghế hàng thoát hiểm cần cam kết riêng (§11.6) -->
+<div class="overlay" id="dlgExit" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" style="max-width:460px">
+    <div class="dialog__head"><span class="dialog__title">Ghế hàng thoát hiểm</span></div>
+    <div class="dialog__body">
+      <p class="text-body-small-regular" style="margin:0 0 12px">Hãng yêu cầu khách ngồi hàng thoát hiểm cam kết đủ điều kiện:</p>
+      <ul class="text-body-small-regular u-text-secondary" style="margin:0;padding-left:20px;line-height:1.8">
+        <li>Từ 15 tuổi trở lên, đủ sức khỏe hỗ trợ mở cửa thoát hiểm</li>
+        <li>Không đi cùng trẻ em hoặc em bé</li>
+        <li>Hiểu và thực hiện được hướng dẫn của tiếp viên</li>
+      </ul>
+    </div>
+    <div class="dialog__foot dialog__foot--equal">
+      <button class="btn btn--secondary" type="button" data-close>Chọn ghế khác</button>
+      <button class="btn btn--secondary" type="button" data-close id="exitOk">Tôi cam kết đủ điều kiện</button>
+    </div>
+  </div>
+</div>
+
+<!-- §17.6 · Hết hạn giữ chỗ — 🔴 GIỮ NGUYÊN TOÀN BỘ DỮ LIỆU ĐÃ NHẬP -->
+<div class="overlay" id="dlgExpired" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" style="max-width:440px">
+    <div class="dialog__body" style="text-align:center;padding-top:32px">
+      <div style="font-size:34px">⏱</div>
+      <h3 class="text-body-large-semibold" style="margin:8px 0">Chỗ đã được nhả</h3>
+      <p class="text-body-small-regular u-text-label" style="margin:0 0 20px">
+        Thời gian giữ chỗ đã hết. Chúng tôi đã lưu toàn bộ thông tin bạn nhập — chỉ cần chọn lại chuyến bay.
+      </p>
+      <a class="btn btn--primary btn--block" href="ket-qua.html">Tìm lại chuyến bay</a>
+    </div>
+  </div>
+</div>
+
+<!-- §15.2 · Đang xử lý thanh toán — 🔴 KHÔNG dùng vòng xoay trơn -->
+<div class="overlay" id="ovProcessing" hidden>
+  <div class="processing">
+    <h3>Đang giữ chỗ với hãng…</h3>
+    <p>Việc này mất khoảng 10 giây. Vui lòng đừng đóng trang hoặc bấm quay lại.</p>
+    <div class="progress"><div class="progress__fill"></div></div>
+  </div>
+</div>
+
+<div class="toaster"></div>
+
+<script src="assets/app.js"></script>
+<script src="assets/data.js"></script>
+<script>
+(function () {
+  BK.mountHeader('vmb');
+
+  var BASE = { fare: 5071743, tax: 870000 };   /* RB27 — khớp đúng dòng "× 3 khách" ở khối ① */
+  var DIRS = BK.DIRECTIONS, PAX = BK.PASSENGERS;
+
+  /* ==================================================================
+     §11.6 — KIỂM SOÁT SỐ LƯỢT GỌI DỮ LIỆU (RB19)
+     `CACHE[loại][chiều]` = đệm theo PHIÊN LÀM VIỆC.
+       null      → chưa tải  → bấm nút = 1 lượt gọi
+       mảng/[]   → đã tải    → mở lại, "Sửa", đổi lựa chọn = 0 lượt
+     Bảng chi phí §11.6.2 được thi hành đúng bằng cấu trúc này.
+     ================================================================== */
+  var CACHE = { bag: { go: null, back: null }, seat: { go: null, back: null }, svc: { go: null, back: null } };
+  var CHOSEN = {            /* lựa chọn của khách — không bao giờ mất khi đóng/mở lại */
+    bag:  { go: {}, back: {} },   /* [số hành khách] = giá */
+    svc:  { go: {}, back: {} },   /* [số hk] = { khóa dịch vụ: giá } */
+    seat: { go: {}, back: {} }    /* [số hk] = { id, price } */
+  };
+  var calls = 0, failNext = false;
+  function bumpCall() {
+    calls++;
+    paintMeter();
+  }
+  /* §7.4 — trần lượt gọi TĂNG TUYẾN TÍNH theo số chặng: 3 loại dịch vụ × N chặng */
+  function paintMeter() {
+    document.getElementById('callMeter').innerHTML =
+      'Prototype · lượt gọi dữ liệu nhà cung cấp đã dùng: <b>' + calls + '</b> / tối đa ' +
+      (3 * DIRS.length) + ' (3 loại dịch vụ × ' + DIRS.length + ' chặng)';
+  }
+
+  /* Gọi dữ liệu — CHỈ khi chưa có trong đệm phiên (§11.6.3 quy tắc 4) */
+  function fetchCatalog(type, dir, btn, done) {
+    if (CACHE[type][dir] !== null) { done(CACHE[type][dir], false); return; }  /* 0 lượt gọi */
+    var label = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner spinner--dark"></span> Đang tải…'; }
+    bumpCall();
+    setTimeout(function () {
+      if (btn) { btn.disabled = false; btn.innerHTML = label; }
+      if (failNext) { failNext = false; done(null, true); return; }           /* §11.6.4 tải lỗi */
+      CACHE[type][dir] = (type === 'seat') ? true
+        : JSON.parse(JSON.stringify(BK.PACKAGES[type][dir]));
+      done(CACHE[type][dir], false);
+    }, 1400);
+  }
+
+  /* ---- Tổng tiền dịch vụ thêm ---- */
+  function svcTotalOf(type) {
+    var t = 0;
+    DIRS.forEach(function (d) {
+      var box = CHOSEN[type][d.id];
+      Object.keys(box).forEach(function (k) {
+        var v = box[k];
+        if (type === 'svc') Object.keys(v).forEach(function (s) { t += v[s] || 0; });
+        else if (type === 'seat') t += v.price || 0;
+        else t += v || 0;
+      });
+    });
+    return t;
+  }
+  function refreshTotal() {
+    var t = { bag: svcTotalOf('bag'), seat: svcTotalOf('seat'), svc: svcTotalOf('svc') };
+    var svc = t.bag + t.seat + t.svc;
+
+    /* RB22 — ba dòng riêng; dòng bằng 0 ẩn hẳn (không hiện "VND 0"),
+       chưa chọn gì thì ẩn cả nhóm kể cả tiêu đề. */
+    ['bag', 'seat', 'svc'].forEach(function (k) {
+      var row = document.querySelector('[data-goto="' + k + '"]');
+      row.hidden = !t[k];
+      if (t[k]) row.querySelector('.sum-sub__v').textContent = BK.money(t[k]);
+    });
+    document.getElementById('svcGroup').classList.toggle('u-hidden', svc === 0);
+
+    document.getElementById('grandTotal').textContent = BK.money(BASE.fare + BASE.tax + svc);
+    renderSummaries();
+  }
+
+  /* §11.8 — chạm vào một dòng con: cuộn tới đúng loại dịch vụ đó trong khối ③ */
+  document.getElementById('svcGroup').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-goto]'); if (!b) return;
+    var target = document.querySelector('[data-svcblock="' + b.getAttribute('data-goto') + '"]');
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  /* §11.5.6 — dòng tóm tắt gọn sau khi chọn xong. Nút "Sửa" KHÔNG gọi lại dữ liệu. */
+  function renderSummaries() {
+    [['bag', 'Xem gói hành lý'], ['seat', 'Chọn ghế'], ['svc', 'Xem dịch vụ']].forEach(function (p) {
+      var type = p[0];
+      var block = document.querySelector('[data-svcblock="' + type + '"]');
+      var sum = block.querySelector('[data-sum]');
+      var btn = block.querySelector('[data-load]');
+      var total = svcTotalOf(type);
+      var touched = DIRS.some(function (d) { return Object.keys(CHOSEN[type][d.id]).length; });
+      if (!touched) { sum.classList.add('u-hidden'); btn.textContent = p[1]; return; }
+
+      var detail = DIRS.map(function (d) {
+        var box = CHOSEN[type][d.id];
+        var short = d.id === 'go' ? 'Chiều đi' : 'Chiều về';
+        var keys = Object.keys(box);
+        if (!keys.length) return short + ': chưa chọn';
+        if (type === 'seat') return short + ': ' + keys.map(function (k) { return box[k].id; }).join(', ');
+        if (type === 'bag')  return short + ': ' + keys.map(function (k) { return paxOf(k).name; }).join(', ');
+        return short + ': ' + keys.length + ' hành khách';
+      }).join(' · ');
+
+      sum.innerHTML = '<b>' + (total ? BK.money(total) : 'Đã chọn') + '</b><span>' + detail + '</span>';
+      sum.classList.remove('u-hidden');
+      btn.textContent = 'Sửa';
+    });
+  }
+  function paxOf(n) { return PAX.filter(function (p) { return String(p.n) === String(n); })[0]; }
+
+  /* ==================================================================
+     §11.4.1 · RB23 — KHỐI GIẤY TỜ TÙY THÂN CÓ NĂM Ô HIỂN THỊ
+     Loại · Số · Ngày hết hạn · Quốc tịch · Nơi cấp.
+     ❌ Ngày cấp KHÔNG hiển thị — hệ thống có nhận nhưng hãng không dùng.
+     🔴 §21-16: không được bỏ ô Ngày hết hạn — thiếu là không đặt được vé.
+     ================================================================== */
+  var COUNTRY_OPTS = BK.COUNTRIES.map(function (c) {
+    return '<option' + (c === 'Việt Nam' ? ' selected' : '') + '>' + c + '</option>';
+  }).join('');
+
+  /* ==================================================================
+     §11.4 · RB28 — THẺ HÀNH KHÁCH LÀ LƯỚI BA CỘT, BA HÀNG
+       Hàng 1: Danh xưng * · Họ * · Tên đệm & tên *
+       Hàng 2: Ngày sinh · Quốc tịch * · Số thẻ hội viên
+       Hàng 3: Loại giấy tờ * · Số giấy tờ * · Ngày hết hạn *  (chỉ khi khai giấy tờ)
+     🔴 §21-23 — KHÔNG lồng khối gấp mở bên trong thẻ.
+     🔴 §21-22 — KHÔNG có ô "tên trên giấy tờ khác tên đặt vé": tên trên vé BẮT BUỘC
+        trùng tên giấy tờ, mở ô cho nhập lệch là tự tạo đơn hỏng.
+     ❌ Không có ô "Nơi cấp" — hệ thống tự đặt bằng quốc tịch.
+     ================================================================== */
+  var INTL = false;                 /* chặng quốc tế? — đổi ở thanh Prototype */
+  var DOC_ON = {};                  /* hành khách nào đã khai giấy tờ */
+
+  function titleOpts(kind) {
+    return (kind === 'adt' ? ['Anh/Ông', 'Chị/Bà', 'Cô'] : ['Bé trai', 'Cô'])
+      .map(function (t) { return '<option>' + t + '</option>'; }).join('');
+  }
+
+  /* §11.4.2 — THẺ HỘI VIÊN LÀ MỘT Ô, không phải một khối gấp mở.
+     Một hãng → nhãn ghi thẳng tên hãng, hãng gán ngầm.
+     Nhiều hãng → hộp chọn hãng GẮN LIỀN bên trái ô số thẻ (một ô ghép). */
+  function memberField(n) {
+    var first = DIRS[0].al;
+    var many = DIRS.some(function (d) { return d.al !== first; });
+    if (!many) {
+      return '<div class="field">' +
+        '<label class="field__label" for="mn' + n + '">Số thẻ ' + BK.AIRLINES[first].name + '</label>' +
+        '<input class="input" id="mn' + n + '" placeholder="Ví dụ: 5901234567" data-memno data-memal="' + first + '">' +
+      '</div>';
+    }
+    var opts = Object.keys(BK.AIRLINES).map(function (k) {
+      return '<option value="' + k + '"' + (k === first ? ' selected' : '') + '>' + BK.AIRLINES[k].short + '</option>';
+    }).join('');
+    return '<div class="field">' +
+      '<label class="field__label" for="mn' + n + '">Số thẻ hội viên</label>' +
+      '<div class="joined">' +
+        '<select class="select joined__sel" aria-label="Hãng" data-memal>' + opts + '</select>' +
+        '<input class="input joined__inp" id="mn' + n + '" placeholder="Ví dụ: 5901234567" data-memno>' +
+      '</div>' +
+      '<span class="field__hint">Thẻ chỉ áp dụng cho chặng do ' + BK.AIRLINES[first].name + ' khai thác</span>' +
+    '</div>';
+  }
+
+  /* §11.4.2 · RB31 — Bảng hướng dẫn nhập họ tên.
+     Nhập sai họ/tên là lỗi TỐN TIỀN NHẤT của toàn luồng: vé xuất rồi thì sửa tên mất phí,
+     có hãng không cho sửa mà phải hủy đặt lại.
+     🔴 §21-28 — ảnh hộ chiếu là ẢNH MẪU do Bookese tự dựng (SVG dưới đây),
+     KHÔNG dùng hộ chiếu của người thật, kể cả đã bôi mờ. */
+  function nameGuidePanel() {
+    return '<div class="nameguide__pop" hidden>' +
+      '<button class="nameguide__x" type="button" data-nameguide-close aria-label="Đóng">✕</button>' +
+      '<ul class="nameguide__list">' +
+        '<li>Họ (ví dụ: <b>NGUYEN</b>)</li>' +
+        '<li>Nhập giống với Hộ chiếu / Thẻ căn cước công dân</li>' +
+        '<li>Không nhập ký tự đặc biệt, nhập tiếng Việt <b>KHÔNG DẤU</b></li>' +
+        '<li>Nếu tên chỉ có một chữ thì điền danh xưng (MR / MRS) vào phần Họ</li>' +
+      '</ul>' +
+      '<div class="nameguide__ex">' +
+        '<div class="nameguide__label">Ví dụ:</div>' +
+        '<div class="nameguide__cols">' +
+          /* Ảnh hộ chiếu MẪU — tự dựng bằng SVG, không phải ảnh người thật */
+          '<svg class="nameguide__pp" viewBox="0 0 200 132" role="img" aria-label="Ảnh minh họa hộ chiếu mẫu">' +
+            '<rect x="1" y="1" width="198" height="130" rx="6" fill="#1B2430" stroke="#3A4657"/>' +
+            '<text x="12" y="20" fill="#9FB3C8" font-size="9" font-family="monospace">INTERNATIONAL PASSPORT</text>' +
+            '<rect x="12" y="30" width="40" height="48" rx="3" fill="#2C3A4B" stroke="#46566B"/>' +
+            '<circle cx="32" cy="48" r="10" fill="#46566B"/><path d="M18 74c3-9 25-9 28 0z" fill="#46566B"/>' +
+            '<text x="60" y="40" fill="#9FB3C8" font-size="7" font-family="monospace">Family (Last name)</text>' +
+            '<text x="60" y="52" fill="#fff" font-size="11" font-family="monospace" font-weight="bold">NGUYEN</text>' +
+            '<text x="60" y="66" fill="#9FB3C8" font-size="7" font-family="monospace">Given name (First &amp; Middle)</text>' +
+            '<text x="60" y="78" fill="#fff" font-size="11" font-family="monospace" font-weight="bold">VAN A</text>' +
+            '<text x="12" y="100" fill="#6B7C93" font-size="8" font-family="monospace">P&lt;VNM&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</text>' +
+            '<text x="12" y="114" fill="#6B7C93" font-size="8" font-family="monospace">C1234567&lt;9VNM&lt;&lt;&lt;&lt;&lt;&lt;</text>' +
+            /* 🔴 Mũi tên nối từ ĐÚNG DÒNG trên ảnh sang ĐÚNG Ô — phần làm nên giá trị của bảng */
+            '<path d="M150 48h34" stroke="#20BA46" stroke-width="1.5" marker-end="url(#ar)"/>' +
+            '<path d="M150 74h34" stroke="#20BA46" stroke-width="1.5" marker-end="url(#ar)"/>' +
+            '<defs><marker id="ar" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">' +
+              '<path d="M0 0l6 3-6 3z" fill="#20BA46"/></marker></defs>' +
+          '</svg>' +
+          '<div class="nameguide__map">' +
+            '<div class="nameguide__k">Họ</div><div class="nameguide__v">NGUYEN</div>' +
+            '<hr>' +
+            '<div class="nameguide__k">Tên đệm và tên</div><div class="nameguide__v">VAN A</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function paxCard(p) {
+    var n = p.n;
+    var showDoc = INTL || DOC_ON[n];
+    var dobReq = p.kind !== 'adt';              /* bắt buộc với trẻ em và em bé */
+    return '<div class="paxcard" data-pax="' + n + '">' +
+      '<div class="paxcard__head"><b>Hành khách ' + n + '</b> <span class="badge badge--muted">' + p.type + '</span>' +
+        (n === 1 ? '<button class="btn btn--link" type="button" style="margin-left:auto;font-size:13px">Chọn từ hồ sơ đã lưu</button>' : '') +
+      '</div>' +
+
+      '<div class="paxgrid">' +
+        /* ---- Hàng 1 ---- */
+        '<div class="field"><label class="field__label req" for="t' + n + '">Danh xưng</label>' +
+          '<select class="select" id="t' + n + '">' + titleOpts(p.kind) + '</select></div>' +
+        '<div class="field"><label class="field__label req" for="l' + n + '">Họ</label>' +
+          '<input class="input" id="l' + n + '" value="' + p.name.split(' ')[0] + '" placeholder="Ví dụ: NGUYEN"></div>' +
+        '<div class="field"><label class="field__label req" for="f' + n + '">Tên đệm &amp; tên</label>' +
+          '<input class="input" id="f' + n + '" value="' + p.name.split(' ').slice(1).join(' ') + '" placeholder="Ví dụ: VAN A"></div>' +
+        /* §11.4.2 · RB31 — HƯỚNG DẪN NHẬP HỌ VÀ TÊN, đặt NGAY DƯỚI cặp ô Họ / Tên.
+           🔴 KHÔNG tự mở: đây là hướng dẫn, không phải cảnh báo. */
+        '<div class="nameguide" style="grid-column:2/-1">' +
+          '<button class="nameguide__link" type="button" data-nameguide>ⓘ Hướng dẫn nhập họ, tên đệm và tên.</button>' +
+          '<span data-namehint></span>' +
+          nameGuidePanel() +
+        '</div>' +
+
+        /* ---- Hàng 2 ---- */
+        '<div class="field"><label class="field__label' + (dobReq ? ' req' : '') + '" for="d' + n + '">Ngày sinh</label>' +
+          '<input class="input" id="d' + n + '" placeholder="DD/MM/YYYY"></div>' +
+        (showDoc
+          ? '<div class="field"><label class="field__label req" for="nat' + n + '">Quốc tịch</label>' +
+              '<select class="select" id="nat' + n + '" data-nat>' + COUNTRY_OPTS + '</select></div>'
+          : '<div class="field"><label class="field__label u-sr-only">Giấy tờ</label>' +
+              '<button class="btn btn--link" type="button" data-adddoc="' + n + '" style="height:52px;justify-content:flex-start">+ Thêm giấy tờ tùy thân</button></div>') +
+        memberField(n) +
+
+        /* ---- Hàng 3 — chỉ khi có khai giấy tờ ---- */
+        (showDoc
+          ? '<div class="field" data-docblock="' + n + '"><label class="field__label req" for="dt' + n + '">Loại giấy tờ</label>' +
+              '<select class="select" id="dt' + n + '" data-doctype><option value="">Chọn loại</option>' +
+              '<option value="cccd">Căn cước công dân</option><option value="pp" selected>Hộ chiếu</option></select></div>' +
+            '<div class="field"><label class="field__label req" for="dn' + n + '">Số giấy tờ</label>' +
+              '<input class="input" id="dn' + n + '" maxlength="15" placeholder="Nhập số giấy tờ" data-docnum>' +
+              '<span class="field__hint" data-dochint>Tối đa 15 ký tự</span>' +
+              '<span class="field__error u-hidden" data-docerr></span></div>' +
+            '<div class="field" data-docexp><label class="field__label req" for="de' + n + '">Ngày hết hạn</label>' +
+              '<input class="input" id="de' + n + '" placeholder="DD/MM/YYYY">' +
+              '<span class="field__hint">Phải sau ngày hôm nay</span></div>'
+          : '') +
+      '</div>' +
+
+      /* 🔴 MỘT dòng ghi chú DUY NHẤT ở cuối thẻ, gộp cảnh báo tên và hạn hộ chiếu.
+         Không rải ghi chú giữa các hàng. */
+      '<p class="paxnote" data-paxnote>ⓘ Tên phải trùng khớp với giấy tờ tùy thân dùng khi làm thủ tục — sửa tên sau khi xuất vé sẽ mất phí.' +
+        (showDoc ? ' Hộ chiếu phải còn hạn ít nhất 6 tháng tính từ ngày khởi hành, tức sau <b>20/02/2027</b>.' : '') +
+      '</p>' +
+
+      /* Em bé phải gắn người lớn đi kèm */
+      (p.kind === 'inf'
+        ? '<div class="paxgrid" style="margin-top:16px"><div class="field">' +
+            '<label class="field__label req" for="w' + n + '">Đi kèm người lớn</label>' +
+            '<select class="select" id="w' + n + '"><option value="">Chọn hành khách</option>' +
+            '<option value="1">Hành khách 1 — NGUYEN VAN A</option></select></div></div>'
+        : '') +
+    '</div>';
+  }
+
+  function renderPaxCards() {
+    document.getElementById('paxCards').innerHTML = PAX.map(paxCard).join('');
+  }
+  renderPaxCards();
+
+  /* Chặng nội địa: "+ Thêm giấy tờ tùy thân" là LIÊN KẾT, không phải khối gấp mở */
+  document.getElementById('blockPax').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-adddoc]');
+    if (b) { DOC_ON[b.getAttribute('data-adddoc')] = true; renderPaxCards(); return; }
+
+    /* §11.4.2 — mở/đóng bảng hướng dẫn. Không bao giờ tự mở. */
+    var g = e.target.closest('[data-nameguide]');
+    document.querySelectorAll('.nameguide__pop').forEach(function (p) {
+      if (!g || p !== g.parentElement.querySelector('.nameguide__pop')) p.hidden = true;
+    });
+    if (g) { var pop = g.parentElement.querySelector('.nameguide__pop'); pop.hidden = !pop.hidden; e.stopPropagation(); return; }
+    if (e.target.closest('[data-nameguide-close]')) e.target.closest('.nameguide__pop').hidden = true;
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.nameguide')) document.querySelectorAll('.nameguide__pop').forEach(function (p) { p.hidden = true; });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.querySelectorAll('.nameguide__pop').forEach(function (p) { p.hidden = true; });
+  });
+
+  /* ==================================================================
+     §11.4.2 — BỐN QUY TẮC KIỂM TRA TƯƠNG ỨNG
+     Bảng hướng dẫn nói gì thì ô nhập phải kiểm đúng thứ đó.
+     💡 Tự bỏ dấu thay vì báo lỗi là chi tiết đáng làm nhất: khách gõ "Nguyễn Văn A"
+     theo phản xạ; bắt họ tự sửa là thêm một bước bực mình.
+     ================================================================== */
+  var DIACRITICS = 'àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ';
+  var PLAIN      = 'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd';
+  function stripDiacritics(s) {
+    var out = '';
+    for (var i = 0; i < s.length; i++) {
+      var c = s[i], k = DIACRITICS.indexOf(c.toLowerCase());
+      out += k > -1 ? (c === c.toLowerCase() ? PLAIN[k] : PLAIN[k].toUpperCase()) : c;
+    }
+    return out;
+  }
+
+  document.getElementById('blockPax').addEventListener('input', function (e) {
+    var el = e.target;
+    if (!el.matches('[id^="l"],[id^="f"]') || el.tagName !== 'INPUT') return;
+    if (!/^[lf]\d+$/.test(el.id)) return;
+    var before = el.value;
+    /* ① Không dấu tiếng Việt — TỰ SỬA ÊM, không báo lỗi */
+    var v = stripDiacritics(before);
+    /* ② Không ký tự đặc biệt — chỉ nhận chữ cái và khoảng trắng */
+    var bad = /[^A-Za-z\s]/.test(v);
+    v = v.replace(/[^A-Za-z\s]/g, '');
+    if (v !== before) { var pos = el.selectionStart; el.value = v; el.setSelectionRange(pos, pos); }
+
+    var card = el.closest('.paxcard');
+    var hint = card.querySelector('[data-namehint]');
+    if (before !== stripDiacritics(before)) {
+      hint.textContent = 'Đã bỏ dấu theo yêu cầu của hãng';
+      hint.className = 'field__hint';
+    } else if (bad) {
+      hint.textContent = 'Họ và tên chỉ được chứa chữ cái.';
+      hint.className = 'field__error';
+    } else hint.textContent = '';
+  });
+
+  /* ③ Viết hoa — tự chuyển khi RỜI ô, không báo lỗi */
+  document.getElementById('blockPax').addEventListener('focusout', function (e) {
+    var el = e.target;
+    if (el.tagName === 'INPUT' && /^[lf]\d+$/.test(el.id)) el.value = el.value.toUpperCase().trim();
+    /* ④ Tên một chữ — ô "Tên đệm & tên" để trống hợp lệ nếu ô Họ đã có danh xưng */
+    if (el.tagName === 'INPUT' && /^f\d+$/.test(el.id) && !el.value.trim()) {
+      var card = el.closest('.paxcard');
+      var ho = card.querySelector('[id^="l"]').value.trim().toUpperCase();
+      var hint = card.querySelector('[data-namehint]');
+      if (!/^(MR|MRS|MS)\b/.test(ho)) {
+        hint.textContent = 'Nếu tên chỉ có một chữ, điền MR hoặc MRS vào ô Họ.';
+        hint.className = 'field__error';
+      }
+    }
+  });
+
+
+  /* ---- Giấy tờ tùy thân: CCCD ẩn ngày hết hạn · Hộ chiếu hiện cảnh báo 6 tháng ---- */
+  /* Uỷ quyền sự kiện — áp dụng cho MỌI hành khách, không chỉ hành khách 1 */
+  document.getElementById('blockPax').addEventListener('change', function (e) {
+    var dt = e.target.closest('[data-doctype]');
+    if (!dt) return;
+    var card = dt.closest('.paxcard');
+    var isCccd = dt.value === 'cccd', isPp = dt.value === 'pp';
+    /* 🔴 §11.4.1 — Căn cước: ẩn ô ngày hết hạn (căn cước không có hạn để khai).
+       Hộ chiếu: hiện ô ngày hết hạn, và ghi chú cuối thẻ nhắc mốc 6 tháng.
+       ❌ Không có ô "Nơi cấp" — hệ thống tự đặt bằng quốc tịch. */
+    card.querySelector('[data-docexp]').classList.toggle('u-hidden', !isPp);
+    card.querySelector('[data-dochint]').textContent =
+      isCccd ? 'Đúng 12 chữ số' : isPp ? 'Tối đa 15 ký tự chữ và số' : 'Tối đa 15 ký tự';
+    /* Ghi chú GỘP ở cuối thẻ — không rải cảnh báo giữa các hàng */
+    var note = card.querySelector('[data-paxnote]');
+    note.innerHTML = 'ⓘ Tên phải trùng khớp với giấy tờ tùy thân dùng khi làm thủ tục — sửa tên sau khi xuất vé sẽ mất phí.' +
+      (isPp ? ' Hộ chiếu phải còn hạn ít nhất 6 tháng tính từ ngày khởi hành, tức sau <b>20/02/2027</b>.' : '');
+    validateDoc(card);
+  });
+
+  function validateDoc(box) {
+    var dt = box.querySelector('[data-doctype]');
+    var dn = box.querySelector('[data-docnum]');
+    var err = box.querySelector('[data-docerr]');
+    var msg = '';
+    if (dn.value.length) {
+      if (dt.value === 'cccd' && !/^\d{12}$/.test(dn.value)) msg = 'Số căn cước công dân gồm đúng 12 chữ số';
+      else if (dt.value === 'pp' && !/^[A-Za-z0-9]{1,15}$/.test(dn.value)) msg = 'Số hộ chiếu chỉ gồm chữ và số, tối đa 15 ký tự';
+    }
+    dn.classList.toggle('input--error', !!msg);
+    err.textContent = msg;
+    err.classList.toggle('u-hidden', !msg);
+  }
+
+  document.getElementById('blockPax').addEventListener('input', function (e) {
+    var dn = e.target.closest('[data-docnum]');
+    if (dn) validateDoc(dn.closest('[data-docblock]'));
+  });
+
+  /* ---- Họ tên liên hệ: chỉ chữ cái, kiểm tra NGAY KHI NHẬP ---- */
+  var cn = document.getElementById('cname');
+  cn.addEventListener('input', function () {
+    var bad = cn.value.length > 0 && !/^[\p{L}\s]+$/u.test(cn.value);
+    cn.classList.toggle('input--error', bad);
+    document.getElementById('cnameErr').classList.toggle('u-hidden', !bad);
+  });
+
+  /* ---- Khối hóa đơn ---- */
+  document.getElementById('wantInvoice').addEventListener('change', function () {
+    document.getElementById('invoiceBody').style.display = this.checked ? 'block' : 'none';
+  });
+
+  /* ==================================================================
+     §11.5.3 · §11.5.4 — MA TRẬN HÀNH KHÁCH × CHIỀU BAY  [MỚI 12] · RB20
+     ================================================================== */
+  var openDir = { bag: 'go', svc: 'go', seat: 'go' };
+
+  /* Chặng nào đã chọn dịch vụ loại này? — §7.4 quy tắc 3 */
+  function legDone(type, dirId) {
+    var box = CHOSEN[type][dirId] || {};
+    return Object.keys(box).length > 0;
+  }
+
+  function dirTabsHTML(type) {
+    /* §11.5.3 — điều khiển chọn chặng CHỈ hiện khi có từ hai chặng */
+    if (DIRS.length < 2) return '';
+    /* §11.5.7 — 2–3 chặng: tab ngang · 4–6 chặng: 🔴 HỘP CHỌN CHẶNG 44px thay cho tab */
+    if (DIRS.length > 3) {
+      return '<div class="field" style="margin-bottom:16px;max-width:420px">' +
+        '<label class="field__label">Chặng</label>' +
+        '<select class="select" data-dirsel>' + DIRS.map(function (d, i) {
+          return '<option value="' + d.id + '"' + (openDir[type] === d.id ? ' selected' : '') + '>' +
+            '⑨①②③④⑤⑥'.charAt(i + 1) + ' ' + d.label + ' · ' + d.date +
+            (legDone(type, d.id) ? '   ✓ đã chọn' : '   —') + '</option>';
+        }).join('') + '</select></div>';
+    }
+    return '<div class="dirtabs">' + DIRS.map(function (d) {
+      return '<button type="button" class="dirtab' + (openDir[type] === d.id ? ' dirtab--active' : '') +
+             '" data-dir="' + d.id + '">' + d.label +
+             (legDone(type, d.id) ? ' <span class="u-text-success">✓</span>' : '') + '</button>';
+    }).join('') + '</div>';
+  }
+
+  function paxCellHTML(p) {
+    return '<div class="paxcell"><span class="paxnum">' + p.n + '</span>' +
+      '<span><span class="paxcell__n">' + p.name + '</span><br>' +
+      '<span class="paxcell__t">' + p.type + '</span></span></div>';
+  }
+
+  function renderBag(dirId, list) {
+    var dir = DIRS.filter(function (d) { return d.id === dirId; })[0];
+    if (!list || !list.length) {
+      return dirTabsHTML('bag') + '<p class="text-body-small-regular u-text-faint" style="margin:0">' +
+             'Hãng chưa mở bán hành lý thêm cho chuyến này</p>';
+    }
+    var rows = PAX.map(function (p) {
+      /* Em bé thường không mua được hành lý riêng → hộp chọn VÔ HIỆU + dòng giải thích */
+      if (p.kind === 'inf') {
+        return '<tr><td>' + paxCellHTML(p) + '</td><td>—</td>' +
+          '<td><select class="select" disabled><option>Không áp dụng</option></select>' +
+          '<span class="u-na">Em bé không có tiêu chuẩn hành lý ký gửi riêng</span></td></tr>';
+      }
+      var cur = CHOSEN.bag[dirId][p.n] || 0;
+      var opts = list.map(function (o) {
+        return '<option value="' + o.v + '"' + (o.v === cur ? ' selected' : '') + '>' +
+               o.t + (o.v ? ' · ' + BK.money(o.v) : '') + '</option>';
+      }).join('');
+      /* 🔴 §11.5.3 — cột "Đã có" đứng TRƯỚC cột "Mua thêm" */
+      var have = dir.checked === 0 ? '<span class="fl-amen__none">Không kèm</span>'
+               : dir.checked === null ? '<span class="fl-amen__unknown">Chưa công bố</span>' : dir.checked;
+      return '<tr><td>' + paxCellHTML(p) + '</td><td>' + have + '</td>' +
+        '<td><select class="select" data-bagpax="' + p.n + '">' + opts + '</select></td></tr>';
+    }).join('');
+
+    var total = Object.keys(CHOSEN.bag[dirId]).reduce(function (s, k) { return s + (CHOSEN.bag[dirId][k] || 0); }, 0);
+    return dirTabsHTML('bag') +
+      '<table class="paxmatrix"><thead><tr><th>Hành khách</th><th>Đã có</th><th>Mua thêm</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>' +
+      /* 🔴 Rất quan trọng khi đông khách — chép lựa chọn của HK1 sang mọi hành khách cùng loại */
+      '<label class="check" style="margin-top:14px"><input type="checkbox" data-applyall="bag">' +
+      'Áp dụng lựa chọn của Hành khách 1 cho tất cả hành khách</label>' +
+      '<div class="matrix-total"><span>Tổng hành lý thêm — ' + (dirId === 'go' ? 'chiều đi' : 'chiều về') + ':</span>' +
+      '<span class="price price--table">' + BK.money(total) + '</span></div>';
+  }
+
+  function renderSvc(dirId, list) {
+    if (!list || !list.length) {
+      /* §11.6.4 — "đã tải, không có gì" KHÁC với "đang tải" */
+      return dirTabsHTML('svc') + '<p class="text-body-small-regular u-text-faint" style="margin:0">' +
+             'Hãng chưa mở bán dịch vụ thêm cho chuyến này</p>';
+    }
+    var rows = PAX.map(function (p) {
+      var lines = list.map(function (s) {
+        var cur = (CHOSEN.svc[dirId][p.n] || {})[s.key] || 0;
+        var dis = (p.kind === 'inf' && s.key === 'meal');
+        var opts = s.opts.map(function (o) {
+          return '<option value="' + o.v + '"' + (o.v === cur ? ' selected' : '') + '>' +
+                 o.t + (o.v ? ' · ' + BK.money(o.v) : '') + '</option>';
+        }).join('');
+        return '<div class="matrix-svcline"><span class="matrix-svcline__l">' + s.icon + ' ' + s.label + '</span>' +
+          '<select class="select" style="width:230px" data-svcpax="' + p.n + '" data-svckey="' + s.key + '"' +
+          (dis ? ' disabled' : '') + '>' + (dis ? '<option>Không áp dụng</option>' : opts) + '</select></div>';
+      }).join('');
+      return '<tr><td>' + paxCellHTML(p) + '</td><td>' + lines + '</td></tr>';
+    }).join('');
+    return dirTabsHTML('svc') +
+      '<table class="paxmatrix"><tbody>' + rows + '</tbody></table>' +
+      '<label class="check" style="margin-top:14px"><input type="checkbox" data-applyall="svc">' +
+      'Áp dụng lựa chọn của Hành khách 1 cho tất cả hành khách</label>';
+  }
+
+  function paintBlock(type) {
+    var block = document.querySelector('[data-svcblock="' + type + '"]');
+    var body = block.querySelector('[data-body]');
+    var data = CACHE[type][openDir[type]];
+    body.innerHTML = (type === 'bag') ? renderBag(openDir[type], data) : renderSvc(openDir[type], data);
+    body.classList.remove('u-hidden');
+  }
+
+  /* ---- Ba "công tắc" gọi dữ liệu ---- */
+  document.getElementById('blockSvc').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-load]');
+    if (!btn) return;
+    var type = btn.getAttribute('data-load');
+    if (type === 'seat') { openSeatDialog(btn); return; }
+
+    var block = btn.closest('[data-svcblock]');
+    var body = block.querySelector('[data-body]');
+    /* Bấm lần nữa (hoặc "Sửa") khi đã tải: chỉ đóng/mở, KHÔNG gọi lại — §11.6.2 */
+    if (CACHE[type][openDir[type]] !== null && !body.classList.contains('u-hidden')) {
+      body.classList.add('u-hidden'); return;
+    }
+    fetchCatalog(type, openDir[type], btn, function (data, failed) {
+      if (failed) {
+        body.innerHTML = '<div class="notice notice--error" style="align-items:center">' +
+          '<span>Không tải được danh sách. Thử lại hoặc mua tại sân bay.</span>' +
+          '<button class="btn btn--secondary" type="button" data-load="' + type + '" style="margin-left:auto">Thử lại</button></div>';
+        body.classList.remove('u-hidden');
+        return;
+      }
+      paintBlock(type);
+    });
+  });
+
+  /* ---- Đổi tab chiều bay: chiều còn lại MỚI tải khi bấm sang (§11.6.3 quy tắc 3) ---- */
+  document.getElementById('blockSvc').addEventListener('click', function (e) {
+    var tab = e.target.closest('.dirtab'); if (!tab) return;
+    var type = tab.closest('[data-svcblock]').getAttribute('data-svcblock');
+    openDir[type] = tab.getAttribute('data-dir');
+    var body = tab.closest('[data-body]');
+    fetchCatalog(type, openDir[type], null, function (data, failed) {
+      if (failed) return;
+      paintBlock(type);
+    });
+    if (CACHE[type][openDir[type]] === null) {
+      body.innerHTML = dirTabsHTML(type) +
+        '<div class="skel skel--line"></div><div class="skel skel--line" style="width:70%"></div>';
+    }
+  });
+
+  /* ---- Thay đổi lựa chọn — 0 lượt gọi ---- */
+  document.getElementById('blockSvc').addEventListener('change', function (e) {
+    var d = openDir;
+    /* §11.5.7 — hộp chọn chặng (khi >3 chặng) thay cho tab ngang */
+    var ds = e.target.closest('[data-dirsel]');
+    if (ds) {
+      var type = ds.closest('[data-svcblock]').getAttribute('data-svcblock');
+      openDir[type] = ds.value;
+      var body = ds.closest('[data-body]');
+      if (CACHE[type][openDir[type]] === null) {
+        body.innerHTML = dirTabsHTML(type) + '<div class="skel skel--line"></div><div class="skel skel--line" style="width:70%"></div>';
+      }
+      fetchCatalog(type, openDir[type], null, function (data, failed) { if (!failed) paintBlock(type); });
+      return;
+    }
+    var bag = e.target.closest('[data-bagpax]');
+    if (bag) {
+      var v = +bag.value;
+      if (v) CHOSEN.bag[d.bag][bag.getAttribute('data-bagpax')] = v;
+      else delete CHOSEN.bag[d.bag][bag.getAttribute('data-bagpax')];
+      paintBlock('bag'); refreshTotal(); return;
+    }
+    var sv = e.target.closest('[data-svcpax]');
+    if (sv) {
+      var n = sv.getAttribute('data-svcpax'), k = sv.getAttribute('data-svckey');
+      CHOSEN.svc[d.svc][n] = CHOSEN.svc[d.svc][n] || {};
+      if (+sv.value) CHOSEN.svc[d.svc][n][k] = +sv.value; else delete CHOSEN.svc[d.svc][n][k];
+      if (!Object.keys(CHOSEN.svc[d.svc][n]).length) delete CHOSEN.svc[d.svc][n];
+      refreshTotal(); return;
+    }
+    var all = e.target.closest('[data-applyall]');
+    if (all && all.checked) {
+      var type = all.getAttribute('data-applyall'), dir = d[type];
+      var src = CHOSEN[type][dir][1];
+      if (src === undefined) { BK.toast('Hành khách 1 chưa chọn gì để áp dụng'); all.checked = false; return; }
+      PAX.forEach(function (p) {
+        if (p.n === 1 || p.kind === 'inf') return;                 /* em bé không áp dụng */
+        CHOSEN[type][dir][p.n] = (type === 'svc') ? JSON.parse(JSON.stringify(src)) : src;
+      });
+      paintBlock(type); refreshTotal();
+      BK.toast('Đã áp dụng lựa chọn của Hành khách 1 cho các hành khách còn lại');
+    }
+  });
+
+  /* ==================================================================
+     §11.5.5 — SƠ ĐỒ CHỖ NGỒI · chọn cho TỪNG hành khách  [MỚI 13]
+     ================================================================== */
+  var activePax = 1;
+
+  document.getElementById('legend').innerHTML = BK.SEAT_LEGEND.map(function (l) {
+    return '<span class="legend__i"><span class="legend__sw" style="border-color:' + l.v +
+      (l.k === 'taken' ? ';background:var(--seat-taken-bg)' : '') + '"></span>' + l.label + '</span>';
+  }).join('');
+
+  function openSeatDialog(btn) {
+    fetchCatalog('seat', openDir.seat, btn, function (data, failed) {
+      if (failed) { BK.toast('Không tải được sơ đồ ghế. Thử lại hoặc chọn ghế tại sân bay.', { type: 'error' }); return; }
+      paintSeatDialog();
+      BK.openDialog('#dlgSeat');
+    });
+  }
+
+  function paintSeatDialog() {
+    /* §11.5.7 — hai tầng chọn: tầng 1 CHẶNG (tab khi ≤3, hộp chọn khi >3, kèm tiến độ) */
+    var seatable = PAX.filter(function (p) { return p.kind !== 'inf'; }).length;
+    document.getElementById('seatDirTabs').innerHTML = DIRS.length > 3
+      ? '<div class="field" style="padding:12px 24px;max-width:460px"><label class="field__label">Chặng</label>' +
+        '<select class="select" id="seatDirSel">' + DIRS.map(function (d, i) {
+          var got = Object.keys(CHOSEN.seat[d.id] || {}).length;
+          return '<option value="' + d.id + '"' + (openDir.seat === d.id ? ' selected' : '') + '>' +
+            '⑨①②③④⑤⑥'.charAt(i + 1) + ' ' + d.label + '   ' +
+            (got ? '✓ ' + got + '/' + seatable + ' khách đã có ghế' : '— chưa chọn') + '</option>';
+        }).join('') + '</select></div>'
+      : DIRS.map(function (d) {
+          var got = Object.keys(CHOSEN.seat[d.id] || {}).length;
+          return '<button type="button" class="dirtab' + (openDir.seat === d.id ? ' dirtab--active' : '') +
+                 '" data-seatdir="' + d.id + '">' + d.label +
+                 (got ? ' <span class="u-text-success">✓' + got + '/' + seatable + '</span>' : '') + '</button>';
+        }).join('');
+    var dir = DIRS.filter(function (d) { return d.id === openDir.seat; })[0];
+    document.getElementById('cabinTitle').textContent = 'ECONOMY · ' + BK.AIRLINES[dir.al].name;
+    BK.renderSeatmap(document.getElementById('cabin'), 24);
+    /* vẽ lại ghế đã chọn của chiều đang xem */
+    Object.keys(CHOSEN.seat[openDir.seat]).forEach(function (n) {
+      var el = document.querySelector('[data-seat="' + CHOSEN.seat[openDir.seat][n].id + '"]');
+      if (el) el.classList.add('seat--picked');
+    });
+    if (paxOf(activePax).kind === 'inf') activePax = 1;
+    paintChips();
+    paintSeatSide();   /* khối "Đã chọn" phải theo ĐÚNG chiều đang xem */
+  }
+
+  function paintChips() {
+    document.getElementById('paxChips').innerHTML = PAX.map(function (p) {
+      var inf = p.kind === 'inf';
+      var got = CHOSEN.seat[openDir.seat][p.n];
+      return '<button type="button" class="paxchip' + (p.n === activePax && !inf ? ' paxchip--active' : '') + '"' +
+        (inf ? ' disabled' : '') + ' data-paxchip="' + p.n + '">' +
+        '<span class="paxchip__n">' + p.n + ' ' + p.name + '</span>' +
+        '<span class="paxchip__s">' + (inf ? 'Em bé — ngồi cùng người lớn' : (got ? got.id + ' ✓' : 'chưa chọn')) + '</span>' +
+        '</button>';
+    }).join('');
+  }
+
+  document.getElementById('dlgSeat').addEventListener('click', function (e) {
+    var tab = e.target.closest('[data-seatdir]');
+    if (tab) {
+      openDir.seat = tab.getAttribute('data-seatdir');
+      /* Chuyển chiều = tải sơ đồ chiều đó (1 lượt, hoặc 0 nếu đã có trong đệm) */
+      fetchCatalog('seat', openDir.seat, null, function (d, failed) { if (!failed) paintSeatDialog(); });
+      return;
+    }
+    var chip = e.target.closest('[data-paxchip]');
+    if (chip && !chip.disabled) { activePax = +chip.getAttribute('data-paxchip'); paintChips(); return; }
+  });
+  document.getElementById('dlgSeat').addEventListener('change', function (e) {
+    if (!e.target.closest('#seatDirSel')) return;
+    openDir.seat = e.target.value;
+    fetchCatalog('seat', openDir.seat, null, function (d, failed) { if (!failed) paintSeatDialog(); });
+  });
+
+  document.getElementById('cabin').addEventListener('click', function (e) {
+    var s = e.target.closest('.seat'); if (!s || s.disabled) return;
+    if (s.getAttribute('data-kind') === 'exit' && !s.classList.contains('seat--picked')) {
+      window.__pendingExit = s; BK.openDialog('#dlgExit'); return;
+    }
+    assignSeat(s);
+  });
+  document.getElementById('exitOk').addEventListener('click', function () {
+    if (window.__pendingExit) assignSeat(window.__pendingExit);
+    window.__pendingExit = null;
+  });
+
+  function assignSeat(el) {
+    var box = CHOSEN.seat[openDir.seat];
+    var id = el.getAttribute('data-seat');
+    var owner = Object.keys(box).filter(function (n) { return box[n].id === id; })[0];
+    if (owner) {                                   /* chạm lại ghế đã chọn = bỏ chọn */
+      delete box[owner]; el.classList.remove('seat--picked');
+    } else {
+      var old = box[activePax];
+      if (old) { var oe = document.querySelector('[data-seat="' + old.id + '"]'); if (oe) oe.classList.remove('seat--picked'); }
+      box[activePax] = { id: id, price: +el.getAttribute('data-price') };
+      el.classList.add('seat--picked');
+      /* §11.5.5 — sau khi chạm một ghế, TỰ NHẢY sang hành khách tiếp theo chưa có ghế */
+      var next = PAX.filter(function (p) { return p.kind !== 'inf' && !box[p.n]; })[0];
+      if (next) activePax = next.n;
+    }
+    paintChips();
+    paintSeatSide();
+  }
+
+  function paintSeatSide() {
+    var box = CHOSEN.seat[openDir.seat];
+    var keys = Object.keys(box), total = 0, rows = '';
+    keys.forEach(function (n) {
+      total += box[n].price;
+      rows += '<div class="sum-row"><span class="sum-row__k"><b style="color:var(--c-text)">' + box[n].id +
+              '</b> · ' + paxOf(n).name + '</span><span class="sum-row__v">' +
+              (box[n].price ? BK.money(box[n].price) : 'Miễn phí') + '</span></div>';
+    });
+    var el = document.getElementById('picked');
+    el.className = '';
+    el.innerHTML = rows || '<span class="text-body-small-regular u-text-faint">Chưa chọn ghế nào</span>';
+    document.getElementById('seatTotal').textContent = BK.money(total);
+  }
+
+  document.getElementById('seatOk').addEventListener('click', function () {
+    refreshTotal();
+    BK.closeDialog('#dlgSeat');
+    var n = DIRS.reduce(function (s, d) { return s + Object.keys(CHOSEN.seat[d.id]).length; }, 0);
+    BK.toast(n ? 'Đã lưu ' + n + ' ghế' : 'Chưa chọn ghế nào');
+  });
+
+  /* ---- Đồng hồ giữ chỗ (§11.9) ---- */
+  var hold = BK.startHold(document.getElementById('holdbar'), 600, function () {
+    BK.openDialog('#dlgExpired');
+  });
+
+  /* ---- Thanh toán (§11.10) ---- */
+  document.getElementById('btnPay').addEventListener('click', function () {
+    /* Kiểm tra: ô đồng ý xử lý dữ liệu cá nhân là BẮT BUỘC và không tích sẵn */
+    if (!document.getElementById('dataConsent').checked) {
+      BK.toast('Vui lòng đồng ý cho Bookese xử lý dữ liệu cá nhân của hành khách', { type: 'error', scrollTo: '#blockPax' });
+      document.getElementById('dataConsent').focus();
+      return;
+    }
+    if (!document.getElementById('cname').value.trim()) {
+      var f = document.getElementById('cname');
+      f.classList.add('input--error');
+      BK.toast('Vui lòng nhập họ tên người liên hệ', { type: 'error', scrollTo: '#cname' });
+      f.focus();
+      return;
+    }
+    BK.openDialog('#ovProcessing');
+    setTimeout(function () { location.href = 'xac-nhan.html'; }, 2600);
+  });
+
+  paintMeter();
+  refreshTotal();
+
+  /* ---- Chuyển trạng thái để trình bày (§11.10 · §11.6.4) ---- */
+  BK.onProtoState = function (id) {
+    if (id === 'normal')  location.reload();
+    if (id === 'multi') {
+      /* §11.5.7 · RB21 — đổi sang hành trình 4 chặng.
+         Giao diện đọc mảng chặng nên chỉ cần thay dữ liệu, KHÔNG sửa bố cục:
+         tab ngang tự chuyển thành hộp chọn chặng, trần lượt gọi tự thành 12. */
+      DIRS = BK.DIRECTIONS_MULTI;
+      ['bag', 'seat', 'svc'].forEach(function (t) {
+        CACHE[t] = {}; CHOSEN[t] = {};
+        DIRS.forEach(function (d) { CACHE[t][d.id] = null; CHOSEN[t][d.id] = {}; });
+        openDir[t] = DIRS[0].id;
+      });
+      calls = 0; paintMeter(); refreshTotal();
+      document.querySelectorAll('.svc-switch__body').forEach(function (b) { b.classList.add('u-hidden'); b.innerHTML = ''; });
+      BK.toast('Đã đổi sang hành trình 4 chặng — mở "Xem gói hành lý" để thấy hộp chọn chặng');
+      document.getElementById('blockSvc').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    if (id === 'svcfail') {
+      failNext = true;
+      BK.toast('Đã bật mô phỏng lỗi — bấm "Xem gói hành lý" để xem trạng thái tải lỗi');
+      document.getElementById('blockSvc').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    if (id === 'svcempty') {
+      CACHE.bag.go = [];   /* đã tải nhưng hãng không có gói nào — KHÁC trạng thái đang tải */
+      BK.toast('Chiều đi sẽ trả về danh sách rỗng — bấm "Xem gói hành lý"');
+      document.getElementById('blockSvc').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    if (id === 'codeshare') {
+      /* §9.4.2 · RB30 — đổi chiều về sang chuyến liên danh: tên và logo vẫn là hãng
+         BÁN VÉ (Vietnam Airlines), thêm dòng (điều hành bởi Pacific Airlines). */
+      document.querySelector('[data-leg2-airline]').textContent = 'Vietnam Airlines · VN6025 · Airbus A320';
+      var op = document.querySelector('[data-leg2-op]');
+      op.textContent = '(điều hành bởi Pacific Airlines)';
+      op.classList.remove('u-hidden');
+      document.querySelector('[data-leg2-fare]').textContent = 'Phổ thông tiết kiệm (K)';
+      document.querySelectorAll('.chosen')[1].querySelector('.airline__logo').style.background = '#1B3A6B';
+      document.querySelectorAll('.chosen')[1].querySelector('.airline__logo').textContent = 'VN';
+      BK.toast('Chiều về đổi sang chuyến liên danh — tên vẫn là VNA, có dòng ghi chú hãng điều hành');
+      document.getElementById('blockPax').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if (id === 'intl') {
+      /* §11.4 — chặng QUỐC TẾ: hiện đủ BA HÀNG ngay từ đầu, quốc tịch bắt buộc.
+         Chặng nội địa thì ẩn hàng 3 và ô quốc tịch, thay bằng liên kết "+ Thêm giấy tờ". */
+      INTL = true;
+      renderPaxCards();
+      BK.toast('Chặng quốc tế — hiện đủ ba hàng, quốc tịch thành bắt buộc');
+      document.getElementById('blockPax').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if (id === 'error') {
+      var f = document.getElementById('cname');
+      f.classList.add('input--error');
+      document.getElementById('cnameErr').textContent = 'Vui lòng nhập họ và tên người liên hệ';
+      document.getElementById('cnameErr').classList.remove('u-hidden');
+      BK.toast('Vui lòng kiểm tra lại thông tin liên hệ', { type: 'error', scrollTo: '#cname' });
+    }
+    if (id === 'warn5')   { hold.set(240); }
+    if (id === 'expired') { hold.set(1); }
+    if (id === 'paying')  { BK.openDialog('#ovProcessing'); }
+    if (id === 'fly24')   { document.getElementById('warn24').classList.remove('u-hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  };
+  BK.mountProto([
+    { id: 'normal',   label: 'Bình thường' },
+    { id: 'multi',    label: 'Hành trình 4 chặng' },
+    { id: 'intl',     label: 'Chặng quốc tế' },
+    { id: 'codeshare',label: 'Chặng liên danh' },
+    { id: 'error',    label: 'Lỗi nhập liệu' },
+    { id: 'svcempty', label: 'Dịch vụ rỗng' },
+    { id: 'svcfail',  label: 'Dịch vụ tải lỗi' },
+    { id: 'warn5',    label: 'Còn dưới 5 phút' },
+    { id: 'expired',  label: 'Hết hạn giữ chỗ' },
+    { id: 'paying',   label: 'Đang xử lý' },
+    { id: 'fly24',    label: 'Bay trong 24h' }
+  ]);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M6 · Lịch sử đặt chỗ — Bookese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<style>
+  /* 🔴 §13 — MỌI QUY CÁCH DƯỚI ĐÂY LẤY TỪ KHẢO SÁT TRANG ĐANG CHẠY
+     trang /booking-history và /booking-history/{id} của Bookese.
+     Đây là thứ Bookese ĐANG CÓ, không phải đề xuất mới. */
+
+  /* §13.1 — tiêu đề h3-bold, 🔴 ẨN trên điện thoại, chỉ hiện từ lg */
+  .bh-title { font-size: 24px; font-weight: 700; margin: 0 0 16px; }
+  @media (max-width: 1023px) { .bh-title { display: none; } }
+
+  /* §13.2 — DẢI CHIP loại dịch vụ, đặt TRÊN thanh tab, cách dưới 16px */
+  .chips { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    height: 36px; padding: 8px 16px; border-radius: 999px; white-space: nowrap;
+    border: 1px solid var(--c-border); background: #fff; color: var(--c-text-secondary);
+    font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit;
+  }
+  .chip--on { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+
+  /* §13.2 — THANH TAB: đúng BỐN tab. Gạch dưới 3px, bo góc trên, cuộn ngang, ẩn thanh cuộn.
+     🔴 §21-30 cấm thêm tab thứ năm — phân loại bằng dải chip, không bằng tab. */
+  .bhtabs { display: flex; border-bottom: 1px solid var(--c-border); overflow-x: auto; scrollbar-width: none; margin-bottom: 20px; }
+  .bhtabs::-webkit-scrollbar { display: none; }
+  .bhtab {
+    border: 0; background: none; cursor: pointer; font-family: inherit; white-space: nowrap;
+    margin: 0 24px; padding: 18px 0; font-size: 18px; font-weight: 500; color: var(--c-text-faint);
+    border-bottom: 3px solid transparent; border-radius: 3px 3px 0 0; margin-bottom: -1px;
+  }
+  .bhtab:first-child { margin-left: 0; }
+  .bhtab:hover { color: var(--c-primary); }
+  .bhtab--on { color: var(--c-primary); border-bottom-color: var(--c-primary); }
+  @media (max-width: 1023px) { .bhtabs { position: sticky; top: 60px; z-index: 30; background: var(--c-page); } }
+
+  /* §13.4 — THẺ ĐƠN: bám đúng khung thẻ đơn phòng đang chạy
+     ảnh 82×82 · tên và mã · hai hộp ngày có mũi tên ở giữa · giá và liên kết Xem */
+  .bcard { background: #fff; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px; }
+  .bcard__top { display: flex; gap: 16px; align-items: flex-start; }
+  .bcard__img {
+    width: 82px; height: 82px; flex: none; border-radius: 8px; background: var(--c-page);
+    display: grid; place-items: center; font-size: 13px; font-weight: 700; letter-spacing: .02em;
+  }
+  .bcard__h { flex: 1; min-width: 0; }
+  .bcard__t { font-family: Manrope, Inter, sans-serif; font-size: 16px; font-weight: 600; color: var(--c-text); }
+  .bcard__sub { font-size: 16px; font-weight: 400; color: var(--c-text-secondary); margin-top: 2px; }
+  .bcard__code { display: inline-block; margin-top: 6px; font-size: 14px; color: var(--c-primary); text-decoration: none; }
+  .bcard__code:hover { text-decoration: underline; }
+  .bcard__st { margin-left: auto; }
+
+  /* Hai hộp ngày, mũi tên 16px ở giữa, nền surface-10, bo 12px, cao 98px */
+  .bcard__dates { display: flex; align-items: center; gap: 16px; }
+  .bbox { flex: 1; min-width: 0; background: var(--c-page); border-radius: 12px; padding: 16px; }
+  .bbox__l { font-size: 14px; color: var(--c-text-label); }
+  .bbox__d { font-size: 16px; font-weight: 600; margin: 4px 0 2px; }
+  .bbox__x { font-size: 16px; color: var(--c-text-secondary); }
+  .bcard__arrow { flex: none; color: var(--c-text-faint); font-size: 16px; }
+  .bcard__foot { display: flex; align-items: flex-end; justify-content: flex-end; gap: 4px; flex-direction: column; }
+  .bcard__price { font-size: 18px; font-weight: 600; font-family: Manrope, Inter, sans-serif; }
+  .bcard__see { font-size: 14px; color: var(--c-primary); background: none; border: 0; cursor: pointer; font-family: inherit; padding: 0; }
+
+  @media (min-width: 1280px) { .bbox { height: 98px; } }
+  @media (max-width: 767px) {
+    /* §13.4 — điện thoại: xếp dọc; khối giá tách bằng viền trên + đệm 16px, xếp NGANG */
+    .bcard__dates { flex-direction: column; align-items: stretch; gap: 8px; }
+    .bcard__arrow { transform: rotate(90deg); align-self: center; }
+    .bbox__l, .bbox__d, .bbox__x { font-size: 12px; }
+    .bcard__foot { flex-direction: row; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--c-border); padding-top: 16px; }
+  }
+
+  /* §13.5 — trang chi tiết: TÁM khối theo đúng thứ tự đang chạy */
+  .db { padding: 20px 0; border-top: 1px solid var(--c-border); }
+  .db:first-child { border-top: 0; padding-top: 0; }
+  .db__n { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--c-page); color: var(--c-text-faint); font-size: 11px; font-weight: 700; margin-right: 8px; }
+  .db__t { font-size: 16px; font-weight: 600; margin: 0 0 12px; }
+  .kv { display: grid; grid-template-columns: 200px 1fr; gap: 6px 16px; font-size: 14px; }
+  .kv dt { color: var(--c-text-label); } .kv dd { margin: 0; }
+  @media (max-width: 640px) { .kv { grid-template-columns: 1fr; gap: 2px 0; } .kv dt { margin-top: 8px; } }
+  .paxrow { display: flex; gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--c-border); flex-wrap: wrap; }
+  .paxrow:last-child { border-bottom: 0; }
+  .paxrow__n { flex: 1; min-width: 200px; font-size: 14px; }
+  .paxrow__n span { display: block; font-size: 12px; color: var(--c-text-faint); }
+  .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .acts .btn { min-width: 0; padding: 0 14px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header data-header></header>
+
+<!-- ============================================================
+     M6 — LỊCH SỬ ĐẶT CHỖ (§13)
+     ✅ §13.1 — KHÔNG tạo trang riêng cho vé máy bay. Đơn vé máy bay là
+     MỘT LOẠI THẺ NỮA trong đúng danh sách /booking-history đang chạy.
+     ============================================================ -->
+<main class="container" style="padding-top:24px;padding-bottom:64px">
+  <h1 class="bh-title">Lịch sử đặt chỗ</h1>
+
+  <!-- §13.2 · DẢI CHIP loại dịch vụ — ẩn cả dải nếu chưa có đơn vé máy bay nào -->
+  <div class="chips" id="chips"></div>
+
+  <!-- §13.2 · THANH TAB — đúng BỐN tab đang chạy: BOOKED · PENDING · FINISHED · CANCELLED.
+       🔴 Nhãn BOOKED đổi "Đã đặt phòng" → "Đã đặt" (điểm chạm số 1 ở §13.8). -->
+  <div class="bhtabs" id="tabs"></div>
+
+  <div id="orders"></div>
+
+  <div class="empty u-hidden" id="emptyBox">
+    <div class="empty__art">🎫</div>
+    <div class="empty__title" id="emptyT">Bạn chưa có chuyến bay nào</div>
+    <p class="empty__sub" id="emptyS">Đặt vé để quản lý đơn của bạn tại đây</p>
+    <a class="btn btn--primary" href="index.html">Tìm chuyến bay</a>
+  </div>
+</main>
+
+<!-- ===================== §13.5 · TRANG CHI TIẾT ĐƠN — TÁM KHỐI ===================== -->
+<div class="overlay" id="dlgDetail" hidden>
+  <div class="dialog dialog--wide" role="dialog" aria-modal="true" aria-labelledby="dtTitle">
+    <div class="dialog__head">
+      <span>
+        <span class="dialog__title" id="dtTitle"></span>
+        <span class="text-body-small-regular u-text-label" id="dtSub"></span>
+      </span>
+      <button class="btn btn--icon dialog__x" type="button" data-close aria-label="Đóng">✕</button>
+    </div>
+    <div class="dialog__body" id="dtBody"></div>
+  </div>
+</div>
+
+<!-- ===================== §13.7 · HOÀN VÉ TỰ PHỤC VỤ (bản 2) =====================
+     Dùng lại ba hộp thoại hủy đang có ở luồng đặt phòng, chỉ thay nội dung.
+     🔴 Phải hiện SỐ TIỀN NHẬN LẠI TRƯỚC khi khách xác nhận. Hiện "sẽ liên hệ báo sau"
+     là cách nhanh nhất tạo một cuộc gọi khiếu nại.
+     ============================================================================ -->
+<div class="overlay" id="dlgRefund" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="rfT">
+    <div class="dialog__head">
+      <span class="dialog__title" id="rfT">Yêu cầu hoàn vé</span>
+      <button class="btn btn--icon dialog__x" type="button" data-close aria-label="Đóng">✕</button>
+    </div>
+    <div class="dialog__body">
+      <p class="text-body-small-semibold" style="margin:0 0 12px">Chọn hành khách và chặng cần hoàn</p>
+      <div id="rfPax" style="margin-bottom:20px"></div>
+
+      <div class="sum-row"><span class="sum-row__k">Tiền vé</span><span class="sum-row__v">VND 1.252.181</span></div>
+      <div class="sum-row"><span class="sum-row__k">Phí hoàn của hãng</span><span class="sum-row__v u-text-error">− VND 500.000</span></div>
+      <div class="sum-row"><span class="sum-row__k">Phí xử lý Bookese</span><span class="sum-row__v u-text-error">− VND 100.000</span></div>
+      <hr class="u-divider" style="margin:10px 0">
+      <div class="sum-total"><span class="sum-total__k">Nhận lại</span><span class="sum-total__v">VND 652.181</span></div>
+
+      <p class="notice notice--warn" style="margin:16px 0 8px">
+        <span aria-hidden="true">⚠</span>
+        <span>Thuế và phí sân bay được hoàn; phí dịch vụ Bookese không hoàn.</span>
+      </p>
+      <!-- RB12 — xu là khoản nhận sau chuyến bay, hủy vé thì thu hồi -->
+      <p class="notice notice--warn" style="margin:0">
+        <span aria-hidden="true">⚠</span>
+        <span>Xu đã nhận từ đơn này sẽ bị thu hồi.</span>
+      </p>
+    </div>
+    <div class="dialog__foot dialog__foot--equal">
+      <button class="btn btn--secondary" type="button" data-close>Đóng</button>
+      <button class="btn btn--secondary" type="button" data-close
+              onclick="BK.toast('Đã gửi yêu cầu hoàn vé — Bookese phản hồi trong 4 giờ làm việc')">Gửi yêu cầu</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hộp thoại chung: thẻ hội viên / bổ sung giấy tờ (§13.6) -->
+<div class="overlay" id="dlgAdd" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="addT">
+    <div class="dialog__head">
+      <span class="dialog__title" id="addT"></span>
+      <button class="btn btn--icon dialog__x" type="button" data-close aria-label="Đóng">✕</button>
+    </div>
+    <div class="dialog__body" id="addBody"></div>
+    <div class="dialog__foot">
+      <button class="btn btn--secondary" type="button" data-close>Để sau</button>
+      <button class="btn btn--primary" type="button" id="addSend" style="height:40px">Gửi cho hãng</button>
+    </div>
+  </div>
+</div>
+
+<div class="toaster"></div>
+
+<script src="assets/app.js"></script>
+<script src="assets/data.js"></script>
+<script>
+(function () {
+  BK.mountHeader('vmb');
+
+  /* ==================================================================
+     §13.2 — ĐÚNG BỐN TAB. Giá trị kỹ thuật giữ nguyên của trang đang chạy.
+     🔴 Nhãn BOOKED đổi từ "Đã đặt phòng" thành "Đã đặt" — đây là điểm chạm
+     số 1 trong bảy điểm chạm vào thành phần dùng chung (§13.8).
+     ================================================================== */
+  var TABS = [
+    { v: 'BOOKED',    label: 'Đã đặt' },
+    { v: 'PENDING',   label: 'Đợi thanh toán' },
+    { v: 'FINISHED',  label: 'Đã hoàn thành' },
+    { v: 'CANCELLED', label: 'Đã hủy' }
+  ];
+
+  /* §13.3 — CHÍN tình huống vé máy bay, chỉ BỐN ngăn để chứa.
+     Đơn đã đổi vé nằm trong BOOKED với nhãn riêng — 🔴 không tạo tab thứ năm. */
+  var ST = {
+    holding:   { label: 'Đợi thanh toán',        badge: 'warn',    tab: 'PENDING' },
+    issuing:   { label: '⏳ Đang xuất vé',        badge: 'warn',    tab: 'BOOKED' },
+    issued:    { label: '✓ Đã xuất vé',          badge: 'success', tab: 'BOOKED' },
+    manual:    { label: '⚠ Đang xử lý',          badge: 'error',   tab: 'BOOKED' },
+    changed:   { label: 'Đã đổi vé',             badge: 'info',    tab: 'BOOKED' },
+    finished:  { label: 'Đã hoàn thành',         badge: 'muted',   tab: 'FINISHED' },
+    cancelled: { label: 'Đã hủy',                badge: 'muted',   tab: 'CANCELLED' },
+    refunding: { label: 'Đã hủy · đang hoàn tiền', badge: 'warn',  tab: 'CANCELLED' },
+    refunded:  { label: 'Đã hủy · đã hoàn tiền',   badge: 'muted', tab: 'CANCELLED' }
+  };
+
+  var LEG_GO = {
+    label: 'Chiều đi', city: 'Hà Nội → TP. Hồ Chí Minh', date: 'T5, 20 tháng 8 2026',
+    al: 'VN', no: 'VN213', craft: 'Airbus A321', dep: '07:00', arr: '09:10', dur: "2h10'",
+    from: 'HAN', to: 'SGN', termFrom: 'Nhà ga 1', termTo: 'Nhà ga 3',
+    fareName: 'Phổ thông tiết kiệm (T)', cabin: '10kg', checked: '23kg', refundable: false, price: 1252181
+  };
+  var LEG_BACK = {
+    label: 'Chiều về', city: 'TP. Hồ Chí Minh → Hà Nội', date: 'T7, 22 tháng 8 2026',
+    /* §9.4.9 · RB30 — bán dưới tên Vietnam Airlines, khai thác bởi Pacific */
+    al: 'VN', no: 'VN6025', craft: 'Airbus A320', operatedBy: 'Pacific Airlines',
+    dep: '13:25', arr: '15:35', dur: "2h10'", from: 'SGN', to: 'HAN',
+    termFrom: 'Nhà ga 3', termTo: 'Nhà ga 1',
+    fareName: 'Phổ thông tiết kiệm (K)', cabin: '7kg', checked: 0, refundable: false, price: 619000
+  };
+
+  var ORDERS = [
+    { svc: 'air', code: 'ABCDEF', st: 'issued', booked: '07/08/2026',
+      route: 'Hà Nội → TP. Hồ Chí Minh', al: 'VN', trip: 'Khứ hồi',
+      legs: [LEG_GO, LEG_BACK], pax: { adt: 2, chd: 1, inf: 1 },
+      breakdown: [['Người lớn', 2, 1500000, 586000], ['Trẻ em', 1, 1100000, 464500], ['Em bé', 1, 208600, 0]],
+      services: { bag: 302400, seat: 200000, other: 145000 }, coins: 72000,
+      tickets: [['NGUYEN VAN A', 'Người lớn', '738-2401234567'],
+                ['NGUYEN MINH KHOI', 'Trẻ em', '738-2401234568'],
+                ['NGUYEN BAO AN', 'Em bé', '738-2401234569']] },
+
+    { svc: 'air', code: 'GHIJKL', st: 'issuing', booked: '09/08/2026',
+      route: 'TP. Hồ Chí Minh → Phú Quốc', al: 'VJ', trip: 'Một chiều',
+      warn: 'Đã thu tiền, đang xuất vé — Bookese sẽ liên hệ nếu quá 10 phút',
+      legs: [{ label: 'Khởi hành', city: 'TP. Hồ Chí Minh → Phú Quốc', date: 'T7, 05 tháng 9 2026',
+               al: 'VJ', no: 'VJ333', craft: 'Airbus A320', dep: '09:15', arr: '10:20', dur: "1h05'",
+               from: 'SGN', to: 'PQC', fareName: 'Eco (E)', cabin: '7kg', checked: 0, refundable: false, price: 1090000 }],
+      pax: { adt: 2 }, breakdown: [['Người lớn', 2, 890000, 200000]], services: {}, coins: 24000, tickets: [] },
+
+    { svc: 'air', code: 'MNOPQR', st: 'holding', booked: 'Giữ chỗ tới 21:30 hôm nay',
+      route: 'Đà Nẵng → Hà Nội', al: 'VU', trip: 'Một chiều',
+      legs: [{ label: 'Khởi hành', city: 'Đà Nẵng → Hà Nội', date: 'T4, 26 tháng 8 2026',
+               al: 'VU', no: 'VU210', craft: 'Airbus A321', dep: '18:40', arr: '20:00', dur: "1h20'",
+               from: 'DAD', to: 'HAN', fareName: 'Eco (E)', cabin: '7kg', checked: 0, refundable: false, price: 1180000 }],
+      pax: { adt: 1 }, breakdown: [['Người lớn', 1, 981000, 199000]], services: {}, coins: 12000, tickets: [] },
+
+    { svc: 'air', code: 'STUVWX', st: 'changed', booked: '03/06/2026',
+      route: 'Hà Nội → Nha Trang', al: 'VN', trip: 'Một chiều',
+      legs: [{ label: 'Khởi hành', city: 'Hà Nội → Nha Trang', date: 'CN, 14 tháng 6 2026 (đã đổi từ 12/06)',
+               al: 'VN', no: 'VN1556', craft: 'Airbus A321', dep: '11:30', arr: '13:20', dur: "1h50'",
+               from: 'HAN', to: 'CXR', fareName: 'Phổ thông linh hoạt (M)', cabin: '10kg', checked: '23kg', refundable: false, price: 1890000 }],
+      pax: { adt: 1 }, breakdown: [['Người lớn', 1, 1537819, 352181]], services: {}, coins: 12000,
+      tickets: [['LE THI C', 'Người lớn', '738-2400998877']] },
+
+    { svc: 'air', code: 'YZABCD', st: 'finished', booked: '10/04/2026',
+      route: 'TP. Hồ Chí Minh → Đà Nẵng', al: 'VJ', trip: 'Một chiều',
+      legs: [{ label: 'Khởi hành', city: 'TP. Hồ Chí Minh → Đà Nẵng', date: 'T2, 14 tháng 4 2026',
+               al: 'VJ', no: 'VJ620', craft: 'Airbus A321neo', dep: '06:00', arr: '07:20', dur: "1h20'",
+               from: 'SGN', to: 'DAD', fareName: 'Eco (E)', cabin: '7kg', checked: 0, refundable: false, price: 820000 }],
+      pax: { adt: 2 }, breakdown: [['Người lớn', 2, 621000, 199000]], services: {}, coins: 24000, coinsPaid: true, tickets: [] },
+
+    { svc: 'air', code: 'EFGHIJ', st: 'refunding', booked: '28/02/2026',
+      route: 'Hà Nội → Huế', al: 'VN', trip: 'Một chiều',
+      legs: [{ label: 'Khởi hành', city: 'Hà Nội → Huế', date: 'T3, 03 tháng 3 2026',
+               al: 'VN', no: 'VN1543', craft: 'ATR72', dep: '15:10', arr: '16:20', dur: "1h10'",
+               from: 'HAN', to: 'HUI', fareName: 'Phổ thông tiết kiệm (T)', cabin: '10kg', checked: '23kg', refundable: true, price: 1120000 }],
+      pax: { adt: 1 }, breakdown: [['Người lớn', 1, 768000, 352000]], services: {}, coins: 0, tickets: [] },
+
+    { svc: 'stay', code: 'HT88213', st: 'issued', booked: '07/08/2026',
+      route: 'Khách sạn Quận 1 · TP. Hồ Chí Minh', al: null, trip: '2 đêm · 1 phòng',
+      stayDates: [['Nhận phòng', 'T5, 20 tháng 8 2026', 'Từ 14:00'], ['Trả phòng', 'T7, 22 tháng 8 2026', 'Đến 12:00']],
+      pax: { adt: 2 }, breakdown: [['Khách lưu trú', 2, 1080000, 100000]], services: {}, coins: 0, tickets: [] }
+  ];
+
+  /* Tổng đơn TÍNH TỪ bảng phân rã — thẻ đơn và trang chi tiết không thể lệch nhau */
+  ORDERS.forEach(function (o) {
+    o.svcTotal = (o.services.bag || 0) + (o.services.seat || 0) + (o.services.other || 0);
+    o.total = o.breakdown.reduce(function (t, r) { return t + (r[2] + r[3]) * r[1]; }, 0) + o.svcTotal;
+    o.paxCount = (o.pax.adt || 0) + (o.pax.chd || 0) + (o.pax.inf || 0);
+  });
+
+  var fSvc = 'all', fTab = 'BOOKED', PHASE = 1;
+
+  /* ---------- §13.2 · Dải chip + thanh tab ---------- */
+  function drawChips() {
+    var nAir = ORDERS.filter(function (o) { return o.svc === 'air'; }).length;
+    var box = document.getElementById('chips');
+    /* Chưa có đơn vé máy bay nào → ẩn CẢ dải chip */
+    if (!nAir) { box.classList.add('u-hidden'); return; }
+    box.classList.remove('u-hidden');
+    box.innerHTML = [['all', 'Tất cả'], ['stay', '🏨 Lưu trú'], ['air', '✈ Vé máy bay (' + nAir + ')']]
+      .map(function (c) {
+        return '<button class="chip' + (fSvc === c[0] ? ' chip--on' : '') + '" type="button" data-svc="' + c[0] + '">' + c[1] + '</button>';
+      }).join('');
+  }
+  function drawTabs() {
+    document.getElementById('tabs').innerHTML = TABS.map(function (t) {
+      return '<button class="bhtab' + (fTab === t.v ? ' bhtab--on' : '') + '" type="button" data-tab="' + t.v + '">' + t.label + '</button>';
+    }).join('');
+  }
+
+  /* ---------- §13.4 · Thẻ đơn — bám đúng khung thẻ đơn phòng ---------- */
+  function dateBoxes(o) {
+    if (o.stayDates) {
+      return '<div class="bcard__dates">' +
+        '<div class="bbox"><div class="bbox__l">' + o.stayDates[0][0] + '</div>' +
+          '<div class="bbox__d">' + o.stayDates[0][1] + '</div><div class="bbox__x">' + o.stayDates[0][2] + '</div></div>' +
+        '<span class="bcard__arrow">⇢</span>' +
+        '<div class="bbox"><div class="bbox__l">' + o.stayDates[1][0] + '</div>' +
+          '<div class="bbox__d">' + o.stayDates[1][1] + '</div><div class="bbox__x">' + o.stayDates[1][2] + '</div></div>' +
+      '</div>';
+    }
+    var n = o.legs.length;
+    var box = function (lg, label) {
+      return '<div class="bbox"><div class="bbox__l">' + label + '</div>' +
+        '<div class="bbox__d">' + lg.date + '</div>' +
+        '<div class="bbox__x">' + lg.dep + ' · ' + lg.no + '</div></div>';
+    };
+    /* 🔴 Một chiều: CHỈ MỘT hộp chiếm toàn chiều ngang, nhãn "Khởi hành", ẩn mũi tên */
+    if (n === 1) return '<div class="bcard__dates">' + box(o.legs[0], 'Khởi hành') + '</div>';
+    /* Khứ hồi: hai hộp. Đa chặng: chặng đầu "Bắt đầu" — chặng cuối "Kết thúc" */
+    var isRT = n === 2;
+    return '<div class="bcard__dates">' +
+      box(o.legs[0], isRT ? 'Chiều đi' : 'Bắt đầu') +
+      '<span class="bcard__arrow">⇢</span>' +
+      box(o.legs[n - 1], isRT ? 'Chiều về' : 'Kết thúc') +
+    '</div>';
+  }
+
+  function cardHTML(o) {
+    var s = ST[o.st];
+    var al = o.al ? BK.AIRLINES[o.al] : null;
+    return '<article class="bcard" data-code="' + o.code + '">' +
+      '<div class="bcard__top">' +
+        /* 🔴 Ảnh 82×82 của đơn phòng → LOGO HÃNG BAY trên nền surface-10, canh giữa */
+        '<span class="bcard__img"' + (al ? ' style="color:' + al.color + '"' : '') + '>' +
+          (al ? al.short : '🏨') + '</span>' +
+        '<span class="bcard__h">' +
+          '<span class="bcard__t">' + o.route + '</span>' +
+          /* Dòng phụ MỚI so với thẻ đơn phòng (điểm chạm số 3 ở §13.8) */
+          '<span class="bcard__sub">' + (al ? al.name + ' · ' : '') + o.trip + '</span>' +
+          '<a class="bcard__code" href="#" data-detail="' + o.code + '">Mã đặt chỗ: #' + o.code + '</a>' +
+        '</span>' +
+        '<span class="bcard__st"><span class="badge badge--' + s.badge + '">' + s.label + '</span></span>' +
+      '</div>' +
+      dateBoxes(o) +
+      (o.warn ? '<p class="notice notice--warn" style="margin:0">⚠️ ' + o.warn + '</p>' : '') +
+      '<div class="bcard__foot">' +
+        '<span class="bcard__price">' + BK.money(o.total) + '</span>' +
+        '<button class="bcard__see" type="button" data-detail="' + o.code + '">Xem →</button>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function draw() {
+    drawChips(); drawTabs();
+    var list = ORDERS.filter(function (o) {
+      return (fSvc === 'all' || o.svc === fSvc) && ST[o.st].tab === fTab;
+    });
+    document.getElementById('orders').innerHTML = list.map(cardHTML).join('');
+    var e = document.getElementById('emptyBox');
+    e.classList.toggle('u-hidden', list.length > 0);
+    if (!list.length) {
+      document.getElementById('emptyT').textContent = 'Không có đơn nào ở mục này';
+      document.getElementById('emptyS').textContent = 'Thử chọn tab khác hoặc bỏ lọc loại dịch vụ';
+    }
+  }
+
+  /* ==================================================================
+     §13.5 — TRANG CHI TIẾT: TÁM KHỐI, bám đúng thứ tự trang đơn phòng
+     ================================================================== */
+  function blk(n, title, body) {
+    return '<div class="db"><h3 class="db__t"><span class="db__n">' + n + '</span>' + title + '</h3>' + body + '</div>';
+  }
+
+  function detailHTML(o) {
+    var s = ST[o.st];
+    var al = o.al ? BK.AIRLINES[o.al] : null;
+    var paxTxt = [o.pax.adt ? o.pax.adt + ' người lớn' : '', o.pax.chd ? o.pax.chd + ' trẻ em' : '',
+                  o.pax.inf ? o.pax.inf + ' em bé' : ''].filter(Boolean).join(', ');
+    var fare = o.breakdown.reduce(function (t, r) { return t + r[2] * r[1]; }, 0);
+    var tax  = o.breakdown.reduce(function (t, r) { return t + r[3] * r[1]; }, 0);
+
+    return (o.warn ? '<p class="notice notice--warn" style="margin:0 0 16px">⚠️ ' + o.warn + '</p>' : '') +
+
+      /* ---- 1 · Tên hành trình + họ tên + mã đặt chỗ ---- */
+      blk(1, o.route, '<dl class="kv">' +
+        '<dt>Hãng hàng không</dt><dd>' + (al ? al.name : '—') + '</dd>' +
+        '<dt>Họ và Tên</dt><dd>Nguyễn Văn A</dd>' +
+        '<dt>Mã đặt chỗ</dt><dd><b>#' + o.code + '</b></dd></dl>') +
+
+      /* ---- 2 · Chi tiết chuyến bay (thay "Chi tiết đặt phòng") ---- */
+      blk(2, 'Chi tiết chuyến bay', '<dl class="kv">' +
+        '<dt>Loại hành trình</dt><dd>' + o.trip + ' · ' + o.legs.length + ' chặng</dd>' +
+        '<dt>Số khách</dt><dd>Bạn đã đặt cho ' + o.paxCount + ' khách (' + paxTxt + ')</dd>' +
+        o.legs.map(function (lg) {
+          return '<dt>' + lg.label + '</dt><dd>' + lg.date + ' · ' + lg.dep + ' – ' + lg.arr + ' · ' + lg.no + '</dd>';
+        }).join('') +
+        '<dt>Hạng vé</dt><dd>' + o.legs.map(function (lg) { return lg.fareName; }).join(' · ') + '</dd>' +
+        '<dt>Trạng thái</dt><dd><span class="badge badge--' + s.badge + '">' + s.label + '</span></dd></dl>') +
+
+      /* ---- 3 · Tóm tắt giá ---- */
+      blk(3, 'Tóm tắt giá',
+        '<div class="sum-row"><span class="sum-row__k">Giá vé</span><span class="sum-row__v">' + BK.money(fare) + '</span></div>' +
+        '<div class="sum-row"><span class="sum-row__k">Thuế &amp; phí</span><span class="sum-row__v">' + BK.money(tax) + '</span></div>' +
+        (o.services.bag   ? '<div class="sum-row"><span class="sum-row__k">🧳 Hành lý</span><span class="sum-row__v">' + BK.money(o.services.bag) + '</span></div>' : '') +
+        (o.services.seat  ? '<div class="sum-row"><span class="sum-row__k">💺 Chỗ ngồi</span><span class="sum-row__v">' + BK.money(o.services.seat) + '</span></div>' : '') +
+        (o.services.other ? '<div class="sum-row"><span class="sum-row__k">🍽 Dịch vụ khác</span><span class="sum-row__v">' + BK.money(o.services.other) + '</span></div>' : '') +
+        '<hr class="u-divider" style="margin:10px 0">' +
+        '<div class="sum-total"><span class="sum-total__k">Tổng</span><span class="sum-total__v">' + BK.money(o.total) + '</span></div>' +
+        /* RB12 — xu là khoản NHẬN SAU, nằm ngoài khối tính tiền, không dấu trừ */
+        (o.coins ? '<div class="coin"><div class="coin__title"><span aria-hidden="true">🪙</span> ' +
+          (o.coinsPaid ? 'Xu đã nhận' : 'Xu sẽ nhận sau chuyến bay') + '</div>' +
+          '<div class="coin__value">' + BK.coin(o.coins) + '</div></div>' : '') +
+        '<p class="text-label-large-regular" style="margin:10px 0 0">Dòng “Thuế &amp; phí” đã gồm phí dịch vụ Bookese. Hóa đơn tách bạch từng khoản.</p>') +
+
+      /* ---- 4 · Chi tiết chuyến bay từng chặng ---- */
+      blk(4, 'Chi tiết từng chặng', o.legs.map(function (lg) {
+        var a = BK.AIRLINES[lg.al];
+        return '<div style="padding:12px 0;border-bottom:1px solid var(--c-border)">' +
+          '<b class="text-body-semibold">' + lg.label + ' · ' + lg.from + ' → ' + lg.to + '</b>' +
+          '<dl class="kv" style="margin-top:6px">' +
+            '<dt>Sân bay đi</dt><dd>' + lg.from + (lg.termFrom ? ' · ' + lg.termFrom : '') + ' · ' + lg.dep + '</dd>' +
+            '<dt>Sân bay đến</dt><dd>' + lg.to + (lg.termTo ? ' · ' + lg.termTo : '') + ' · ' + lg.arr + '</dd>' +
+            '<dt>Chuyến bay</dt><dd>' + a.name + ' · ' + lg.no + ' · ' + lg.craft +
+              /* §9.4.9 · RB30 */
+              (lg.operatedBy ? '<br><span class="opnote">(điều hành bởi ' + lg.operatedBy + ')</span>' : '') + '</dd>' +
+            '<dt>Hạng vé</dt><dd><span class="fare-name-line">' + lg.fareName + '</span></dd>' +
+          '</dl></div>';
+      }).join('')) +
+
+      /* ---- 5 · Thông tin hành khách (thay "Thông tin phòng") ---- */
+      blk(5, 'Thông tin hành khách',
+        (o.tickets.length
+          ? o.tickets.map(function (t) {
+              return '<div class="paxrow"><div class="paxrow__n"><b>' + t[0] + '</b>' +
+                '<span>' + t[1] + ' · số vé điện tử ' + t[2] + '</span>' +
+                '<span data-memstate>Thẻ hội viên: chưa có</span></div>' +
+                '<div class="acts">' +
+                  '<button class="btn btn--secondary" type="button" data-add="mem|' + t[0] + '">Thêm / sửa thẻ hội viên</button>' +
+                  '<button class="btn btn--secondary" type="button" data-add="doc|' + t[0] + '">Bổ sung giấy tờ</button>' +
+                '</div></div>';
+            }).join('') + (o.svcTotal ? '<p class="text-label-large-regular" style="margin:10px 0 0">Dịch vụ đã mua: ' +
+              [o.services.bag ? '🧳 hành lý' : '', o.services.seat ? '💺 chỗ ngồi' : '', o.services.other ? '🍽 dịch vụ khác' : ''].filter(Boolean).join(' · ') + '</p>' : '')
+          : '<p class="text-body-small-regular u-text-faint" style="margin:0">Số vé điện tử sẽ có ngay sau khi xuất vé xong.</p>')) +
+
+      /* ---- 6 · "Tất cả các thông tin có đều chính xác?" ---- */
+      blk(6, 'Tất cả các thông tin có đều chính xác?',
+        /* 🔴 §13.6 — bản 1: đổi và hoàn là GỬI YÊU CẦU, phải nói rõ kèm cam kết thời gian */
+        '<p class="text-body-small-regular u-text-label" style="margin:0 0 12px">' +
+          (PHASE === 1
+            ? 'Đổi và hoàn vé ở bản này là <b>gửi yêu cầu</b>, không phải tự động — Bookese phản hồi trong <b>4 giờ làm việc</b>.'
+            : 'Bạn có thể tự thao tác hoàn vé; số tiền nhận lại hiện đầy đủ trước khi xác nhận.') + '</p>' +
+        '<div class="acts">' +
+          '<button class="btn btn--secondary" type="button" data-refund>' +
+            (PHASE === 1 ? 'Yêu cầu hủy vé' : 'Hoàn vé') + '</button>' +
+          '<button class="btn btn--secondary" type="button">Tải vé PDF</button>' +
+          '<button class="btn btn--secondary" type="button">Gửi lại email</button>' +
+          '<button class="btn btn--secondary" type="button">Chỉnh sửa thông tin hành khách</button>' +
+        '</div>') +
+
+      /* ---- 7 · Thông tin liên lạc — 🔴 LIÊN HỆ BOOKESE, không phải hãng bay ---- */
+      blk(7, 'Thông tin liên lạc',
+        '<dl class="kv">' +
+          '<dt>Tổng đài Bookese</dt><dd><b>078 222 1131</b> · 24/7</dd>' +
+          '<dt>Email</dt><dd>hotro@bookese.com</dd>' +
+        '</dl>' +
+        '<p class="notice notice--tip" style="margin:12px 0 0"><span>ⓘ</span><span>' +
+        'Bạn mua vé qua Bookese thì <b>Bookese chịu trách nhiệm tuyến đầu</b> — không cần gọi hãng hàng không.' +
+        '</span></p>') +
+
+      /* ---- 8 · Điều kiện vé + chính sách hoàn đổi ---- */
+      blk(8, 'Điều kiện vé và chính sách hoàn đổi',
+        '<div class="freetext">' +
+          '<p><b>Hoàn vé:</b> Vé không được hoàn trong mọi trường hợp. Thuế và phí sân bay được hoàn lại theo quy định của hãng sau khi trừ chi phí xử lý.</p>' +
+          '<p><b>Đổi chuyến:</b> Phí đổi 360.000đ mỗi khách mỗi chặng, cộng chênh lệch giá vé nếu có.</p>' +
+          '<p><b>Đổi tên khách:</b> Không được phép.</p>' +
+        '</div>' +
+        /* 🔴 §13.5 — bản điều kiện vé LƯU TẠI THỜI ĐIỂM ĐẶT, không gọi lại hệ thống nguồn cung.
+           Hai lý do: gọi lại tốn lượt, và điều kiện có thể đã đổi — thứ ràng buộc khách là
+           bản họ thấy LÚC BẤM MUA. */
+        '<p class="text-label-large-regular" style="margin:10px 0 0">' +
+        'Đây là bản điều kiện vé <b>đã lưu lúc bạn đặt (' + o.booked + ')</b>. Bookese không tải lại từ hãng ' +
+        'vì điều kiện ràng buộc bạn là bản bạn thấy khi bấm mua.</p>');
+  }
+
+  function openDetail(code) {
+    var o = ORDERS.filter(function (x) { return x.code === code; })[0];
+    if (!o) return;
+    if (o.svc === 'stay') { BK.toast('Đơn lưu trú — mở bằng trang chi tiết của luồng đặt phòng'); return; }
+    document.getElementById('dtTitle').textContent = o.route;
+    document.getElementById('dtSub').textContent = 'Mã đặt chỗ #' + o.code + ' · ' + ST[o.st].label;
+    document.getElementById('dtBody').innerHTML = detailHTML(o);
+    document.getElementById('dtBody').setAttribute('data-code', o.code);
+    BK.openDialog('#dlgDetail');
+  }
+
+  /* ---------- Sự kiện ---------- */
+  document.getElementById('chips').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-svc]'); if (!b) return;
+    fSvc = b.getAttribute('data-svc'); draw();
+  });
+  document.getElementById('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-tab]'); if (!b) return;
+    fTab = b.getAttribute('data-tab'); draw();
+  });
+  document.getElementById('orders').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-detail]'); if (!b) return;
+    e.preventDefault(); openDetail(b.getAttribute('data-detail'));
+  });
+
+  document.getElementById('dlgDetail').addEventListener('click', function (e) {
+    if (e.target.closest('[data-refund]')) {
+      var o = ORDERS.filter(function (x) { return x.code === document.getElementById('dtBody').getAttribute('data-code'); })[0];
+      document.getElementById('rfPax').innerHTML = (o.tickets.length ? o.tickets : [['NGUYEN VAN A', 'Người lớn']])
+        .map(function (t, i) {
+          return '<label class="check" style="margin-bottom:10px"><input type="checkbox"' + (i === 0 ? ' checked' : '') + '> ' +
+            t[0] + ' — ' + o.legs[0].label + ' ' + o.legs[0].from + '→' + o.legs[0].to + '</label>';
+        }).join('');
+      BK.openDialog('#dlgRefund');
+      return;
+    }
+    /* §13.6 — bổ sung thẻ hội viên / giấy tờ SAU khi đã đặt */
+    var a = e.target.closest('[data-add]');
+    if (a) {
+      var p = a.getAttribute('data-add').split('|');
+      window.__addRow = a.closest('.paxrow'); window.__addKind = p[0];
+      document.getElementById('addT').textContent =
+        (p[0] === 'mem' ? 'Thẻ hội viên hãng bay — ' : 'Bổ sung giấy tờ tùy thân — ') + p[1];
+      document.getElementById('addBody').innerHTML = p[0] === 'mem'
+        ? '<div class="form-grid">' +
+            '<div class="field"><label class="field__label">Hãng</label><select class="select">' +
+              Object.keys(BK.AIRLINES).map(function (k) { return '<option>' + BK.AIRLINES[k].name + '</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="field"><label class="field__label">Số thẻ</label><input class="input" placeholder="Ví dụ: 5901234567"></div>' +
+          '</div>' +
+          '<p class="notice notice--tip" style="margin:12px 0 0"><span>ⓘ</span><span>Bookese không kiểm tra được số thẻ — ' +
+          'vui lòng nhập đúng theo thẻ của bạn. Bổ sung được cho tới trước giờ khởi hành.</span></p>'
+        : '<div class="form-grid">' +
+            '<div class="field"><label class="field__label req">Loại giấy tờ</label><select class="select">' +
+              '<option>Hộ chiếu</option><option>Căn cước công dân</option></select></div>' +
+            '<div class="field"><label class="field__label req">Số giấy tờ</label><input class="input" maxlength="15"></div>' +
+            '<div class="field"><label class="field__label req">Ngày hết hạn</label><input class="input" placeholder="DD/MM/YYYY"></div>' +
+            '<div class="field"><label class="field__label req">Quốc tịch</label><select class="select">' +
+              BK.COUNTRIES.map(function (c) { return '<option>' + c + '</option>'; }).join('') + '</select></div>' +
+          '</div>' +
+          '<p class="notice notice--tip" style="margin:12px 0 0"><span>ⓘ</span><span>Bổ sung giấy tờ không làm thay đổi giá ' +
+          'và không ảnh hưởng tới chỗ đã giữ.</span></p>';
+      document.getElementById('addSend').textContent = p[0] === 'mem' ? 'Gửi cho hãng' : 'Lưu giấy tờ';
+      BK.openDialog('#dlgAdd');
+    }
+  });
+
+  document.getElementById('addSend').addEventListener('click', function () {
+    BK.closeDialog('#dlgAdd');
+    if (window.__addKind === 'mem' && window.__addRow) {
+      /* 🔴 §21-17 — chỉ được nói "đã gửi cho hãng"; Bookese không xác minh được số thẻ */
+      window.__addRow.querySelector('[data-memstate]').innerHTML =
+        'Thẻ hội viên: Vietnam Airlines 5901234567 · <span class="u-text-secondary">đã gửi cho hãng</span>';
+      BK.toast('Đã gửi cho hãng');
+    } else BK.toast('Đã lưu giấy tờ tùy thân');
+  });
+
+  draw();
+
+  /* ---------- Chuyển trạng thái để trình bày ---------- */
+  BK.onProtoState = function (id) {
+    if (id === 'booked')   { fTab = 'BOOKED'; fSvc = 'all'; draw(); }
+    if (id === 'air')      { fSvc = 'air'; draw(); }
+    if (id === 'cancel')   { fTab = 'CANCELLED'; draw(); }
+    if (id === 'detail')   openDetail('ABCDEF');
+    if (id === 'oneway')   openDetail('MNOPQR');
+    if (id === 'phase2')   { PHASE = 2; openDetail('ABCDEF'); BK.toast('Bản 2 — khách tự thao tác hoàn vé'); }
+    if (id === 'nostay')   {
+      /* Chưa có đơn vé máy bay nào → ẩn cả dải chip (§13.2) */
+      ORDERS.splice(0, ORDERS.length, ORDERS.filter(function (o) { return o.svc === 'stay'; })[0]);
+      fSvc = 'all'; draw();
+      BK.toast('Khách chỉ có đơn lưu trú — dải chip ẩn hẳn');
+    }
+  };
+  BK.mountProto([
+    { id: 'booked', label: 'Tab Đã đặt' },
+    { id: 'air',    label: 'Lọc vé máy bay' },
+    { id: 'cancel', label: 'Tab Đã hủy' },
+    { id: 'detail', label: 'Chi tiết · khứ hồi' },
+    { id: 'oneway', label: 'Chi tiết · một chiều' },
+    { id: 'phase2', label: 'Bản 2 · tự hoàn vé' },
+    { id: 'nostay', label: 'Chỉ có đơn phòng' }
+  ]);
+})();
+</script>
+</body>
+</html>

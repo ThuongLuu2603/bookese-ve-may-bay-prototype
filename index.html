@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M1 · Tìm kiếm chuyến bay — Bookese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<style>
+  /* §8.3 — Hero có NỀN ẢNH. Ở prototype dùng dải màu thay chỗ;
+     bàn giao thật cần ảnh thật (tỷ lệ rộng, tối ở nửa trái để chữ trắng đọc được). */
+  .hero {
+    position: relative; padding: 40px 0 56px;
+    background:
+      linear-gradient(100deg, rgba(8,77,197,.92) 0%, rgba(0,100,253,.72) 46%, rgba(131,213,255,.55) 100%),
+      radial-gradient(1200px 400px at 78% 18%, rgba(255,255,255,.30), transparent 60%),
+      #0B4EA2;
+  }
+  .hero__title { color: #fff; font-size: 48px; font-weight: 700; line-height: 1.14; margin: 0 0 8px; letter-spacing: -.02em; }
+  .hero__sub   { color: rgba(255,255,255,.92); font-size: 16px; font-weight: 500; margin: 0 0 24px; }
+  .searchwrap  { position: relative; }
+  .rowsec { padding: 40px 0; }
+  .rowsec__title { font-size: 18px; font-weight: 600; margin: 0 0 16px; }
+  .tilegrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .tile { background: #fff; border-radius: var(--r-base); padding: 16px; display: flex; gap: 12px; align-items: center; cursor: pointer; border: 1px solid transparent; }
+  .tile:hover { border-color: var(--c-primary); }
+  .tile__r { margin-left: auto; text-align: right; }
+  .promo { background: #fff; border-radius: var(--r-base); overflow: hidden; }
+  .promo__img { height: 120px; background: linear-gradient(135deg, var(--c-primary-lightest), var(--c-primary-light)); }
+  .promo__body { padding: 16px; }
+  @media (max-width: 1023px) {
+    .hero { padding: 24px 0 32px; }
+    .hero__title { font-size: 24px; }
+    .tilegrid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header data-header></header>
+
+<!-- ============================================================
+     M1 — TÌM KIẾM CHUYẾN BAY  (§8)
+     Mục tiêu: vào trang kết quả trong DƯỚI 15 GIÂY
+     ============================================================ -->
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1 class="hero__title">Bay khắp Việt Nam<br>cùng Bookese</h1>
+
+      <!-- §8.5-1 · Loại hành trình: 3 nút chọn một, đặt PHÍA TRÊN hộp. Mặc định Khứ hồi -->
+      <div class="triptype" role="radiogroup" aria-label="Loại hành trình">
+        <label class="check"><input type="radio" name="trip" value="one"> Một chiều</label>
+        <label class="check"><input type="radio" name="trip" value="round" checked> Khứ hồi</label>
+        <label class="check"><input type="radio" name="trip" value="multi"> Nhiều chặng</label>
+      </div>
+
+      <form class="searchbox searchwrap" id="searchForm" novalidate>
+
+        <!-- 🔴 HÀNG Ô NHẬP là khung neo của các panel.
+             Nếu neo vào cả hộp tìm kiếm thì panel rơi xuống dưới cả hàng
+             "Chỉ bay thẳng / Hạng ghế / Hãng bay" — quá xa ô vừa bấm. -->
+        <div class="searchbox__row" id="rowSimple">
+        <div class="searchbox__grid">
+
+          <!-- §8.5-2 · Điểm đi -->
+          <div class="swap-wrap">
+            <label class="searchbox__label" for="btnFrom">Điểm đi</label>
+            <button class="sfield" type="button" id="btnFrom" data-pop="from" aria-haspopup="dialog">
+              <span aria-hidden="true">🛫</span>
+              <span class="sfield__val" data-from-label>Hà Nội (HAN)</span>
+            </button>
+            <!-- §8.5-3 · Nút đảo chiều: tròn 32px, nằm giữa hai ô, đè lên -->
+            <button class="swap" type="button" id="btnSwap" aria-label="Đảo chiều điểm đi và điểm đến">⇄</button>
+          </div>
+
+          <!-- §8.5-4 · Điểm đến — MẶC ĐỊNH ĐỂ TRỐNG -->
+          <div>
+            <label class="searchbox__label" for="btnTo">Điểm đến</label>
+            <button class="sfield sfield--ph" type="button" id="btnTo" data-pop="to" aria-haspopup="dialog">
+              <span aria-hidden="true">🛬</span>
+              <span class="sfield__val" data-to-label>Nhập điểm đến</span>
+            </button>
+            <p class="field__error u-hidden" data-err="to">Vui lòng chọn điểm đến</p>
+          </div>
+
+          <!-- §8.5-5 · MỘT Ô DUY NHẤT cho cả ngày đi và ngày về -->
+          <div class="field-anchor">
+            <label class="searchbox__label" for="btnDate">Ngày đi &amp; về</label>
+            <button class="sfield" type="button" id="btnDate" data-pop="cal" aria-haspopup="dialog">
+              <span aria-hidden="true">📅</span>
+              <span class="sfield__val" data-date-label>Chọn ngày</span>
+            </button>
+            <!-- Lịch neo vào CHÍNH Ô NGÀY, bung ra ngay dưới ô (§4.1-2) -->
+            <div class="calendar calendar--anchor-right" data-pop-panel="cal" hidden id="calBox"></div>
+          </div>
+
+          <!-- §8.5-6 · Hành khách -->
+          <div class="field-anchor">
+            <label class="searchbox__label" for="btnPax">Hành khách</label>
+            <button class="sfield" type="button" id="btnPax" data-pop="pax" aria-haspopup="dialog">
+              <span aria-hidden="true">👤</span>
+              <span class="sfield__val" data-pax-label>1 người lớn</span>
+            </button>
+            <!-- Popover số khách neo vào CHÍNH Ô HÀNH KHÁCH (§4.1-3) -->
+            <div class="pax" data-pop-panel="pax" hidden id="paxBox"></div>
+          </div>
+
+          <!-- §8.5-10 · Nút Tìm 48×120 -->
+          <div>
+            <button class="btn btn--primary" type="submit" id="btnSearch">Tìm</button>
+          </div>
+        </div>
+
+        <!-- ===== BỘ CHỌN SÂN BAY (§8.6) — [MỚI 7] =====
+             §8.6: "panel rộng bằng đúng hộp tìm kiếm trên máy tính" → trải hết chiều
+             ngang của HÀNG ô nhập, và bung ra NGAY DƯỚI hàng đó. -->
+        <div class="picker" data-pop-panel="from" hidden>
+          <div class="picker__head">
+            <strong class="text-body-semibold" style="white-space:nowrap">Chọn điểm đi</strong>
+            <input class="input" type="search" placeholder="Nhập để tìm thành phố, sân bay hoặc mã sân bay" data-picker-q>
+            <button class="btn btn--icon" type="button" data-pop-close aria-label="Đóng">✕</button>
+          </div>
+          <div class="picker__tabs" data-picker-tabs></div>
+          <div class="picker__grid" data-picker-grid></div>
+        </div>
+        <div class="picker" data-pop-panel="to" hidden>
+          <div class="picker__head">
+            <strong class="text-body-semibold" style="white-space:nowrap">Chọn điểm đến</strong>
+            <input class="input" type="search" placeholder="Nhập để tìm thành phố, sân bay hoặc mã sân bay" data-picker-q>
+            <button class="btn btn--icon" type="button" data-pop-close aria-label="Đóng">✕</button>
+          </div>
+          <div class="picker__tabs" data-picker-tabs></div>
+          <div class="picker__grid" data-picker-grid></div>
+        </div>
+        </div><!-- /.searchbox__row -->
+
+        <!-- ===== §8.11 · BIẾN THỂ NHIỀU CHẶNG — mỗi chặng MỘT HÀNG xếp dọc ===== -->
+        <div class="legrows u-hidden" id="rowMulti"></div>
+
+        <!-- §8.3 — BA điều khiển này nằm CÙNG MỘT HÀNG -->
+        <div class="searchbox__extra">
+          <label class="check"><input type="checkbox" id="directOnly"> Chỉ bay thẳng</label>
+          <select class="select" aria-label="Hạng ghế" style="min-width:190px">
+            <option>Phổ thông</option>
+            <option>Phổ thông đặc biệt</option>
+            <option>Thương gia</option>
+            <option>Hạng nhất</option>
+            <option>Tất cả các hạng</option>
+          </select>
+          <!-- §8.5-9 · Hãng bay là POPOVER CHỌN NHIỀU, mặc định "Tất cả".
+               🔴 Danh sách hãng LẤY TỪ HỆ THỐNG — không cố định trong mã. -->
+          <div class="field-anchor">
+            <button class="sfield sfield--compact" type="button" id="btnAirlines" data-pop="airlines" aria-haspopup="dialog">
+              <span class="sfield__val" data-airlines-label>Tất cả hãng bay</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:auto;flex:none"><path d="m6 9 6 6 6-6" stroke-linecap="round"/></svg>
+            </button>
+            <div class="airlinepop" data-pop-panel="airlines" hidden id="airlineBox"></div>
+          </div>
+          <span class="text-label-large-regular" style="margin-left:auto" id="legCounter"></span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <div class="container">
+
+    <!-- §8.9 · Trạng thái "Khách đã đăng nhập": khối Chuyến bay gần đây -->
+    <section class="rowsec u-hidden" id="secRecent">
+      <h2 class="rowsec__title">Chuyến bay gần đây</h2>
+      <div class="tilegrid">
+        <button class="tile" type="button">
+          <span aria-hidden="true">🕘</span>
+          <span><b class="text-body-semibold">HAN → SGN</b><br><span class="text-body-small-regular u-text-label">T5, 20/08 · 1 người lớn</span></span>
+          <span class="tile__r text-body-small-semibold u-text-primary">Điền lại</span>
+        </button>
+        <button class="tile" type="button">
+          <span aria-hidden="true">🕘</span>
+          <span><b class="text-body-semibold">SGN → PQC</b><br><span class="text-body-small-regular u-text-label">T7, 05/09 · 2 người lớn</span></span>
+          <span class="tile__r text-body-small-semibold u-text-primary">Điền lại</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="rowsec">
+      <h2 class="rowsec__title">Đường bay phổ biến</h2>
+      <div class="tilegrid" id="popular"></div>
+    </section>
+
+    <section class="rowsec">
+      <h2 class="rowsec__title">Ưu đãi đang có</h2>
+      <div class="tilegrid">
+        <article class="promo"><div class="promo__img"></div><div class="promo__body">
+          <b class="text-body-semibold">Bay là có xu</b>
+          <p class="text-body-small-regular u-text-label" style="margin:6px 0 0">Nhận tới 15.000 Xu mỗi khách mỗi chặng — cộng sau khi hoàn tất chuyến bay.</p>
+        </div></article>
+        <article class="promo"><div class="promo__img"></div><div class="promo__body">
+          <b class="text-body-semibold">Bay rồi ở</b>
+          <p class="text-body-small-regular u-text-label" style="margin:6px 0 0">Đặt vé xong, đặt tiếp chỗ nghỉ tại điểm đến ngay trên Bookese.</p>
+        </div></article>
+        <article class="promo"><div class="promo__img"></div><div class="promo__body">
+          <b class="text-body-semibold">Giá đúng giá hãng</b>
+          <p class="text-body-small-regular u-text-label" style="margin:6px 0 0">Giá vé bằng đúng giá hãng công bố. Phí dịch vụ hiển thị rõ trong bảng tách giá.</p>
+        </div></article>
+        <article class="promo"><div class="promo__img"></div><div class="promo__body">
+          <b class="text-body-semibold">Hỗ trợ 24/7</b>
+          <p class="text-body-small-regular u-text-label" style="margin:6px 0 0">Gọi 078 222 1131 nếu cần đổi, hoàn hoặc hỗ trợ trước chuyến bay.</p>
+        </div></article>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="toaster"></div>
+
+<script src="assets/app.js"></script>
+<script src="assets/data.js"></script>
+<script>
+(function () {
+  BK.mountHeader('vmb');
+
+  /* ---------- Trạng thái màn hình ---------- */
+  var S = {
+    from: { code: 'HAN', city: 'Hà Nội' },
+    to:   null,
+    trip: 'round',
+    go:   null, back: null,
+    cursor: null,
+    pax:  { adt: 1, chd: 0, inf: 0 },
+    airlines: [],                      /* rỗng = "Tất cả hãng bay" (§8.5-9) */
+    /* RB21 — cấu trúc dữ liệu là MẢNG CHẶNG, không phải "đi/về" cố định.
+       Một chiều = 1 phần tử · khứ hồi = 2 · nhiều chặng = 2…6 (§7.2) */
+    legs: [
+      { from: { code: 'HAN', city: 'Hà Nội' }, to: { code: 'SGN', city: 'TP. Hồ Chí Minh' }, date: null },
+      { from: { code: 'SGN', city: 'TP. Hồ Chí Minh' }, to: { code: 'DAD', city: 'Đà Nẵng' }, date: null }
+    ]
+  };
+  var MAX_LEGS = 6;                    /* §8.11 — tối đa 6 chặng */
+
+  /* ---------- Popover số khách (§8.8) — dựng từ JS để dùng lại ---------- */
+  document.getElementById('paxBox').innerHTML =
+    '<div class="pax__note">' +
+      '<span>Độ tuổi tính đến ngày khởi hành của chặng bay cuối cùng</span>' +
+      '<button class="btn btn--icon" type="button" data-pop-close aria-label="Đóng" style="margin-left:auto;width:24px;height:24px">✕</button>' +
+    '</div>' +
+    [['adt','Người lớn','Từ 12 tuổi'],['chd','Trẻ em','Từ 2 đến dưới 12 tuổi'],['inf','Em bé','Dưới 2 tuổi']].map(function (r) {
+      return '<div class="pax__row"><div class="pax__label"><b>' + r[1] + '</b><span>' + r[2] + '</span></div>' +
+        '<div class="stepper">' +
+          '<button type="button" data-step="' + r[0] + '" data-d="-1" aria-label="Bớt ' + r[1] + '">−</button>' +
+          '<output data-count="' + r[0] + '">0</output>' +
+          '<button type="button" data-step="' + r[0] + '" data-d="1" aria-label="Thêm ' + r[1] + '">+</button>' +
+        '</div></div>';
+    }).join('') +
+    /* §8.8 · Ràng buộc hiển thị NGAY, không đợi bấm Tìm mới báo lỗi */
+    '<p class="pax__limit u-hidden" data-pax-limit></p>' +
+    '<div class="pax__foot"><button class="btn btn--primary btn--block" type="submit">Tìm chuyến bay</button></div>';
+
+  /* Mặc định §8.5-5: ngày đi = hôm nay + 3 */
+  (function () {
+    var d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + 3);
+    var b = new Date(d); b.setDate(b.getDate() + 2);
+    S.go = iso(d); S.back = iso(b); S.cursor = new Date(d.getFullYear(), d.getMonth(), 1);
+  })();
+
+  function iso(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+  function parse(s) { var p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+
+  /* ---------- Bộ chọn sân bay (§8.6) ---------- */
+  ['from','to'].forEach(function (which) {
+    var panel = document.querySelector('[data-pop-panel="' + which + '"]');
+    var tabs  = panel.querySelector('[data-picker-tabs]');
+    var grid  = panel.querySelector('[data-picker-grid]');
+    var q     = panel.querySelector('[data-picker-q]');
+    var region = 'Việt Nam';
+
+    function drawTabs() {
+      tabs.innerHTML = Object.keys(BK.AIRPORTS).map(function (r) {
+        return '<button type="button" class="ptab' + (r === region ? ' ptab--active' : '') + '" data-region="' + r + '">' + r + '</button>';
+      }).join('');
+    }
+    function drawGrid() {
+      var term = (q.value || '').trim().toLowerCase();
+      var list = [];
+      if (term) {
+        /* §8.6 — khi gõ tìm: ẨN TAB, một cột, BỔ SUNG TÊN QUỐC GIA */
+        tabs.style.display = 'none';
+        grid.style.gridTemplateColumns = '1fr';
+        Object.keys(BK.AIRPORTS).forEach(function (r) {
+          BK.AIRPORTS[r].forEach(function (a) {
+            if ((a[0] + ' ' + a[1] + ' ' + a[2]).toLowerCase().indexOf(term) > -1) list.push(a.concat([r]));
+          });
+        });
+      } else {
+        tabs.style.display = '';
+        grid.style.gridTemplateColumns = '';
+        list = BK.AIRPORTS[region].map(function (a) { return a.concat([region]); });
+      }
+      if (!list.length) {
+        grid.innerHTML = '<p class="text-body-small-regular u-text-label" style="padding:8px">Không tìm thấy sân bay phù hợp. Thử nhập mã sân bay, ví dụ HAN.</p>';
+        return;
+      }
+      grid.innerHTML = list.map(function (a) {
+        return '<button type="button" class="pcity" data-code="' + a[0] + '" data-city="' + a[1] + '">' +
+          '<span class="pcity__code">' + a[0] + '</span>' +
+          '<span style="min-width:0"><span class="pcity__city">' + a[1] + '</span><br>' +
+          '<span class="pcity__ap">' + a[2] + (term ? ' · ' + a[3] : '') + '</span></span></button>';
+      }).join('');
+    }
+    drawTabs(); drawGrid();
+
+    tabs.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-region]'); if (!b) return;
+      region = b.getAttribute('data-region'); drawTabs(); drawGrid();
+    });
+    q.addEventListener('input', drawGrid);
+    panel.querySelector('[data-pop-close]').addEventListener('click', function () { BK.closeAllPops(); });
+
+    grid.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-code]'); if (!b) return;
+      S[which] = { code: b.getAttribute('data-code'), city: b.getAttribute('data-city') };
+      render();
+      /* 🔴 §8.6 — CHUỖI TỰ ĐỘNG: chọn điểm đi → tự sang điểm đến → xong thì LỊCH TỰ BẬT.
+         Hành vi này tiết kiệm hai cú chạm, giữ nguyên. */
+      if (which === 'from' && !S.to) BK.togglePop('to', true);
+      else if (which === 'to') BK.togglePop('cal', true);
+      else BK.closeAllPops();
+    });
+  });
+
+  document.getElementById('btnSwap').addEventListener('click', function (e) {
+    e.stopPropagation();
+    var t = S.from; S.from = S.to; S.to = t; render();
+  });
+
+  /* ---------- Lịch (§8.7) ---------- */
+  var calBox = document.getElementById('calBox');
+  function drawCal() { BK.renderCalendar(calBox, { go: S.go, back: S.back, cursor: S.cursor }); }
+  drawCal();
+  calBox.addEventListener('click', function (e) {
+    if (e.target.closest('[data-cal-prev]')) { S.cursor = new Date(S.cursor.getFullYear(), S.cursor.getMonth()-1, 1); drawCal(); return; }
+    if (e.target.closest('[data-cal-next]')) { S.cursor = new Date(S.cursor.getFullYear(), S.cursor.getMonth()+1, 1); drawCal(); return; }
+    var d = e.target.closest('[data-day]'); if (!d) return;
+    var v = d.getAttribute('data-day');
+    if (S.trip === 'one') { S.go = v; S.back = null; BK.closeAllPops(); }
+    else if (!S.go || S.back || v < S.go) { S.go = v; S.back = null; }   /* chọn về trước đi → tự đẩy ngày đi */
+    else { S.back = v; BK.closeAllPops(); }
+    drawCal(); render();
+  });
+
+  /* ---------- Số khách (§8.8) ---------- */
+  var paxPanel = document.querySelector('[data-pop-panel="pax"]');
+  paxPanel.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-step]'); if (!b) return;
+    var k = b.getAttribute('data-step'), d = +b.getAttribute('data-d');
+    var next = Object.assign({}, S.pax); next[k] = next[k] + d;
+    if (next.adt < 1 || next.chd < 0 || next.inf < 0) return;
+    if (next.adt + next.chd > 9) return;
+    if (next.inf > next.adt) return;
+    S.pax = next; render();
+  });
+  paxPanel.querySelector('[data-pop-close]').addEventListener('click', function () { BK.closeAllPops(); });
+
+  /* ---------- Mở/đóng popover ---------- */
+  document.querySelectorAll('[data-pop]').forEach(function (btn) {
+    btn.addEventListener('click', function (e) { e.stopPropagation(); BK.togglePop(btn.getAttribute('data-pop')); });
+  });
+
+  /* ---------- §8.5-9 · Popover hãng bay — CHỌN NHIỀU ---------- */
+  function drawAirlines() {
+    var keys = Object.keys(BK.AIRLINES);          /* nguồn: hệ thống, không cố định trong mã */
+    document.getElementById('airlineBox').innerHTML =
+      '<div class="airlinepop__list">' +
+        '<label class="check"><input type="checkbox" data-al="__all"' + (S.airlines.length ? '' : ' checked') + '>' +
+        '<b style="flex:1">Tất cả hãng bay</b></label>' +
+        keys.map(function (k) {
+          var a = BK.AIRLINES[k];
+          return '<label class="check"><input type="checkbox" data-al="' + k + '"' + (S.airlines.indexOf(k) > -1 ? ' checked' : '') + '>' +
+            '<span style="display:flex;align-items:center;gap:8px;flex:1">' +
+              '<span class="airline__logo" style="width:24px;height:24px;font-size:10px;background:' + a.color + '">' + a.short + '</span>' +
+              a.name + '</span></label>';
+        }).join('') +
+      '</div>' +
+      '<div class="airlinepop__foot">' +
+        '<button class="btn btn--secondary" type="button" data-al-clear style="flex:1;min-width:0">Bỏ chọn</button>' +
+        '<button class="btn btn--primary" type="button" data-al-done style="flex:1;min-width:0;height:40px">Xong</button>' +
+      '</div>';
+  }
+  drawAirlines();
+
+  document.getElementById('airlineBox').addEventListener('click', function (e) {
+    if (e.target.closest('[data-al-done]')) { BK.closeAllPops(); return; }
+    if (e.target.closest('[data-al-clear]')) { S.airlines = []; drawAirlines(); render(); return; }
+    var cb = e.target.closest('[data-al]'); if (!cb) return;
+    var k = cb.getAttribute('data-al');
+    if (k === '__all') S.airlines = [];
+    else {
+      var i = S.airlines.indexOf(k);
+      if (i > -1) S.airlines.splice(i, 1); else S.airlines.push(k);
+    }
+    drawAirlines(); render();
+  });
+
+  /* ---------- §8.11 · Hàng chặng cho chế độ nhiều chặng ---------- */
+  function drawLegs() {
+    var host = document.getElementById('rowMulti');
+    host.innerHTML = S.legs.map(function (lg, i) {
+      return '<div class="legrow" data-leg="' + i + '">' +
+        '<span class="legrow__n">' + (i + 1) + '</span>' +
+        '<div class="swap-wrap">' +
+          (i === 0 ? '<label class="searchbox__label">Điểm đi</label>' : '') +
+          '<button class="sfield' + (lg.from ? '' : ' sfield--ph') + '" type="button" data-legfield="from" data-i="' + i + '">' +
+            '<span aria-hidden="true">🛫</span><span class="sfield__val">' + (lg.from ? lg.from.city + ' (' + lg.from.code + ')' : 'Nhập điểm đi') + '</span></button>' +
+          '<button class="swap" type="button" data-legswap="' + i + '" aria-label="Đảo chiều chặng ' + (i + 1) + '">⇄</button>' +
+        '</div>' +
+        '<div>' + (i === 0 ? '<label class="searchbox__label">Điểm đến</label>' : '') +
+          '<button class="sfield' + (lg.to ? '' : ' sfield--ph') + '" type="button" data-legfield="to" data-i="' + i + '">' +
+            '<span aria-hidden="true">🛬</span><span class="sfield__val">' + (lg.to ? lg.to.city + ' (' + lg.to.code + ')' : 'Nhập điểm đến') + '</span></button></div>' +
+        '<div>' + (i === 0 ? '<label class="searchbox__label">Ngày bay</label>' : '') +
+          '<button class="sfield" type="button" data-legdate="' + i + '">' +
+            '<span aria-hidden="true">📅</span><span class="sfield__val">' + (lg.date ? BK.dateBookese(parse(lg.date)) : 'Chọn ngày') + '</span></button></div>' +
+        /* Nút Xóa chỉ hiện từ chặng THỨ BA trở đi — tối thiểu phải có 2 chặng */
+        (i >= 2 ? '<button class="btn btn--secondary legrow__del" type="button" data-legdel="' + i + '" style="min-width:72px">Xóa</button>'
+                : '<span class="legrow__del"></span>') +
+      '</div>';
+    }).join('') +
+    '<div class="legrows__foot">' +
+      /* 🔴 Nút Thêm chặng BIẾN MẤT khi đạt 6 chặng */
+      (S.legs.length < MAX_LEGS ? '<button class="btn btn--secondary" type="button" id="btnAddLeg">+ Thêm chặng</button>' : '') +
+      '<span class="text-label-large-regular">' + S.legs.length + ' / ' + MAX_LEGS + ' chặng</span>' +
+    '</div>';
+  }
+
+  document.getElementById('rowMulti').addEventListener('click', function (e) {
+    if (e.target.closest('#btnAddLeg')) {
+      var last = S.legs[S.legs.length - 1];
+      /* Tự điền: điểm đi của chặng sau = điểm đến của chặng trước, vẫn sửa được */
+      S.legs.push({ from: last.to, to: null, date: null });
+      drawLegs(); render(); return;
+    }
+    var del = e.target.closest('[data-legdel]');
+    if (del) { S.legs.splice(+del.getAttribute('data-legdel'), 1); drawLegs(); render(); return; }
+    var sw = e.target.closest('[data-legswap]');
+    if (sw) { var i = +sw.getAttribute('data-legswap'); var t = S.legs[i].from; S.legs[i].from = S.legs[i].to; S.legs[i].to = t; drawLegs(); return; }
+    if (e.target.closest('[data-legfield]') || e.target.closest('[data-legdate]')) {
+      BK.toast('Bản dựng: dùng chế độ Một chiều / Khứ hồi để thử bộ chọn sân bay và lịch');
+    }
+  });
+
+  /* ---------- Loại hành trình ---------- */
+  document.querySelectorAll('input[name="trip"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      S.trip = r.value;
+      if (S.trip === 'one') S.back = null;
+      var multi = S.trip === 'multi';
+      document.getElementById('rowSimple').classList.toggle('u-hidden', multi);
+      document.getElementById('rowMulti').classList.toggle('u-hidden', !multi);
+      if (multi) drawLegs();
+      BK.closeAllPops();
+      drawCal(); render();
+    });
+  });
+
+  /* ---------- Vẽ lại ---------- */
+  function render() {
+    var f = document.querySelector('[data-from-label]'), t = document.querySelector('[data-to-label]');
+    f.textContent = S.from ? S.from.city + ' (' + S.from.code + ')' : 'Nhập điểm đi';
+    document.getElementById('btnFrom').classList.toggle('sfield--ph', !S.from);
+    t.textContent = S.to ? S.to.city + ' (' + S.to.code + ')' : 'Nhập điểm đến';
+    document.getElementById('btnTo').classList.toggle('sfield--ph', !S.to);
+    if (S.to) { document.getElementById('btnTo').classList.remove('input--error'); document.querySelector('[data-err="to"]').classList.add('u-hidden'); }
+
+    var lbl = S.go ? BK.dateBookese(parse(S.go)) : 'Chọn ngày';
+    if (S.trip !== 'one' && S.back) lbl += ' — ' + BK.dateBookese(parse(S.back));
+    document.querySelector('[data-date-label]').textContent = lbl;
+
+    var p = S.pax, parts = [p.adt + ' người lớn'];
+    if (p.chd) parts.push(p.chd + ' trẻ em');
+    if (p.inf) parts.push(p.inf + ' em bé');
+    document.querySelector('[data-pax-label]').textContent = parts.join(', ');
+    document.querySelector('[data-count="adt"]').textContent = p.adt;
+    document.querySelector('[data-count="chd"]').textContent = p.chd;
+    document.querySelector('[data-count="inf"]').textContent = p.inf;
+
+    /* Nút vô hiệu NHÌN THẤY ĐƯỢC + dòng giải thích ngay lập tức */
+    var dis = {
+      'adt-1': p.adt <= 1, 'adt1': p.adt + p.chd >= 9,
+      'chd-1': p.chd <= 0, 'chd1': p.adt + p.chd >= 9,
+      'inf-1': p.inf <= 0, 'inf1': p.inf >= p.adt
+    };
+    paxPanel.querySelectorAll('[data-step]').forEach(function (b) {
+      b.disabled = !!dis[b.getAttribute('data-step') + b.getAttribute('data-d')];
+    });
+    /* Nhãn hãng bay — §8.5-9 mặc định "Tất cả" */
+    document.querySelector('[data-airlines-label]').textContent =
+      !S.airlines.length ? 'Tất cả hãng bay'
+      : S.airlines.length === 1 ? BK.AIRLINES[S.airlines[0]].name
+      : S.airlines.length + ' hãng đã chọn';
+
+    var limit = paxPanel.querySelector('[data-pax-limit]');
+    if (p.inf >= p.adt) { limit.textContent = 'Mỗi em bé cần một người lớn đi kèm'; limit.classList.remove('u-hidden'); }
+    else if (p.adt + p.chd >= 9) { limit.textContent = 'Tối đa 9 người lớn và trẻ em trong một lần đặt'; limit.classList.remove('u-hidden'); }
+    else limit.classList.add('u-hidden');
+  }
+
+  /* ---------- Đường bay phổ biến ---------- */
+  document.getElementById('popular').innerHTML = [
+    ['HAN','SGN','Hà Nội → TP. HCM', 1252181],
+    ['HAN','DAD','Hà Nội → Đà Nẵng', 890000],
+    ['SGN','PQC','TP. HCM → Phú Quốc', 760000],
+    ['SGN','CXR','TP. HCM → Nha Trang', 820000]
+  ].map(function (r) {
+    return '<button class="tile" type="button"><span aria-hidden="true">✈</span>' +
+      '<span><b class="text-body-semibold">' + r[2] + '</b><br>' +
+      '<span class="text-body-small-regular u-text-label">Bay thẳng · từ</span></span>' +
+      '<span class="tile__r"><span class="price price--table">' + BK.money(r[3]) + '</span><br>' +
+      '<span class="text-label-large-regular">/khách</span></span></button>';
+  }).join('');
+
+  /* ---------- Gửi biểu mẫu ---------- §8.9 bốn trạng thái ---------- */
+  document.getElementById('searchForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('btnSearch');
+    if (!S.to) {
+      /* §8.9 — Thiếu trường bắt buộc: viền đỏ Ở Ô ĐÓ + thông báo NGAY DƯỚI Ô,
+         không phải một thông báo chung ở cuối biểu mẫu. */
+      document.getElementById('btnTo').classList.add('input--error');
+      document.querySelector('[data-err="to"]').classList.remove('u-hidden');
+      document.getElementById('btnTo').focus();
+      return;
+    }
+    btn.classList.add('btn--busy');
+    btn.innerHTML = '<span class="spinner"></span>';
+    setTimeout(function () { location.href = 'ket-qua.html'; }, 900);
+  });
+
+  render();
+
+  /* ---------- Chuyển trạng thái để trình bày ---------- */
+  BK.onProtoState = function (id) {
+    if (id === 'normal') { location.reload(); }
+    if (id === 'error') {
+      S.to = null; render();
+      document.getElementById('btnTo').classList.add('input--error');
+      document.querySelector('[data-err="to"]').classList.remove('u-hidden');
+    }
+    if (id === 'submitting') {
+      var b = document.getElementById('btnSearch');
+      b.classList.add('btn--busy'); b.innerHTML = '<span class="spinner"></span>';
+    }
+    if (id === 'loggedin') {
+      document.getElementById('secRecent').classList.remove('u-hidden');
+      document.querySelector('.header-right').innerHTML =
+        '<button class="btn btn--link" type="button">VND</button><span class="sep"></span>' +
+        '<button class="btn btn--link" type="button">VN</button><span class="sep"></span>' +
+        '<span class="badge badge--warn">🪙 128.000 Xu</span>' +
+        '<span class="text-body-small-semibold" style="color:var(--c-text)">Chị Lan</span>';
+      BK.toast('Đã đăng nhập — hồ sơ hành khách sẽ được điền sẵn ở bước thanh toán');
+    }
+  };
+  BK.mountProto([
+    { id: 'normal', label: 'Bình thường' },
+    { id: 'error', label: 'Thiếu trường' },
+    { id: 'submitting', label: 'Đang gửi' },
+    { id: 'loggedin', label: 'Đã đăng nhập' }
+  ]);
+})();
+</script>
+</body>
+</html>

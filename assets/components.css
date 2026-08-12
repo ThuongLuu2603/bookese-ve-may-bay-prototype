@@ -1,0 +1,1144 @@
+/* =====================================================================
+   BOOKESE — VÉ MÁY BAY · THƯ VIỆN THÀNH PHẦN
+   §4.1 — 15 thành phần DÙNG LẠI từ luồng đặt phòng (đánh dấu [DÙNG LẠI])
+   §4.2 — 13 thành phần MỚI phải dựng          (đánh dấu [MỚI])
+   ===================================================================== */
+
+/* =====================================================================
+   THANH ĐẦU TRANG — §3.4 · 81px máy tính / 72px điện thoại
+   Dính đầu trang · nền trắng · KHÔNG viền, KHÔNG bóng
+   ===================================================================== */
+.site-header {
+  position: sticky; top: 0; z-index: 60;
+  height: var(--h-header);
+  background: var(--c-card);
+  display: flex; align-items: center;
+}
+.site-header .container { display: flex; align-items: center; gap: var(--sp-6); }
+
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; color: var(--c-text); }
+.brand__mark {
+  width: 32px; height: 32px; border-radius: var(--r-base);
+  background: var(--c-primary); color: #fff;
+  display: grid; place-items: center; font-size: 17px; font-weight: 700;
+}
+
+/* Dãy điều hướng viên thuốc — NGOẠI LỆ DUY NHẤT được bo tròn hoàn toàn (§4.3) */
+.navpills { display: flex; align-items: center; gap: var(--sp-2); margin-left: var(--sp-4); }
+.navpill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 20px; border-radius: 999px;
+  border: 1px solid transparent; background: transparent;
+  font-size: 14px; font-weight: 600; color: var(--c-text-label);
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+}
+.navpill:hover { background: var(--c-page); color: var(--c-text); text-decoration: none; }
+.navpill--active { border-color: var(--c-primary); color: var(--c-primary); background: transparent; }
+.navpill--active:hover { color: var(--c-primary); background: transparent; }
+
+.header-right { margin-left: auto; display: flex; align-items: center; gap: var(--sp-3); font-size: 14px; }
+.header-right .sep { width: 1px; height: 20px; background: var(--c-border); }
+
+/* §8.4 — thanh đầu trang bản điện thoại rút gọn: ☰ [logo] 👤 🌐 */
+@media (max-width: 1023px) {
+  .site-header { height: var(--h-header-mobile); }
+  .navpills { display: none; }
+  .header-right { gap: var(--sp-2); }
+  .header-right .sep { display: none; }
+  .header-right .btn--secondary { display: none; }
+}
+
+/* =====================================================================
+   NÚT — §4.3 · Bo góc 8px, KHÔNG bo tròn viên thuốc
+   ===================================================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: var(--r-base); border: 1px solid transparent;
+  font-size: 14px; font-weight: 600; line-height: 1;
+  cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.btn:hover { text-decoration: none; }
+
+.btn--primary { height: var(--h-btn); min-width: 120px; padding: 0 20px; background: var(--c-primary); color: #fff; }
+.btn--primary:hover { background: var(--c-primary-dark); color: #fff; }
+.btn--primary:disabled,
+.btn--primary[aria-disabled="true"] { background: var(--c-disabled-bg); color: var(--c-text-faint); cursor: not-allowed; }
+
+.btn--secondary { height: var(--h-btn-sm); min-width: 129px; padding: 0 16px; background: #fff; border-color: var(--c-border); color: var(--c-text); }
+.btn--secondary:hover { border-color: var(--c-text-faint); color: var(--c-text); }
+
+.btn--link { height: auto; padding: 0; background: none; border: 0; color: var(--c-primary); font-weight: 600; }
+.btn--link:hover { color: var(--c-primary-dark); text-decoration: underline; }
+
+.btn--icon { width: 40px; height: 40px; min-width: 40px; padding: 0; background: none; border: 0; color: var(--c-text-label); border-radius: var(--r-base); }
+.btn--icon:hover { background: var(--c-page); }
+
+.btn--block { width: 100%; }
+.btn--danger { background: var(--c-error); color: #fff; }
+
+/* Vòng xoay đặt TRÊN CHÍNH NÚT (§10.6 · §15.1) — không chuyển màn hình tải toàn trang */
+.btn--busy { pointer-events: none; background: var(--c-primary-dark); }
+.spinner {
+  width: 16px; height: 16px; border-radius: 50%; flex: none;
+  border: 2px solid rgba(255,255,255,.35); border-top-color: #fff;
+  animation: spin .7s linear infinite;
+}
+.spinner--dark { border-color: var(--c-border); border-top-color: var(--c-primary); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* =====================================================================
+   Ô NHẬP — §4.4 · Nhãn PHÍA TRÊN ô nhập, không dùng nhãn nổi (RB5)
+   ===================================================================== */
+.field { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+.field__label { font-size: 14px; font-weight: 600; color: var(--c-text-label); }
+.field__hint  { font-size: 12px; font-weight: 400; color: var(--c-text-faint); }
+.field__error { font-size: 14px; font-weight: 400; color: var(--c-error); }
+
+.input, .select, .textarea {
+  width: 100%; border: 1px solid var(--c-border); border-radius: var(--r-base);
+  background: #fff; color: var(--c-text); font-size: 16px; font-family: inherit;
+  padding: 12px 16px;
+}
+.input    { height: var(--h-input); }
+.select   { height: var(--h-select); padding-right: 40px; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23575764' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; }
+.textarea { height: var(--h-textarea); resize: none; padding: 12px 16px; }
+
+.input::placeholder, .textarea::placeholder { color: var(--c-text-label); }
+/* §4.4 — Khi được chọn: VIỀN CHUYỂN SANG MÀU ĐEN */
+.input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--c-text); }
+.input--error, .select--error, .textarea--error { border-color: var(--c-error); }
+.input:disabled, .select:disabled { background: var(--c-disabled-bg); color: var(--c-text-faint); }
+
+/* Chip đếm ký tự — viền/chữ #108A00, chuyển đỏ khi đầy */
+.charcount {
+  position: absolute; right: 12px; bottom: 12px;
+  border: 1px solid #108A00; color: #108A00; background: #fff;
+  border-radius: var(--r-tooltip); padding: 2px 8px; font-size: 12px; font-weight: 500;
+}
+.charcount--full { border-color: var(--c-error); color: var(--c-error); }
+.textarea-wrap { position: relative; }
+
+/* Ô tích và nút chọn một */
+.check { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14px; line-height: 1.45; }
+.check input { appearance: none; flex: none; width: 20px; height: 20px; margin: 0; border: 1px solid var(--c-checkbox-border); border-radius: 4px; background: #fff; cursor: pointer; position: relative; }
+.check input[type="radio"] { border-radius: 50%; }
+.check input:checked { background: var(--c-primary); border-color: var(--c-primary); }
+.check input[type="checkbox"]:checked::after {
+  content: ""; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/14px no-repeat;
+}
+.check input[type="radio"]:checked::after {
+  content: ""; position: absolute; inset: 5px; border-radius: 50%; background: #fff;
+}
+.check input:disabled { background: var(--c-disabled-bg); border-color: var(--c-border); cursor: not-allowed; }
+.check__count { margin-left: auto; color: var(--c-text-faint); font-size: 12px; }
+
+/* =====================================================================
+   THẺ · KHỐI — RB4: KHÔNG ĐỔ BÓNG, phân tách bằng đường kẻ
+   ===================================================================== */
+.card { background: var(--c-card); border-radius: var(--r-base); }
+.card--pad { padding: 24px; }
+.page-title { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
+
+.breadcrumb { font-size: 14px; color: var(--c-text-label); padding: 16px 0; }
+.breadcrumb a { color: var(--c-text-label); }
+.breadcrumb a:hover { color: var(--c-primary); }
+
+/* Dải tiêu đề bảng [DÙNG LẠI §4.1-6] — h48 · nền #D6EEFF · viền #83D5FF · chữ #084DC5 */
+.band {
+  height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 16px;
+  background: var(--c-primary-lightest); border: 1px solid var(--c-primary-light);
+  color: var(--c-primary-dark); font-size: 16px; font-weight: 600;
+  font-family: Manrope, Inter, sans-serif;
+}
+
+/* Huy hiệu */
+.badge { display: inline-flex; align-items: center; gap: 6px; border-radius: var(--r-tooltip); padding: 3px 8px; font-size: 12px; font-weight: 600; }
+.badge--info    { background: var(--c-primary-lightest); color: var(--c-primary-dark); }
+.badge--error   { background: #FFECEC; color: var(--c-error); }
+.badge--success { background: #E7F8ED; color: #108A00; }
+.badge--warn    { background: #FFF6DA; color: #8A6300; }
+.badge--muted   { background: var(--c-disabled-bg); color: var(--c-text-label); }
+
+/* Dải cảnh báo */
+.notice { display: flex; gap: 10px; padding: 12px 16px; border-radius: var(--r-base); font-size: 14px; line-height: 1.5; }
+.notice--info  { background: var(--c-primary-lightest); color: var(--c-primary-dark); }
+.notice--warn  { background: #FFF6DA; color: #7A5800; }
+.notice--error { background: #FFECEC; color: var(--c-error); }
+.notice--tip   { background: #F2F8FF; color: var(--c-info); }
+
+/* =====================================================================
+   GIÁ — §5.1 · Định dạng `VND 1.252.181` (RB1) · màu ĐEN #121314 (RB7)
+   ===================================================================== */
+.price { font-family: Manrope, Inter, sans-serif; color: var(--c-text); font-weight: 600; }
+.price--row   { font-size: 18px; }  /* giá trên dòng chuyến bay */
+.price--table { font-size: 16px; }  /* giá trong bảng và cột tóm tắt */
+.price__per   { font-size: 14px; font-weight: 400; color: var(--c-text-label); }
+/* Giá gốc khi giảm: 14/400, ĐỎ, gạch ngang, đặt PHÍA TRÊN giá mới */
+.price__was   { display: block; font-size: 14px; font-weight: 400; color: var(--c-error); text-decoration: line-through; }
+.price__note  { font-size: 14px; font-weight: 500; color: var(--c-text-secondary); } /* "Đã bao gồm thuế và phí" */
+
+
+/* =====================================================================
+   §9.4 · RB36 — DÒNG CHUYẾN BAY: BA HÀNG, CAO ~108px
+   Bản trước ~570px → màn 1080px chỉ thấy 2 chuyến. Bản này 108px + 8px
+   khoảng cách = 116px/chuyến → vùng danh sách 700px hiển thị 6 chuyến.
+   ===================================================================== */
+.fr {
+  background: #fff; border: 1px solid var(--c-border); border-radius: var(--r-base);
+  margin-bottom: 8px;                 /* §9.4.6 — 8px, không phải 16px */
+}
+.fr--open { border-color: var(--c-primary); }     /* nền vẫn TRẮNG, không tô */
+.fr--soldout .fr__main { opacity: .55; }
+.fr__main { padding: 16px; cursor: pointer; display: flex; gap: 12px; }  /* §9.4.4 — cả dòng bấm được */
+.fr__col { flex: 1; min-width: 0; }
+.fr--soldout .fr__main { cursor: default; }
+
+/* ---------- HÀNG 1 · 20px (+18px nếu có dòng điều hành bởi) ---------- */
+.fr__r1 { display: flex; align-items: center; gap: 8px; height: 20px; }
+/* 🔴 §21-35 — logo 32px, KHÔNG dựng khối màu đặc 82px */
+.fr__logo {
+  width: 32px; height: 32px; flex: none; border-radius: var(--r-tooltip);
+  display: grid; place-items: center; color: #fff; font-size: 11px; font-weight: 700;
+}
+/* Dòng "(điều hành bởi …)" là thứ DUY NHẤT được phép đẩy hàng 1 cao thêm 18px */
+.fr__r1--op { height: auto; align-items: flex-start; }
+.fr__who { min-width: 0; font-size: 14px; line-height: 20px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
+.fr__who b { font-weight: 600; color: var(--c-text); }
+.fr__alsuffix { font-style: normal; }
+.fr__meta { font-weight: 400; color: var(--c-text-label); }
+.fr__op { display: block; font-size: 12px; line-height: 18px; font-weight: 400; color: var(--c-text-faint); }
+/* 🔴 §21-36 — chỉ hiện khi ≤ 5 chỗ */
+.fr__seats { margin-left: auto; font-size: 12px; font-weight: 500; color: var(--c-error); white-space: nowrap; }
+
+/* ---------- HÀNG 2 · 36px ---------- */
+.fr__r2 { display: flex; align-items: center; gap: 16px; height: 36px; }
+.fr__t { text-align: left; white-space: nowrap; }
+.fr__t b { display: block; font-family: Manrope, Inter, sans-serif; font-size: 18px; line-height: 20px; font-weight: 600; color: var(--c-text); }
+.fr__t span { display: block; font-size: 13px; line-height: 15px; color: var(--c-text-label); }
+.fr__t--to { text-align: right; }
+.fr__mid { flex: 1; min-width: 0; text-align: center; }
+.fr__dur { display: block; font-size: 12px; line-height: 16px; color: var(--c-text-label); }
+/* 🔴 §9.4.3 — đường kẻ 1px, KHÔNG chấm tròn hai đầu, không kẻ 2px */
+.fr__line { display: block; height: 1px; background: var(--c-border); }
+.fr__price { text-align: right; white-space: nowrap; position: relative; margin-left: 8px; }
+.fr__amtbtn { display: inline-flex; align-items: center; gap: 2px; border: 0; background: none; padding: 0; cursor: pointer; color: var(--c-text); }
+.fr__amtbtn:hover { color: var(--c-primary); }
+.fr__amt { font-family: Manrope, Inter, sans-serif; font-size: 20px; line-height: 22px; font-weight: 700; }
+.fr__amtbtn:hover .fr__amt { color: var(--c-primary); }
+.fr__per { display: flex; align-items: center; justify-content: flex-end; gap: 2px; font-size: 12px; line-height: 14px; color: var(--c-text-faint); }
+
+/* ---------- HÀNG 3 · 20px ---------- */
+.fr__r3 { display: flex; align-items: center; gap: 12px; height: 20px; }
+.fr__attrs { flex: 1; min-width: 0; font-size: 13px; color: var(--c-text-secondary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; position: relative; }
+.fr__fare { border: 0; background: none; padding: 0; cursor: pointer; font-family: inherit;
+  font-size: 13px; font-weight: 500; color: var(--c-text); border-bottom: 1px dashed var(--c-checkbox-border); }
+.fr__fare:hover { color: var(--c-primary); border-bottom-color: var(--c-primary); }
+.u-bag { color: #108A00; }
+.u-norefund { color: var(--c-error); font-weight: 500; }
+.fr__cta { height: 36px; min-width: 96px; padding: 0 16px; flex: none; }
+.fr__chev { color: var(--c-text-faint); font-size: 16px; line-height: 1; flex: none;
+  display: inline-block; transition: transform .18s; }
+.fr.fr--open .fr__chev { transform: rotate(180deg); }
+
+/* §9.4.5 — ĐIỆN THOẠI: hai hàng, cao ~96px */
+@media (max-width: 767px) {
+  .fr__main { padding: 12px; }
+  .fr__logo { width: 28px; height: 28px; }
+  .fr__craft { display: none; }                 /* 🔴 ẩn tàu bay */
+  .fr__alsuffix { display: none; }              /* Vietravel Airlines → Vietravel */
+  .fr__cta { display: none; }                   /* 🔴 ẩn nút Chọn — chọn trong panel */
+  .fr__r2 { gap: 10px; }
+  .fr__t b { font-size: 16px; }
+  .fr__amt { font-size: 17px; }
+  .fr__attrs { white-space: normal; }
+}
+
+/* ===== (giữ để tham chiếu: các lớp .flight__panel, .fl-amen dùng ở panel chi tiết) =====
+   [MỚI 1] DÒNG CHUYẾN BAY — §9.4 · thành phần dùng nhiều nhất (5/7 màn)
+   padding dọc 24px · đường kẻ #E2E2EF · KHÔNG đổ bóng
+   ===================================================================== */
+.flight { background: #fff; border-bottom: 1px solid var(--c-border); }
+.flight__main { display: grid; grid-template-columns: 1fr 260px; }
+.flight__left { padding: 24px; min-width: 0; }
+.flight__right {
+  padding: 24px; border-left: 1px solid var(--c-border);
+  display: flex; flex-direction: column; align-items: flex-end; gap: 6px; text-align: right;
+}
+
+.airline { display: flex; align-items: center; gap: 12px; }
+.airline__logo { width: 48px; height: 48px; flex: none; border-radius: var(--r-base); display: grid; place-items: center; color: #fff; font-size: 13px; font-weight: 700; letter-spacing: .02em; }
+.airline__name { font-size: 16px; font-weight: 600; color: var(--c-text); }
+.airline__meta { font-size: 14px; font-weight: 400; color: var(--c-text-label); }
+
+/* Đường bay ● ─── ✈ ─── ● (§19.1) */
+.leg { display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: 16px; margin-top: 16px; }
+.leg__time  { font-family: Manrope, Inter, sans-serif; font-size: 18px; font-weight: 600; color: var(--c-text); white-space: nowrap; }
+.leg__code  { font-size: 14px; font-weight: 400; color: var(--c-text-secondary); }
+.leg__end   { display: flex; flex-direction: column; gap: 2px; }
+.leg__end--to { align-items: flex-end; text-align: right; }
+.leg__mid   { display: flex; flex-direction: column; align-items: center; gap: 2px; padding-top: 4px; }
+.leg__dur   { font-size: 14px; font-weight: 400; color: var(--c-text-label); }
+.leg__line  { position: relative; width: 100%; height: 14px; }
+.leg__line::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--c-border); }
+.leg__line .dot { position: absolute; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: var(--c-checkbox-border); }
+.leg__line .dot--a { left: 0; } .leg__line .dot--b { right: 0; }
+.leg__line .plane { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 0 4px; color: var(--c-primary); display: flex; }
+.leg__stops { font-size: 14px; font-weight: 400; color: var(--c-text-secondary); }
+
+/* §9.4.2 · RB30 — hãng KHAI THÁC khác hãng BÁN VÉ thì phải ghi rõ.
+   Tên và logo lấy theo hãng bán vé; dòng này đặt ngay dưới số hiệu và loại tàu bay.
+   🔴 §21-27: không được hiện "Pacific Airlines" thay cho "Vietnam Airlines". */
+.opnote { display: block; font-size: 13px; font-weight: 400; color: var(--c-text-label); }
+
+/* =====================================================================
+   §9.4.1 · RB29 — HUY HIỆU TRÊN DÒNG CHUYẾN BAY  [MỚI 16]
+   Cao 24px · bo 6px · padding 4/10 · chữ 13/600.
+   Nhóm A tối đa 1 · Nhóm B tối đa 3 · Nhóm C tối đa 1, luôn đứng cuối.
+   ===================================================================== */
+.bdg-row { margin-top: 10px; }
+.bdg {
+  display: inline-flex; align-items: center; height: 20px; border-radius: 4px;
+  padding: 0 8px; font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+.bdg--ok   { background: #E7F7EC; color: #108A00; }
+.bdg--info { background: #EAF2FF; color: var(--c-primary); }
+.bdg--warn { background: #FFF4E5; color: #B45309; }
+
+/* Nhóm B — nhãn thuộc tính: chỉ là dữ kiện, không phải huy hiệu quảng bá */
+.attr { font-size: 13px; font-weight: 400; color: var(--c-text-secondary); }
+.attr--ok   { color: #108A00; font-weight: 500; }
+.attr--warn { color: var(--c-error); font-weight: 500; font-size: 12px; }
+
+/* Nhóm C — chip xu. 🔴 Phần thưởng SAU chuyến bay: không dấu −, không chữ "giảm" (RB12) */
+.coinchip {
+  display: inline-flex; align-items: center; height: 20px; border-radius: 4px;
+  padding: 0 8px; font-size: 12px; font-weight: 600;
+  background: #FFF7E5; color: #B45309;
+}
+.coinchip--guest { background: var(--c-disabled-bg); color: var(--c-text-label); cursor: help; }
+
+/* =====================================================================
+   §9.9 — KHỨ HỒI CHỌN TUẦN TỰ  ·  [MỚI 14] thanh chỉ báo chặng
+   ===================================================================== */
+.legbar {
+  position: sticky; top: var(--h-header); z-index: 40;
+  display: flex; gap: 8px; background: var(--c-page);
+  padding: 12px 0; margin-bottom: 4px;
+}
+.legstep {
+  display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;
+  border: 1px solid var(--c-border); border-radius: var(--r-base); background: #fff;
+  padding: 10px 14px; cursor: pointer; text-align: left; font-family: inherit;
+}
+.legstep__m { width: 22px; height: 22px; flex: none; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+.legstep b { display: block; font-size: 14px; font-weight: 600; color: var(--c-text); }
+.legstep span span { display: block; font-size: 12px; color: var(--c-text-faint); }
+/* Đã chọn: dấu tích #20BA46 · Đang chọn: chấm đặc #0064FD · Chưa tới: vòng rỗng #9494A4 */
+.legstep--done .legstep__m { background: #E7F7EC; color: var(--c-success); }
+.legstep--now  { border-color: var(--c-primary); }
+.legstep--now  .legstep__m { background: var(--c-primary-lightest); color: var(--c-primary); }
+.legstep--todo { opacity: .7; }
+.legstep--todo .legstep__m { color: var(--c-text-faint); }
+
+/* Dòng thu gọn của chiều đã chọn — nền #F5F9FF, viền trái 3px #0064FD */
+.legpicked {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: #F5F9FF; border-left: 3px solid var(--c-primary);
+  border-radius: 0 var(--r-base) var(--r-base) 0; padding: 12px 16px; margin-bottom: 12px;
+}
+.legpicked__tick { color: var(--c-success); font-weight: 700; }
+.legpicked__b { flex: 1; min-width: 200px; font-size: 13px; }
+.legpicked__b b { display: block; font-size: 14px; color: var(--c-text); }
+.legpicked__b span { display: block; color: var(--c-text-secondary); }
+.legpicked__b i { font-style: normal; color: var(--c-text-faint); }
+
+/* Thanh dính đáy 76px — hiện từ khi chọn xong chặng đầu tiên */
+.tripbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 80;
+  height: var(--h-mobile-bar); background: #fff; border-top: 1px solid var(--c-border);
+  display: flex; align-items: center;
+}
+.tripbar__in { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.tripbar__n { font-size: 14px; font-weight: 600; }
+.tripbar__p { font-size: 14px; color: var(--c-text-secondary); }
+.tripbar__p b { font-family: Manrope, Inter, sans-serif; color: var(--c-text); }
+.has-tripbar { padding-bottom: calc(var(--h-mobile-bar) + 16px); }
+/* Trên điện thoại thanh chọn chặng thay chỗ thanh bộ lọc để không chồng nhau */
+@media (max-width: 1023px) {
+  .has-tripbar .mobilebar { display: none; }
+  .legbar { flex-direction: column; gap: 6px; }
+  .legstep { padding: 8px 12px; }
+}
+
+/* 🔴 Nhãn +1 khi hạ cánh hôm sau — BẮT BUỘC (§5.1 · §9.4-5) */
+.plus1 { font-size: 12px; font-weight: 500; color: var(--c-error); vertical-align: super; margin-left: 2px; }
+
+/* Khối hành lý — viền trái 1,5px #0064FD, thụt 12px (§9.4) */
+.fl-amen { margin-top: 16px; padding-left: 12px; border-left: 1.5px solid var(--c-primary); display: flex; flex-direction: column; gap: 4px; }
+.fl-amen__row { font-size: 14px; font-weight: 400; color: var(--c-text-secondary); display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.fl-amen__sep { color: var(--c-checkbox-border); }
+/* §16.3 — PHÂN BIỆT "không có" và "không biết". Hai trạng thái rỗng KHÁC NHAU. */
+.fl-amen__none    { color: var(--c-text-secondary); }                 /* Hãng thật sự không cho */
+.fl-amen__unknown { color: var(--c-text-faint); font-style: italic; } /* Hệ thống không có dữ liệu */
+.fl-amen__norefund{ font-size: 14px; font-weight: 500; color: var(--c-error); }
+/* §9.4-19 · RB16 — Tên hạng vé: dòng đầu trong khối viền trái, 14/500 #121314.
+   🔴 §21-1: KHÔNG cố định chiều rộng — tên dài ngắn rất khác nhau giữa các hãng. */
+.fare-name-line { font-size: 14px; font-weight: 500; color: var(--c-text); }
+
+/* Cảnh báo nối chuyến (§9.4-9, -10) — bắt buộc hiển thị */
+.fl-warn { font-size: 14px; font-weight: 500; color: var(--c-error); margin-top: 8px; }
+
+.seats-left { font-size: 12px; font-weight: 500; color: var(--c-text-secondary); }
+.seats-left--low { color: var(--c-error); }
+
+.flight__soldout { padding: 0 24px 20px; font-family: Manrope, Inter, sans-serif; font-size: 14px; font-weight: 500; color: var(--c-error); }
+.flight--soldout .flight__main { opacity: .55; }
+
+.flight__toggle {
+  width: 100%; border: 0; border-top: 1px solid var(--c-border); background: #fff;
+  padding: 12px 24px; text-align: left; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: var(--c-primary);
+  display: flex; align-items: center; gap: 6px;
+}
+.flight__toggle:hover { background: var(--c-accent-bg); }
+.flight__panel { border-top: 1px solid var(--c-border); background: var(--c-accent-bg); padding: 24px; }
+
+@media (max-width: 1023px) {
+  .flight { border: 1px solid var(--c-border); border-radius: var(--r-base); margin-bottom: 12px; }
+  .flight__main { grid-template-columns: 1fr; }
+  .flight__left { padding: 16px; }
+  .flight__right { padding: 16px; border-left: 0; border-top: 1px solid var(--c-border);
+    flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; text-align: left; }
+}
+
+/* =====================================================================
+   [DÙNG LẠI §4.1-5] TOOLTIP TÁCH CHI TIẾT GIÁ — §9.5 · rộng 240px
+   nền trắng · bo 6px · CÓ bóng · padding 12/16 · Manrope 12px
+   ===================================================================== */
+.pricepop { position: relative; display: inline-flex; }
+.fr__per .pricepop__btn { width: 16px; height: 16px; }
+.pricepop__btn {
+  width: 24px; height: 24px; border: 0; background: none; padding: 0; cursor: pointer;
+  color: var(--c-text-label); display: grid; place-items: center;
+}
+.pricepop__btn:hover { color: var(--c-primary); }
+.pricepop__panel {
+  position: absolute; right: 0; top: calc(100% + 10px); z-index: 40;
+  width: 240px; background: #fff; border-radius: var(--r-tooltip);
+  box-shadow: var(--shadow-tooltip); padding: 12px 16px;
+  font-family: Manrope, Inter, sans-serif; font-size: 12px; line-height: 1.5;
+  text-align: left; color: var(--c-text);
+}
+.pricepop__panel[hidden] { display: none; }
+.pricepop__panel::before {
+  content: ""; position: absolute; top: -4px; right: 8px; width: 8px; height: 8px;
+  background: #fff; transform: rotate(45deg);
+}
+.pp-title { font-weight: 500; }
+.pp-sub   { color: var(--c-text-faint); font-weight: 400; }
+.pp-hr    { border: 0; border-top: 1px solid var(--c-border); margin: 8px 0; }
+.pp-row   { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; }
+.pp-row--sub { color: var(--c-text-faint); padding-left: 10px; }
+.pp-row--total { font-weight: 600; }
+.pp-foot  { color: var(--c-text-faint); font-weight: 400; margin-top: 8px; font-size: 11px; line-height: 1.45; }
+
+/* =====================================================================
+   [MỚI 11] KHỐI XU — §5.4 · RB12
+   Không nằm trong khối tính tiền · không dấu trừ · luôn kèm "sau chuyến bay"
+   ===================================================================== */
+.coin { border-top: 1px solid var(--c-border); margin-top: 8px; padding-top: 10px; }
+.coin__title { font-size: 12px; font-weight: 500; color: var(--c-text); display: flex; align-items: center; gap: 6px; }
+.coin__meta  { font-size: 12px; font-weight: 400; color: var(--c-text-faint); }
+.coin__value { font-size: 12px; font-weight: 600; color: var(--c-text); text-align: right; }
+.coin--guest { font-size: 12px; color: var(--c-text-secondary); }
+
+/* =====================================================================
+   [MỚI 3] DẢI GIÁ 7 NGÀY LÂN CẬN — §9.7
+   ===================================================================== */
+.daystrip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.dayslot {
+  border: 1px solid var(--c-border); border-radius: var(--r-base); background: #fff;
+  padding: 10px 8px; text-align: center; cursor: pointer;
+}
+.dayslot:hover { border-color: var(--c-primary); }
+.dayslot__d { font-size: 12px; font-weight: 400; color: var(--c-text-secondary); }
+.dayslot__p { font-family: Manrope, Inter, sans-serif; font-size: 14px; font-weight: 600; color: var(--c-text); margin-top: 2px; }
+.dayslot--active { background: var(--c-primary-lightest); border-color: var(--c-primary-light); }
+.dayslot--active .dayslot__d, .dayslot--active .dayslot__p { color: var(--c-primary-dark); font-weight: 600; }
+
+@media (max-width: 1023px) {
+  .daystrip { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 4px; scrollbar-width: none; }
+  .daystrip::-webkit-scrollbar { display: none; }
+  .dayslot { flex: 0 0 84px; }
+}
+
+/* =====================================================================
+   [DÙNG LẠI §4.1-4] CỘT BỘ LỌC 320px — §9.6
+   ===================================================================== */
+.layout-results { display: grid; grid-template-columns: var(--w-filter) minmax(0, 1fr); gap: 16px; align-items: start; }
+/* Cột phải phải co được — nếu không, dải giá 7 ngày (flex, ô 84px) sẽ đẩy trang tràn ngang */
+.layout-results > *, .layout-checkout > * { min-width: 0; }
+.filters { background: #fff; border-radius: var(--r-base); position: sticky; top: var(--sticky-top); max-height: calc(100vh - 120px); overflow: auto; }
+.fgroup { padding: 16px; border-bottom: 1px solid var(--c-border); }
+.fgroup:last-child { border-bottom: 0; }
+.fgroup__title { font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.fgroup__list { display: flex; flex-direction: column; gap: 10px; }
+/* Nút "Lọc riêng" — mẫu tốt §9.6, cô lập đúng một tiêu chí */
+.only-btn {
+  opacity: 0; border: 1px solid var(--c-border); background: #fff; border-radius: 999px;
+  padding: 1px 8px; font-size: 11px; font-weight: 600; color: var(--c-primary); cursor: pointer;
+}
+.check:hover .only-btn, .only-btn:focus { opacity: 1; }
+
+/* =====================================================================
+   [MỚI 2] BẢNG HẠNG VÉ — §10.2 · cột cuối nền #F8FAFF
+   RB16: ô nhãn hạng vé PHẢI CO GIÃN — không có tên thương hiệu
+   ===================================================================== */
+.fare-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--c-primary-light); border-top: 0; }
+.fare-table thead th {
+  height: 48px; background: var(--c-primary-lightest); border-bottom: 1px solid var(--c-primary-light);
+  color: var(--c-primary-dark); font-size: 16px; font-weight: 600; text-align: left; padding: 0 16px; white-space: nowrap;
+}
+.fare-table tbody td { padding: 16px; border-bottom: 1px solid var(--c-border); vertical-align: top; font-size: 14px; }
+.fare-table tbody tr:last-child td { border-bottom: 0; }
+/* 🔴 §21-1: KHÔNG cố định chiều rộng. `min-width` chỉ là sàn để bảng không bị bóp;
+   ô vẫn nở theo tên dài nhất (~28 ký tự: "Phổ thông đặc biệt linh hoạt (D)"). */
+.fare-table td.fare-name { font-weight: 600; font-size: 14px; min-width: 180px; width: auto; }
+/* Dòng mô tả thuộc tính — chỉ hiện khi bảng ánh xạ thiếu tên (§10.3) */
+.fare-name__attrs { display: block; margin-top: 4px; font-size: 12px; font-weight: 400; color: var(--c-text-faint); }
+.fare-table td.fare-price { background: var(--c-accent-bg); width: 200px; }
+.fare-table thead th.fare-price { background: var(--c-primary-lightest); }
+.fare-soldout { color: var(--c-error); font-weight: 500; font-size: 14px; }
+
+@media (max-width: 1023px) {
+  /* §10.2 — trên điện thoại bảng biến thành THẺ DỌC */
+  .fare-table, .fare-table tbody, .fare-table tr, .fare-table td { display: block; width: 100%; }
+  .fare-table thead { display: none; }
+  .fare-table tbody tr { border: 1px solid var(--c-border); border-radius: var(--r-base); margin-bottom: 12px; }
+  .fare-table tbody td { border-bottom: 1px solid var(--c-border); }
+  .fare-table tbody td::before { content: attr(data-th); display: block; font-size: 12px; color: var(--c-text-faint); margin-bottom: 4px; }
+  .fare-table td.fare-price { width: auto; }
+}
+
+/* Hành trình chi tiết (§10.2) */
+.itin { display: grid; grid-template-columns: 64px 1fr auto; gap: 4px 16px; padding: 16px 0; }
+.itin__t { font-family: Manrope, Inter, sans-serif; font-size: 16px; font-weight: 600; }
+.itin__rail { grid-column: 1; justify-self: center; width: 1px; background: var(--c-border); }
+.itin__mid { font-size: 14px; color: var(--c-text-label); padding: 6px 0; }
+.itin__date { font-size: 14px; color: var(--c-text-secondary); }
+
+/* Khối điều kiện vé — RB18: văn bản TỰ DO, chiều cao thay đổi.
+   🔴 KHÔNG thiết kế thành bảng có ô cố định. */
+.freetext { font-size: 14px; line-height: 1.6; color: var(--c-text-secondary); }
+.freetext p { margin: 0 0 8px; }
+
+/* =====================================================================
+   §10.4.3 · RB26 — BỘ CHỌN HẠNG VÉ NGAY TRÊN DÒNG KẾT QUẢ
+   Đổi hạng = 0 lượt gọi; toàn bộ dữ liệu hạng vé đã có trong kết quả tìm kiếm.
+   ===================================================================== */
+.farepick { position: relative; display: flex; align-items: center; gap: 2px; }
+.farepick__btn {
+  display: inline-flex; align-items: center; gap: 4px; border: 0; background: none;
+  padding: 0; cursor: pointer; color: var(--c-text); border-radius: var(--r-tooltip);
+}
+.farepick__btn:hover { color: var(--c-primary); }
+.farepick__btn:hover .price { color: var(--c-primary); }
+.farelist {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 45; width: 288px;
+  background: #fff; border-radius: var(--r-base); box-shadow: var(--shadow-dialog); overflow: hidden;
+  text-align: left;
+}
+.fareopt {
+  display: flex; gap: 12px; width: 100%; padding: 12px 14px; border: 0; background: none;
+  cursor: pointer; text-align: left; border-bottom: 1px solid var(--c-border); font-family: inherit;
+}
+.fareopt:last-child { border-bottom: 0; }
+.fareopt:hover { background: var(--c-page); }
+/* Dòng đang chọn: nền #EAF2FF, chữ #0064FD */
+.fareopt--on { background: #EAF2FF; }
+.fareopt--on .fareopt__l b, .fareopt--on .fareopt__r b { color: var(--c-primary); }
+.fareopt__l { flex: 1; min-width: 0; }
+.fareopt__l b { display: block; font-size: 14px; font-weight: 500; color: var(--c-text); }
+.fareopt__l span { font-size: 12px; font-weight: 400; color: var(--c-text-faint); }
+.fareopt__r { text-align: right; white-space: nowrap; }
+.fareopt__r b { display: block; font-family: Manrope, Inter, sans-serif; font-size: 14px; font-weight: 600; color: var(--c-text); }
+.fareopt__r span { font-size: 12px; font-weight: 400; color: var(--c-text-faint); }
+
+/* §10.4.4 — Bảng nổi "Thông tin hạng vé". Nguồn: kết quả tìm kiếm → 0 lượt gọi. */
+.amen { position: static; }
+.amen__btn { display: flex; gap: 6px; border: 0; background: none; padding: 4px 0; cursor: pointer; font-size: 15px; }
+.amen__btn:hover { opacity: .7; }
+.amen__pop {
+  position: absolute; left: 0; top: calc(100% + 8px); z-index: 45; width: 268px;
+  background: #fff; border-radius: var(--r-base); box-shadow: var(--shadow-tooltip);
+  padding: 14px 16px; text-align: left;
+}
+.amen__head { display: flex; align-items: center; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+.amen__sec { font-size: 13px; font-weight: 600; color: var(--c-text-label); margin: 10px 0 6px; }
+.amen__box { border: 1px solid var(--c-border); border-radius: var(--r-tooltip); padding: 8px 10px; font-size: 13px; margin-bottom: 6px; }
+.amen__box--err { color: var(--c-error); border-color: #FFD3D4; }
+/* 🔴 Câu miễn trừ BẮT BUỘC có — đây là dữ liệu tóm tắt, không phải điều kiện vé chính thức */
+.amen__note { font-size: 12px; font-weight: 400; color: var(--c-error); line-height: 1.45; margin: 10px 0 12px; }
+
+/* §10.4.5 · RB25 — Liên kết Điều kiện vé của TỪNG hạng vé, trong ô tên hạng */
+.condlink {
+  display: inline-flex; align-items: center; gap: 4px; margin-top: 6px;
+  border: 0; background: none; padding: 6px 0; cursor: pointer; font-family: inherit;
+  font-size: 13px; font-weight: 500; color: var(--c-primary); min-height: 44px;
+}
+.condlink:hover { text-decoration: underline; }
+/* Đã xem rồi → khách biết hạng nào mình đã đọc */
+.condlink--seen { color: var(--c-text-secondary); }
+/* Hạng ĐANG CHỌN là dòng đầu bảng, viền trái 3px */
+.fare-table tbody tr.fare-row--on td:first-child { box-shadow: inset 3px 0 0 var(--c-primary); }
+
+.cond-leg {
+  font-size: 13px; font-weight: 600; color: var(--c-primary-dark);
+  background: var(--c-primary-lightest); border: 1px solid var(--c-primary-light);
+  border-radius: var(--r-tooltip); padding: 6px 10px; margin: 0 0 10px;
+}
+.cond-leg ~ .cond-leg { margin-top: 16px; }
+
+@media (max-width: 1023px) {
+  /* §10.4.3 — trên điện thoại danh sách hạng vé là TẤM TRƯỢT TỪ ĐÁY, không phải thả xuống */
+  .farelist {
+    position: fixed; inset: auto 0 0 0; width: auto; top: auto; z-index: 120;
+    border-radius: var(--r-surface) var(--r-surface) 0 0; max-height: 70vh; overflow: auto;
+  }
+  .amen__pop { position: fixed; inset: auto 0 0 0; width: auto; top: auto; z-index: 120;
+    border-radius: var(--r-surface) var(--r-surface) 0 0; max-height: 80vh; overflow: auto; }
+}
+
+/* =====================================================================
+   KHUNG XƯƠNG — §15 trạng thái đang tải
+   ===================================================================== */
+.skel { background: linear-gradient(90deg, #EFEFF4 25%, #F7F7FA 37%, #EFEFF4 63%); background-size: 400% 100%; animation: skel 1.4s ease infinite; border-radius: 4px; }
+@keyframes skel { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+.skel--line { height: 12px; margin-bottom: 8px; }
+.skel--title { height: 18px; width: 40%; margin-bottom: 12px; }
+
+/* =====================================================================
+   [DÙNG LẠI §4.1-15] TRẠNG THÁI RỖNG — §16.1 tiêu đề + dòng phụ + nút
+   ===================================================================== */
+.empty { text-align: center; padding: 56px 24px; background: #fff; border-radius: var(--r-base); }
+.empty__art { width: 96px; height: 96px; margin: 0 auto 16px; border-radius: 50%; background: var(--c-page); display: grid; place-items: center; color: var(--c-text-faint); }
+.empty__title { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.empty__sub { font-size: 14px; color: var(--c-text-label); margin-bottom: 20px; }
+
+/* =====================================================================
+   HỘP TÌM KIẾM — §8.4 · bo 16px · CÓ bóng (một trong 4 ngoại lệ RB4)
+   ===================================================================== */
+.searchbox { background: #fff; border-radius: var(--r-surface); box-shadow: var(--shadow-search); padding: 13px 20px; }
+.searchbox__grid { display: grid; grid-template-columns: 1fr 1fr 1.15fr .85fr auto; gap: 16px; align-items: end; }
+.searchbox__label { font-size: 14px; font-weight: 600; color: var(--c-text-label); margin-bottom: 9px; display: block; }
+.sfield {
+  height: var(--h-input-search); border: 1px solid var(--c-border); border-radius: var(--r-base);
+  background: #fff; display: flex; align-items: center; gap: 10px; padding: 0 14px; cursor: pointer; width: 100%; text-align: left;
+  font-family: Manrope, Inter, sans-serif; font-size: 15px; color: var(--c-text); min-width: 0;
+}
+.sfield:hover { border-color: var(--c-text-faint); }
+.sfield--open { border-color: var(--c-text); }
+.sfield__val { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sfield__sub { color: var(--c-text-label); font-weight: 400; font-size: 13px; }
+.sfield--ph .sfield__val { color: var(--c-text-label); font-weight: 400; }
+
+.swap-wrap { position: relative; }
+.swap {
+  position: absolute; z-index: 5; top: 50%; right: -22px; transform: translateY(-50%);
+  width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--c-border);
+  background: #fff; display: grid; place-items: center; cursor: pointer; color: var(--c-text-label);
+}
+.swap:hover { border-color: var(--c-primary); color: var(--c-primary); }
+
+.triptype { display: flex; gap: 20px; margin-bottom: 12px; }
+.triptype .check { color: #fff; font-weight: 600; }
+.triptype--onlight .check { color: var(--c-text); }
+
+/* 🔴 Khung neo của các panel = HÀNG Ô NHẬP, không phải cả hộp tìm kiếm.
+   Neo vào hộp thì panel rơi xuống dưới cả hàng bộ lọc — xa ô vừa bấm. */
+.searchbox__row { position: relative; }
+.field-anchor { position: relative; min-width: 0; }
+
+/* §8.3 — Chỉ bay thẳng · Hạng ghế · Hãng bay nằm CÙNG MỘT HÀNG */
+.searchbox__extra { display: flex; align-items: center; gap: 16px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--c-border); flex-wrap: wrap; }
+/* `.select` và `.sfield` mặc định width:100% — trong hàng ngang phải khoá lại,
+   nếu không mỗi điều khiển chiếm trọn một dòng. */
+.searchbox__extra > .select { flex: none; width: 190px; }
+.searchbox__extra > .check  { flex: none; }
+.searchbox__extra > .field-anchor { flex: none; width: 200px; }
+.sfield--compact { height: var(--h-select); font-size: 14px; font-weight: 600; }
+
+/* §8.5-9 — Hãng bay: popover CHỌN NHIỀU, danh sách lấy từ hệ thống */
+.airlinepop {
+  position: absolute; z-index: 50; left: 0; top: calc(100% + 8px); width: 320px;
+  background: #fff; border-radius: var(--r-surface); box-shadow: var(--shadow-dialog); overflow: hidden;
+}
+.airlinepop__list { max-height: 300px; overflow: auto; padding: 8px 0; }
+.airlinepop__list .check { padding: 10px 16px; }
+.airlinepop__list .check:hover { background: var(--c-page); }
+.airlinepop__foot { border-top: 1px solid var(--c-border); padding: 12px 16px; display: flex; gap: 8px; }
+
+/* §8.11 — Biến thể nhiều chặng: mỗi chặng MỘT HÀNG xếp dọc */
+.legrows { display: flex; flex-direction: column; gap: 12px; }
+.legrow { position: relative; display: grid; grid-template-columns: 28px 1fr 1fr 1.1fr auto; gap: 16px; align-items: end; }
+.legrow__n {
+  width: 24px; height: 24px; border-radius: 50%; align-self: center; margin-bottom: 12px;
+  background: var(--c-primary-lightest); color: var(--c-primary-dark);
+  display: grid; place-items: center; font-size: 12px; font-weight: 700;
+}
+.legrow__del { align-self: center; margin-bottom: 6px; }
+.legrows__foot { display: flex; align-items: center; gap: 16px; margin-top: 14px; }
+@media (max-width: 1023px) {
+  .legrow { grid-template-columns: 1fr; gap: 0; border: 1px solid var(--c-border); border-radius: var(--r-base); padding: 12px; }
+  .legrow .sfield { border-radius: var(--r-base); margin-top: 8px; }
+  .legrow__n { margin: 0 0 4px; }
+  .legrow__del { position: absolute; top: 8px; right: 8px; margin: 0; }
+  .sfield--compact { width: 100%; }
+}
+
+@media (max-width: 1023px) {
+  .searchbox { padding: 16px; }
+  .searchbox__grid { grid-template-columns: 1fr; gap: 0; }
+  .searchbox__grid .sfield { border-radius: 0; margin-top: -1px; }
+  .searchbox__grid > *:first-child .sfield { border-radius: var(--r-base) var(--r-base) 0 0; margin-top: 0; }
+  .searchbox__grid > *:nth-last-child(2) .sfield { border-radius: 0 0 var(--r-base) var(--r-base); }
+  .searchbox__label { display: none; }
+  .swap { right: 10px; }
+}
+
+/* Bộ chọn sân bay [MỚI 7] — §8.6 · điện thoại bung toàn màn hình */
+.picker { position: absolute; z-index: 50; left: 0; right: 0; top: calc(100% + 8px); background: #fff; border-radius: var(--r-surface); box-shadow: var(--shadow-dialog); overflow: hidden; }
+.picker__head { height: 70px; display: flex; align-items: center; gap: 12px; padding: 0 20px; border-bottom: 1px solid var(--c-border); }
+.picker__tabs { display: flex; gap: 6px; padding: 12px 20px; overflow-x: auto; border-bottom: 1px solid var(--c-border); scrollbar-width: none; }
+.picker__tabs::-webkit-scrollbar { display: none; }
+.ptab { border: 1px solid var(--c-border); background: #fff; border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 600; color: var(--c-text-label); cursor: pointer; white-space: nowrap; }
+.ptab--active { background: var(--c-primary-lightest); border-color: var(--c-primary-light); color: var(--c-primary-dark); }
+.picker__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 16px 20px 20px; max-height: 340px; overflow: auto; }
+.pcity { display: flex; gap: 10px; align-items: flex-start; min-height: 53px; padding: 8px 10px; border: 1px solid transparent; border-radius: var(--r-base); cursor: pointer; background: #fff; text-align: left; }
+.pcity:hover { background: var(--c-page); }
+.pcity__code { flex: none; background: var(--c-primary-lightest); color: var(--c-primary-dark); border-radius: var(--r-tooltip); font-size: 11px; font-weight: 700; padding: 3px 6px; }
+.pcity__city { font-size: 14px; font-weight: 600; }
+.pcity__ap { font-size: 12px; color: var(--c-text-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* [DÙNG LẠI §4.1-2] LỊCH — §8.7 · hai tháng cạnh nhau · CÓ GIÁ trong ô ngày */
+.calendar { position: absolute; z-index: 50; left: 0; top: calc(100% + 8px); background: #fff; border-radius: var(--r-surface); box-shadow: var(--shadow-dialog); padding: 20px; }
+.cal-months { display: flex; gap: 32px; }
+.cal-month { width: 300px; }
+.cal-month__title { text-align: center; font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-dow { text-align: center; font-size: 12px; font-weight: 600; color: var(--c-text-label); padding-bottom: 6px; }
+.cal-dow--sun { color: var(--c-error); }
+.cal-day { border: 1px solid transparent; border-radius: var(--r-tooltip); background: none; cursor: pointer; padding: 4px 0 5px; text-align: center; }
+.cal-day:hover:not(:disabled) { background: var(--c-page); }
+.cal-day__n { font-size: 14px; font-weight: 500; }
+.cal-day__p { font-size: 10px; color: var(--c-text-secondary); display: block; line-height: 1.2; }
+.cal-day:disabled { opacity: .32; cursor: not-allowed; }
+.cal-day--sun .cal-day__n { color: var(--c-error); }
+.cal-day--sel { background: var(--c-primary); }
+.cal-day--sel .cal-day__n, .cal-day--sel .cal-day__p { color: #fff; }
+.cal-day--in { background: var(--c-primary-lightest); }
+.cal-nav { display: flex; justify-content: space-between; margin-bottom: 4px; }
+
+/* [DÙNG LẠI §4.1-3] POPOVER SỐ KHÁCH — §8.8 */
+.pax { position: absolute; z-index: 50; right: 0; top: calc(100% + 8px); width: 340px; background: #fff; border-radius: var(--r-surface); box-shadow: var(--shadow-dialog); overflow: hidden; }
+.pax__note { padding: 14px 16px; font-size: 12px; color: var(--c-text-faint); border-bottom: 1px solid var(--c-border); display: flex; gap: 10px; }
+.pax__row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--c-border); }
+.pax__label { flex: 1; }
+.pax__label b { display: block; font-size: 16px; font-weight: 500; }
+.pax__label span { font-size: 12px; color: var(--c-text-faint); }
+.stepper { display: flex; align-items: center; gap: 14px; }
+.stepper button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--c-border); background: #fff; cursor: pointer; font-size: 18px; line-height: 1; color: var(--c-text); }
+.stepper button:hover:not(:disabled) { border-color: var(--c-primary); color: var(--c-primary); }
+.stepper button:disabled { background: var(--c-disabled-bg); color: var(--c-text-faint); cursor: not-allowed; border-color: var(--c-border); }
+.stepper output { min-width: 18px; text-align: center; font-weight: 600; }
+.pax__limit { padding: 0 16px 12px; font-size: 12px; color: var(--c-error); }
+.pax__foot { padding: 16px; }
+
+/* Lịch neo vào ô Ngày: mép phải trùng mép phải ô, nở sang trái (không tràn màn hình) */
+@media (min-width: 1024px) { .calendar--anchor-right { left: auto; right: 0; } }
+
+/* §8.6 · §8.7 — TRÊN ĐIỆN THOẠI: bộ chọn sân bay, lịch và bộ đếm khách
+   bung toàn màn hình, TRƯỢT TỪ DƯỚI LÊN (tấm trượt), không phải popover neo. */
+@media (max-width: 1023px) {
+  .picker, .calendar, .pax {
+    position: fixed; inset: auto 0 0 0; top: auto; width: auto;
+    max-height: 88vh; overflow: auto; z-index: 120;
+    border-radius: var(--r-surface) var(--r-surface) 0 0;
+    animation: sheetup .22s ease-out;
+  }
+  .picker__grid { grid-template-columns: 1fr; max-height: none; }
+  .cal-months { flex-direction: column; gap: 20px; }
+  .cal-month { width: 100%; }
+}
+@keyframes sheetup { from { transform: translateY(16px); opacity: .6; } to { transform: none; opacity: 1; } }
+
+/* =====================================================================
+   M4 — KHỐI GẤP MỞ (§11.1) · mặc định MỞ HẾT · RB2 KHÔNG thanh tiến trình
+   ===================================================================== */
+.layout-checkout { display: grid; grid-template-columns: minmax(0, 1fr) var(--w-summary); gap: 24px; align-items: start; }
+.acc { background: #fff; border-bottom: 1px solid var(--c-border); }
+.acc:first-of-type { border-radius: var(--r-base) var(--r-base) 0 0; }
+.acc:last-of-type  { border-radius: 0 0 var(--r-base) var(--r-base); border-bottom: 0; }
+.acc__head { width: 100%; border: 0; background: none; padding: 20px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; text-align: left; }
+.acc__title { font-size: 18px; font-weight: 600; }
+.acc__sub { font-size: 14px; font-weight: 400; color: var(--c-text-label); display: block; margin-top: 2px; }
+.acc__chev { margin-left: auto; color: var(--c-text-label); transition: transform .2s; }
+.acc[data-open="false"] .acc__chev { transform: rotate(180deg); }
+.acc[data-open="false"] .acc__body { display: none; }
+.acc__body { padding: 0 24px 24px; }
+
+/* [MỚI 6] Khối nhập một hành khách — §11.4 · RB28
+   🔴 LƯỚI BA CỘT, ba hàng. Mọi ô CÙNG CHIỀU RỘNG, khoảng cách 16px ngang · 20px dọc.
+   §21-23: KHÔNG lồng khối gấp mở bên trong thẻ — thẻ đã là một khối rồi. */
+.paxcard { border: 1px solid var(--c-border); border-radius: var(--r-base); padding: 20px; margin-bottom: 16px; }
+.paxcard__head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.paxcard__head b { font-size: 16px; font-weight: 600; }
+.paxgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 16px; }
+/* 🔴 MỘT dòng ghi chú duy nhất ở cuối thẻ — gộp cảnh báo tên và hạn hộ chiếu.
+   Không rải ghi chú giữa các hàng. */
+.paxnote { margin: 16px 0 0; font-size: 13px; line-height: 1.5; color: var(--c-info); }
+
+/* =====================================================================
+   §11.4.2 · RB31 — BẢNG HƯỚNG DẪN NHẬP HỌ VÀ TÊN  [MỚI 17]
+   🔴 Nền TỐI, mờ — tách hẳn khỏi biểu mẫu nền trắng. Không bao giờ tự mở.
+   ===================================================================== */
+.nameguide { position: relative; margin-top: -8px; }
+.nameguide__link {
+  border: 0; background: none; padding: 4px 0; cursor: pointer; font-family: inherit;
+  font-size: 14px; font-weight: 500; color: var(--c-info); text-decoration: underline;
+}
+.nameguide [data-namehint] { display: block; font-size: 12px; margin-top: 2px; }
+.nameguide__pop {
+  position: absolute; z-index: 60; left: 0; top: calc(100% + 10px); width: 420px;
+  background: rgba(18, 19, 20, .92); color: #fff; border-radius: var(--r-base);
+  padding: 20px; box-shadow: var(--shadow-dialog);
+}
+/* Mũi nhọn 8px trỏ về liên kết */
+.nameguide__pop::before {
+  content: ""; position: absolute; top: -4px; left: 24px; width: 8px; height: 8px;
+  background: rgba(18, 19, 20, .92); transform: rotate(45deg);
+}
+.nameguide__x { position: absolute; top: 10px; right: 10px; border: 0; background: none; color: #9494A4; cursor: pointer; font-size: 14px; }
+.nameguide__list { margin: 0; padding-left: 18px; font-size: 14px; font-weight: 400; line-height: 1.6; }
+.nameguide__list li { margin-bottom: 4px; }
+.nameguide__label { font-size: 13px; color: #9FB3C8; margin: 16px 0 8px; }
+.nameguide__cols { display: grid; grid-template-columns: 200px 1fr; gap: 16px; align-items: center; }
+.nameguide__pp { width: 200px; height: auto; }
+.nameguide__k { font-size: 12px; color: #9FB3C8; }
+.nameguide__v { font-size: 15px; font-weight: 700; font-family: Manrope, monospace; letter-spacing: .04em; }
+.nameguide__map hr { border: 0; border-top: 1px solid rgba(255,255,255,.18); margin: 10px 0; }
+@media (max-width: 767px) {
+  /* Điện thoại: tấm trượt từ đáy, ảnh xếp trên, cặp nhãn–giá trị xếp dưới */
+  .nameguide__pop { position: fixed; inset: auto 0 0 0; width: auto; top: auto;
+    border-radius: var(--r-surface) var(--r-surface) 0 0; max-height: 85vh; overflow: auto; }
+  .nameguide__pop::before { display: none; }
+  .nameguide__cols { grid-template-columns: 1fr; }
+  .nameguide__pp { width: 100%; max-width: 260px; }
+}
+
+/* §11.4.2 — thẻ hội viên nhiều hãng: hộp chọn GẮN LIỀN ô số thẻ, một ô ghép */
+.joined { display: flex; }
+.joined__sel { width: 84px; flex: none; border-radius: var(--r-base) 0 0 var(--r-base); border-right: 0; padding-right: 26px; background-position: right 8px center; height: var(--h-input); }
+.joined__inp { border-radius: 0 var(--r-base) var(--r-base) 0; }
+
+/* §11.3 · RB27 — giá từng chặng + hai dòng cộng dồn */
+.legprice { font-family: Manrope, Inter, sans-serif; font-size: 14px; font-weight: 600; color: var(--c-text); }
+.legsum { border-top: 1px solid var(--c-border); margin-top: 4px; padding-top: 12px; }
+.legsum__row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 600; color: var(--c-text-secondary); padding: 2px 0; }
+.legsum__row b { font-family: Manrope, Inter, sans-serif; color: var(--c-text); }
+.legsum__row--x { font-weight: 400; }
+.legsum__row--x span:last-child { font-family: Manrope, Inter, sans-serif; }
+
+@media (max-width: 767px) { .paxgrid { grid-template-columns: 1fr; gap: 16px; } }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid--3 { grid-template-columns: 140px 1fr 1fr; }
+.form-grid--full { grid-template-columns: 1fr; }
+@media (max-width: 767px) { .form-grid, .form-grid--3 { grid-template-columns: 1fr; } }
+
+.disclosure { border-top: 1px solid var(--c-border); margin-top: 16px; padding-top: 12px; }
+.disclosure__btn { border: 0; background: none; padding: 0; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--c-text); display: flex; align-items: center; gap: 8px; }
+.disclosure__btn small { font-weight: 400; color: var(--c-text-faint); }
+.disclosure__body { padding-top: 16px; }
+.disclosure[data-open="false"] .disclosure__body { display: none; }
+
+/* [MỚI 4] Đồng hồ giữ chỗ — §11.9 */
+.holdbar { border-radius: var(--r-base); padding: 12px 16px; margin-bottom: 16px; background: var(--c-primary-lightest); color: var(--c-primary-dark); }
+.holdbar__top { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.holdbar__bar { height: 6px; border-radius: 3px; background: rgba(8, 77, 197, .18); margin-top: 8px; overflow: hidden; }
+.holdbar__fill { height: 100%; background: currentColor; border-radius: 3px; transition: width 1s linear; }
+.holdbar__left { margin-left: auto; font-variant-numeric: tabular-nums; }
+.holdbar--warn  { background: #FFF6DA; color: #7A5800; }
+.holdbar--danger{ background: #FFECEC; color: var(--c-error); }
+
+/* =====================================================================
+   §11.5 — DỊCH VỤ THÊM · trạng thái ban đầu và ba "công tắc" gọi dữ liệu
+   🔴 RB19: khối MỞ SẴN nhưng CHƯA GỌI GÌ. Chi phí kỹ thuật = 0 cho tới
+   khi khách bấm đúng nút của loại dịch vụ đó.
+   ===================================================================== */
+.included { background: var(--c-accent-bg); border: 1px solid var(--c-border); border-radius: var(--r-base); padding: 14px 16px; margin-bottom: 20px; }
+.included__row { display: flex; gap: 16px; align-items: baseline; font-size: 14px; padding: 3px 0; flex-wrap: wrap; }
+.included__dir { font-weight: 600; min-width: 168px; }
+
+.svc-switch { border-top: 1px solid var(--c-border); }
+.svc-switch:last-of-type { border-bottom: 1px solid var(--c-border); }
+.svc-switch__head { display: flex; align-items: center; gap: 12px; padding: 16px 0; }
+.svc-switch__icon { font-size: 20px; width: 24px; text-align: center; flex: none; }
+.svc-switch__t { flex: 1; min-width: 0; font-size: 14px; }
+.svc-switch__t b { font-size: 16px; font-weight: 600; display: block; }
+.svc-switch__sub { font-size: 14px; font-weight: 400; color: var(--c-text-faint); }
+/* §11.5.6 — dòng tóm tắt sau khi chọn xong; nút "Sửa" KHÔNG gọi lại dữ liệu */
+.svc-switch__sum { text-align: right; font-size: 14px; }
+.svc-switch__sum b { font-family: Manrope, Inter, sans-serif; font-weight: 600; display: block; color: var(--c-text); }
+.svc-switch__sum span { font-size: 12px; color: var(--c-text-faint); }
+.svc-switch__body { padding: 0 0 20px; }
+
+/* [MỚI 12] Ma trận hành khách × chiều bay — §11.5.3 · RB20 */
+.dirtabs { display: flex; gap: 24px; border-bottom: 1px solid var(--c-border); padding: 0 24px; }
+.dirtab {
+  border: 0; background: none; cursor: pointer; padding: 12px 0;
+  font-size: 14px; font-weight: 600; color: var(--c-text-label);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.dirtab--active { color: var(--c-primary); border-bottom-color: var(--c-primary); }
+.svc-switch__body .dirtabs { padding: 0; margin-bottom: 16px; }
+
+.paxmatrix { width: 100%; border-collapse: collapse; font-size: 14px; }
+.paxmatrix th { text-align: left; font-size: 12px; font-weight: 600; color: var(--c-text-label); padding: 0 12px 8px 0; }
+.paxmatrix th:last-child, .paxmatrix td:last-child { padding-right: 0; width: 260px; }
+.paxmatrix td { padding: 12px 12px 12px 0; border-top: 1px solid var(--c-border); vertical-align: middle; }
+.paxcell { display: flex; align-items: center; gap: 10px; }
+.paxnum {
+  width: 24px; height: 24px; flex: none; border-radius: 50%;
+  background: var(--c-primary-lightest); color: var(--c-primary-dark);
+  display: grid; place-items: center; font-size: 12px; font-weight: 700;
+}
+.paxcell__n { font-weight: 600; }
+.paxcell__t { font-size: 12px; font-weight: 400; color: var(--c-text-faint); }
+.paxmatrix .u-na { font-size: 12px; color: var(--c-text-faint); margin-top: 4px; display: block; }
+.matrix-total { display: flex; justify-content: space-between; padding-top: 14px; font-size: 14px; font-weight: 600; }
+.matrix-svcline { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.matrix-svcline:last-child { margin-bottom: 0; }
+.matrix-svcline__l { flex: 1; font-size: 14px; }
+
+/* [MỚI 13] Dãy thẻ chọn hành khách trong sơ đồ ghế — §11.5.5 */
+.paxchips { display: flex; gap: 10px; flex-wrap: wrap; }
+.paxchip {
+  border: 2px solid var(--c-border); border-radius: var(--r-base); background: #fff;
+  padding: 10px 14px; min-width: 150px; text-align: left; cursor: pointer; font-size: 13px;
+}
+.paxchip:hover:not(:disabled) { border-color: var(--c-text-faint); }
+.paxchip--active { border-color: var(--c-primary); }
+.paxchip:disabled { background: var(--c-disabled-bg); color: var(--c-text-faint); cursor: not-allowed; }
+.paxchip__n { display: block; font-weight: 600; color: var(--c-text); }
+.paxchip:disabled .paxchip__n { color: var(--c-text-faint); }
+.paxchip__s { display: block; font-size: 12px; color: var(--c-text-faint); margin-top: 2px; }
+.paxchip--active .paxchip__s { color: var(--c-primary); font-weight: 600; }
+
+/* Chỉ dùng khi trình bày prototype — chứng minh RB19 (§11.6.2) */
+.callmeter {
+  margin: 16px 0 0; padding: 8px 12px; border: 1px dashed var(--c-checkbox-border);
+  border-radius: var(--r-base); font-size: 12px; color: var(--c-text-faint); background: var(--c-page);
+}
+
+@media (max-width: 767px) {
+  .paxmatrix, .paxmatrix tbody, .paxmatrix tr, .paxmatrix td { display: block; width: 100%; }
+  .paxmatrix thead { display: none; }
+  .paxmatrix tr { border-top: 1px solid var(--c-border); padding: 12px 0; }
+  .paxmatrix td { border-top: 0; padding: 4px 0; }
+  .paxmatrix th:last-child, .paxmatrix td:last-child { width: auto; }
+  .svc-switch__head { flex-wrap: wrap; }
+  .svc-switch__head .btn { width: 100%; }
+  .included__dir { min-width: 0; width: 100%; }
+}
+
+/* =====================================================================
+   [DÙNG LẠI §4.1-8] CỘT TÓM TẮT KIỂU VÉ XÉ 286px — §11.8 · RB3
+   Hai thẻ trắng bo 8 + đường ĐỨT NÉT + hai hình tròn 20px màu nền trang
+   ===================================================================== */
+.summary { position: sticky; top: var(--sticky-top); width: var(--w-summary); }
+.summary-card { background: #fff; border-radius: var(--r-base); padding: 24px; }
+.summary-card--top { border-radius: var(--r-base) var(--r-base) 0 0; }
+.summary-card--bot { border-radius: 0 0 var(--r-base) var(--r-base); }
+.summary-tear { position: relative; height: 20px; background: #fff; }
+.summary-tear::before {
+  content: ""; position: absolute; top: 50%; left: 16px; right: 16px; height: 0;
+  border-top: 1px dashed var(--c-checkbox-border);
+}
+.summary-tear__c { position: absolute; top: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--c-page); }
+.summary-tear__c--l { left: -10px; }
+.summary-tear__c--r { right: -10px; }
+
+.sum-row { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 14px; }
+.sum-row__k { color: var(--c-text-secondary); font-weight: 400; }
+.sum-row__v { color: var(--c-text); font-weight: 500; font-family: Manrope, Inter, sans-serif; }
+.sum-total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.sum-total__k { font-size: 14px; font-weight: 600; color: var(--c-text-secondary); }
+.sum-total__v { font-size: 16px; font-weight: 600; color: var(--c-text); font-family: Manrope, Inter, sans-serif; }
+.sum-note { text-align: right; font-size: 12px; font-weight: 400; color: var(--c-text-faint); margin-top: 2px; }
+
+/* RB22 · §11.8 — nhóm "Dịch vụ thêm": tiêu đề nhóm 14/600, ba dòng con thụt 12px */
+.sum-group__t { font-size: 14px; font-weight: 600; color: var(--c-text-secondary); padding: 2px 0 4px; }
+.sum-sub {
+  display: flex; justify-content: space-between; gap: 12px; width: 100%;
+  padding: 4px 0 4px 12px; border: 0; background: none; cursor: pointer; text-align: left;
+  font-size: 14px; font-weight: 400; color: var(--c-text-secondary); font-family: inherit;
+}
+.sum-sub:hover { color: var(--c-primary); }
+.sum-sub__v { font-family: Manrope, Inter, sans-serif; font-weight: 500; color: var(--c-text); white-space: nowrap; }
+
+@media (max-width: 1023px) {
+  .layout-checkout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  /* §11.2 — trên điện thoại cột tóm tắt KHÔNG dính, xếp cuối trang */
+  .summary { position: static; width: 100%; }
+}
+
+/* =====================================================================
+   [MỚI 5] SƠ ĐỒ CHỖ NGỒI — §11.6 · 🔴 ghế ≥ 44×44px trên điện thoại
+   Cột lối đi là KHOẢNG TRỐNG, không phải ghế
+   ===================================================================== */
+/* minmax(0,…) là bắt buộc: hàng ghế có cột cố định 44px nên min-content của
+   sơ đồ ~404px — nếu để `1fr` nó sẽ đẩy hộp thoại rộng hơn màn hình 375px
+   thay vì cho khoang cuộn ngang trong khung của nó. */
+.seatmap { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 24px; }
+.seatmap__cabin { border: 1px solid var(--c-border); border-radius: var(--r-base); padding: 16px; overflow: auto; max-height: 52vh; }
+.seat-row { display: grid; grid-template-columns: 24px repeat(3, 44px) 28px repeat(3, 44px); gap: 8px; align-items: center; margin-bottom: 8px; }
+.seat-row__n { font-size: 12px; color: var(--c-text-faint); text-align: center; }
+.seat-aisle-gap { }               /* cột lối đi — cố ý để trống */
+.seat {
+  width: 44px; height: 44px; border-radius: var(--r-tooltip); border: 1.5px solid transparent;
+  background: #fff; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--c-text);
+  display: grid; place-items: center;
+}
+.seat--free     { border-color: var(--seat-free);     color: var(--seat-free); }
+.seat--standard { border-color: var(--seat-standard); color: var(--seat-standard); }
+.seat--infant   { border-color: var(--seat-infant);   color: #8A6300; }
+.seat--window   { border-color: var(--seat-window);   color: var(--c-primary-dark); }
+.seat--aisle    { border-color: var(--seat-aisle);    color: var(--seat-aisle); }
+.seat--exit     { border-color: var(--seat-exit);     color: var(--seat-exit); }
+.seat--taken    { background: var(--seat-taken-bg); border-color: var(--seat-taken-bd); color: var(--c-text-faint); cursor: not-allowed; }
+.seat--picked   { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+.seat:hover:not(.seat--taken):not(.seat--picked) { background: var(--c-page); }
+.legend { display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+.legend__i { display: flex; align-items: center; gap: 8px; }
+.legend__sw { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid; flex: none; }
+@media (max-width: 1023px) { .seatmap { grid-template-columns: minmax(0, 1fr); } }
+
+/* =====================================================================
+   [DÙNG LẠI §4.1-10] HỘP THOẠI bo 16px · tấm trượt từ dưới trên điện thoại
+   ===================================================================== */
+/* `grid-template-columns: minmax(0,1fr)` khoá rãnh bằng đúng bề rộng màn hình —
+   nếu không, nội dung rộng (sơ đồ ghế) sẽ kéo hộp thoại tràn ra ngoài viewport. */
+.overlay {
+  position: fixed; inset: 0; z-index: 100; background: rgba(18, 19, 20, .45);
+  display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 24px;
+}
+.overlay[hidden] { display: none; }
+.dialog { background: #fff; border-radius: var(--r-surface); box-shadow: var(--shadow-dialog); width: 100%; max-width: 520px; max-height: 88vh; display: flex; flex-direction: column; }
+.dialog--wide { max-width: 900px; }
+.dialog__head { display: flex; align-items: center; gap: 12px; padding: 22px 24px; border-bottom: 1px solid var(--c-border); }
+.dialog__title { font-size: 18px; font-weight: 600; }
+.dialog__x { margin-left: auto; }
+.dialog__body { padding: 24px; overflow: auto; }
+.dialog__foot { padding: 16px 24px; border-top: 1px solid var(--c-border); display: flex; gap: 12px; justify-content: flex-end; }
+/* §17.3 — hai nút PHẢI cùng kích thước, cùng độ nổi bật */
+.dialog__foot--equal { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dialog__foot--equal .btn { width: 100%; height: var(--h-btn); min-width: 0; }
+
+@media (max-width: 640px) {
+  .overlay { align-items: end; padding: 0; }
+  .dialog { max-width: none; border-radius: var(--r-surface) var(--r-surface) 0 0; max-height: 82vh; }
+}
+
+/* Lớp phủ xử lý thanh toán — §15.2 KHÔNG dùng vòng xoay trơn */
+.processing { text-align: center; max-width: 380px; background: #fff; border-radius: var(--r-surface); padding: 32px; }
+.processing h3 { font-size: 18px; font-weight: 600; margin: 0 0 8px; }
+.processing p { font-size: 14px; color: var(--c-text-label); margin: 0 0 20px; }
+
+/* =====================================================================
+   [DÙNG LẠI §4.1-11] THÔNG BÁO NỔI — §17.1
+   Góc TRÊN BÊN PHẢI · 312×64px · bo 4px · nền trắng · chữ #757575 16px
+   ===================================================================== */
+.toaster { position: fixed; top: 96px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+.toast {
+  width: 312px; min-height: 64px; background: #fff; border-radius: var(--r-toast);
+  box-shadow: var(--shadow-toast); padding: 14px 16px 16px; position: relative; overflow: hidden;
+  display: flex; gap: 10px; align-items: center; font-size: 16px; color: #757575;
+}
+.toast__bar { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--c-primary); animation: toastbar 1.5s linear forwards; }
+.toast--error .toast__bar { background: var(--c-error); }
+@keyframes toastbar { from { width: 100%; } to { width: 0; } }
+@media (max-width: 640px) { .toaster { left: 12px; right: 12px; top: 84px; } .toast { width: auto; } }
+
+/* =====================================================================
+   [DÙNG LẠI §4.1-12] THANH DÍNH ĐÁY ĐIỆN THOẠI 76px — §9.3
+   ⚠️ NỀN ĐẶC, không dùng nền trong suốt
+   ===================================================================== */
+.mobilebar {
+  display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+  height: var(--h-mobile-bar); background: #fff; border-top: 1px solid var(--c-border);
+  align-items: center; gap: 12px; padding: 0 16px;
+}
+@media (max-width: 1023px) { .mobilebar { display: flex; } .has-mobilebar { padding-bottom: calc(var(--h-mobile-bar) + 16px); } }
+
+/* =====================================================================
+   M5 · M6 · M7
+   ===================================================================== */
+/* §13.3 — dòng chuyến bay biến thể CHỈ ĐỌC, dùng chung M5 · M6 */
+.legro { display: flex; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--c-border); }
+.legro:last-of-type { border-bottom: 0; }
+.legro__b { flex: 1; min-width: 0; font-size: 14px; line-height: 1.6; }
+.legro__b b { display: block; font-size: 14px; }
+.legro__b > span { display: block; }
+.legro__r { text-align: right; white-space: nowrap; align-self: flex-start; }
+@media (max-width: 640px) {
+  .legro { flex-wrap: wrap; }
+  .legro__r { text-align: left; width: 100%; }
+}
+
+.pnr { font-family: Manrope, Inter, sans-serif; font-size: 32px; font-weight: 700; letter-spacing: .35em; }
+.tickets { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tickets td { padding: 8px 0; border-bottom: 1px solid var(--c-border); }
+.tickets td:last-child { text-align: right; font-family: Manrope, Inter, sans-serif; font-weight: 600; }
+
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.tab { border: 1px solid var(--c-border); background: #fff; border-radius: 999px; padding: 8px 16px; font-size: 14px; font-weight: 600; color: var(--c-text-label); cursor: pointer; }
+.tab--active { background: var(--c-primary-lightest); border-color: var(--c-primary-light); color: var(--c-primary-dark); }
+
+.progress { height: 8px; border-radius: 4px; background: var(--c-disabled-bg); overflow: hidden; }
+.progress__fill { height: 100%; background: var(--c-primary); animation: indet 1.6s ease-in-out infinite; width: 40%; }
+@keyframes indet { 0% { margin-left: -40%; } 100% { margin-left: 100%; } }
+
+/* M7 — mật độ cao, chữ nhỏ hơn, bảng dày (§14 ghi chú: cần RÕ, không cần ĐẸP) */
+.ops { font-size: 13px; }
+.ops table { width: 100%; border-collapse: collapse; }
+.ops th { text-align: left; font-weight: 600; color: var(--c-text-label); border-bottom: 1px solid var(--c-border); padding: 8px 10px; white-space: nowrap; }
+.ops td { padding: 8px 10px; border-bottom: 1px solid var(--c-border); }
+.ops tr:hover td { background: var(--c-accent-bg); }
+.ops__queue { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--c-border); cursor: pointer; }
+.ops__queue:hover { background: var(--c-accent-bg); }
+.ops__dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.ops__count { margin-left: auto; font-weight: 700; font-family: Manrope, Inter, sans-serif; }
+.ops pre { background: var(--c-page); border-radius: var(--r-base); padding: 12px; font-size: 12px; overflow: auto; margin: 0; }
+
+/* =====================================================================
+   THANH ĐIỀU HƯỚNG PROTOTYPE — chỉ dùng khi trình bày, KHÔNG thuộc sản phẩm
+   ===================================================================== */
+.proto { position: fixed; left: 16px; bottom: 16px; z-index: 300; font-family: Inter, sans-serif; }
+.proto__toggle { border: 0; background: #121314; color: #fff; border-radius: 999px; padding: 10px 16px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.28); }
+.proto__panel { display: none; background: #121314; color: #fff; border-radius: 12px; padding: 12px; width: 268px; margin-bottom: 8px; box-shadow: 0 12px 32px rgba(0,0,0,.35); }
+.proto--open .proto__panel { display: block; }
+.proto__panel h4 { margin: 0 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #9494A4; font-weight: 700; }
+.proto__links { display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px; }
+.proto__links a { color: #fff; font-size: 13px; padding: 6px 8px; border-radius: 6px; text-decoration: none; }
+.proto__links a:hover { background: rgba(255,255,255,.12); text-decoration: none; color: #fff; }
+.proto__links a.is-here { background: var(--c-primary); }
+.proto__states { display: flex; flex-wrap: wrap; gap: 6px; }
+.proto__states button { border: 1px solid rgba(255,255,255,.25); background: transparent; color: #fff; border-radius: 6px; padding: 5px 9px; font-size: 11px; cursor: pointer; }
+.proto__states button:hover { background: rgba(255,255,255,.14); }
+@media print { .proto { display: none; } }

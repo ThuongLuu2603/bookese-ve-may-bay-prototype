@@ -1,0 +1,155 @@
+/* =====================================================================
+   BOOKESE — VÉ MÁY BAY · TOKENS
+   Nguồn: Đặc tả giao diện §3 (Hệ thống thiết kế Bookese)
+   Mọi giá trị lấy từ CSS thật của hệ thống Bookese đang chạy — KHÔNG tự sáng tạo.
+   RB6: KHÔNG có chế độ tối. Không viết @media (prefers-color-scheme: dark).
+   ===================================================================== */
+
+:root {
+  /* ---------- §3.1 Màu chính ---------- */
+  --c-primary-lightest: #D6EEFF;  /* nền huy hiệu · nền dải tiêu đề bảng */
+  --c-primary-light:    #83D5FF;  /* viền dải tiêu đề bảng */
+  --c-primary:          #0064FD;  /* nút chính · liên kết · mục đang chọn */
+  --c-primary-dark:     #084DC5;  /* hover nút chính · chữ trên dải tiêu đề */
+
+  /* ---------- §3.1 Trung tính ---------- */
+  --c-disabled-bg:      #F2F2F7;
+  --c-border:           #E2E2EF;  /* đường phân cách chuẩn toàn hệ thống */
+  --c-checkbox-border:  #BDBDCE;
+  --c-text-faint:       #9494A4;
+  --c-text-label:       #575764;
+  --c-text-secondary:   #43434B;  /* "Đã bao gồm thuế và phí" */
+  --c-text:             #121314;  /* chữ chính VÀ giá tiền (RB7) */
+
+  /* ---------- §3.1 Nền và trạng thái ---------- */
+  --c-page:             #F2F4F8;  /* cũng là màu 2 hình tròn khoét ở cột tóm tắt */
+  --c-accent-bg:        #F8FAFF;  /* cột tổng tiền trong bảng */
+  --c-card:             #FFFFFF;
+  --c-error:            #FF383C;
+  --c-success:          #20BA46;
+  --c-info:             #0088FF;
+  --c-star:             #ECBD00;
+
+  /* ---------- §3.1 Bảng màu sơ đồ chỗ ngồi (7 trạng thái) ---------- */
+  --seat-free:      #20BA46;  /* ghế miễn phí */
+  --seat-standard:  #0064FD;  /* ghế tiêu chuẩn có phí */
+  --seat-infant:    #ECBD00;  /* phù hợp người lớn bế em bé */
+  --seat-window:    #83D5FF;  /* cạnh cửa sổ */
+  --seat-aisle:     #084DC5;  /* cạnh lối đi */
+  --seat-exit:      #0088FF;  /* gần cửa thoát hiểm */
+  --seat-taken-bg:  #F2F2F7;
+  --seat-taken-bd:  #BDBDCE;
+
+  /* ---------- §3.3 Bo góc ---------- */
+  --r-base:    8px;   /* nút, ô nhập, hộp chọn, thẻ, ảnh */
+  --r-surface: 16px;  /* hộp tìm kiếm và hộp thoại */
+  --r-tooltip: 6px;   /* tooltip và huy hiệu nhỏ */
+  --r-toast:   4px;   /* thông báo nổi */
+  --r-coin:    20px;  /* thẻ số dư xu */
+
+  /* ---------- §3.3 Đổ bóng — CHỈ cho 4 thành phần ----------
+     RB4: thẻ và dòng danh sách KHÔNG đổ bóng. Phân tách bằng đường kẻ. */
+  --shadow-search: 0 8px 24px rgba(18, 19, 20, .10);
+  --shadow-dialog: 0 16px 48px rgba(18, 19, 20, .18);
+  --shadow-tooltip: 0 4px 16px rgba(18, 19, 20, .12);
+  --shadow-toast:  0 4px 16px rgba(18, 19, 20, .14);
+
+  /* ---------- §3.3 Khoảng cách — thang 4px ---------- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;
+  --sp-4: 16px; --sp-6: 24px; --sp-8: 32px;
+
+  /* ---------- §3.4 Kích thước chuẩn ---------- */
+  --h-header:        81px;  /* máy tính */
+  --h-header-mobile: 72px;
+  --w-container:     1312px;
+  --w-content:       1216px;
+  --h-input-search:  48px;  /* ô nhập trong hộp tìm kiếm */
+  --h-input:         52px;  /* ô nhập trong biểu mẫu */
+  --h-select:        44px;
+  --h-textarea:      134px;
+  --h-btn:           48px;  /* nút chính */
+  --h-btn-sm:        40px;  /* nút phụ */
+  --w-filter:        320px;
+  --w-results:       880px;
+  --w-summary:       286px;
+  --sticky-top:      96px;  /* cột tóm tắt dính (81px header + 15px) */
+  --h-mobile-bar:    76px;
+}
+
+/* ===================== §3.2 KIỂU CHỮ ===================== */
+/* Cỡ gốc 16px · Inter cho nội dung · Manrope cho khung sườn (header, GIÁ, form, nút, bảng) */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--c-text);
+  background: var(--c-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Thang chữ — tên lớp giữ NGUYÊN VĂN như mã nguồn Bookese để đội phát triển map thẳng */
+.text-h1-bold            { font-size: 48px; font-weight: 700; line-height: 1.15; letter-spacing: -.02em; }
+.text-h4-bold            { font-size: 24px; font-weight: 700; line-height: 1.3; }   /* tên trang */
+.text-body-large-semibold{ font-size: 18px; font-weight: 600; line-height: 1.4; }   /* tiêu đề khối · GIÁ trên dòng chuyến bay */
+.text-body-semibold      { font-size: 16px; font-weight: 600; }                     /* tên hãng, tiêu đề phụ */
+.text-body-medium        { font-size: 16px; font-weight: 500; }
+.text-body-regular       { font-size: 16px; font-weight: 400; }
+.text-body-small-semibold{ font-size: 14px; font-weight: 600; color: var(--c-text-label); } /* nhãn biểu mẫu */
+.text-body-small-medium  { font-size: 14px; font-weight: 500; }                     /* "Đã bao gồm thuế và phí" */
+.text-body-small-regular { font-size: 14px; font-weight: 400; }
+.text-label-large-medium { font-size: 12px; font-weight: 500; color: var(--c-text-secondary); }
+.text-label-large-regular{ font-size: 12px; font-weight: 400; color: var(--c-text-faint); }
+
+/* ⚠️ §3.2 — LỖI CHÍNH TẢ PHẢI GIỮ NGUYÊN.
+   Lớp `tw-text-lable-medium-regular` viết sai `label` → `lable` đang dùng rộng rãi
+   trong mã nguồn Bookese = 14px/400. Viết đúng chính tả sẽ KHÔNG ăn style.
+   Đây không phải lỗi của bản thiết kế này. */
+.tw-text-lable-medium-regular { font-size: 14px; font-weight: 400; }
+
+/* Manrope — khung sườn: header, GIÁ TIỀN, biểu mẫu, nút, bảng */
+.font-frame,
+.price, .btn, input, select, textarea, table, th, td,
+.site-header, .fare-table, .summary-card {
+  font-family: Manrope, Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ===================== TIỆN ÍCH DÙNG CHUNG ===================== */
+.container { width: 100%; max-width: var(--w-container); margin-inline: auto; padding-inline: 48px; }
+.content   { max-width: var(--w-content); margin-inline: auto; }
+
+.u-text-faint     { color: var(--c-text-faint); }
+.u-text-label     { color: var(--c-text-label); }
+.u-text-secondary { color: var(--c-text-secondary); }
+.u-text-error     { color: var(--c-error); }
+.u-text-success   { color: var(--c-success); }
+.u-text-info      { color: var(--c-info); }
+.u-text-primary   { color: var(--c-primary); }
+
+.u-divider { border: 0; border-top: 1px solid var(--c-border); margin: 0; }
+.u-hidden  { display: none !important; }
+.u-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* §5.1 — Bắt buộc: dấu sao đỏ cho trường bắt buộc */
+.req::after { content: " *"; color: var(--c-error); }
+
+a { color: var(--c-primary); text-decoration: none; }
+a:hover { color: var(--c-primary-dark); text-decoration: underline; }
+
+:focus-visible { outline: 2px solid var(--c-primary); outline-offset: 2px; }
+
+/* ===================== §3.5 ĐIỂM NGẮT =====================
+   sm 640 · md 768 · lg 1024 · xl 1280 · 2xl 1536
+   🔴 Thiết kế và duyệt ở 375px TRƯỚC, máy tính sau. */
+@media (max-width: 1023px) {
+  .container { padding-inline: 16px; }
+}

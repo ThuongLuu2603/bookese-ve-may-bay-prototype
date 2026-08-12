@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hệ thống thiết kế · Vé máy bay — Bookese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<style>
+  .doc { max-width: 1000px; margin-inline: auto; }
+  .block { background: #fff; border-radius: var(--r-base); padding: 24px; margin-bottom: 16px; }
+  .block h2 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+  .block h3 { font-size: 16px; font-weight: 600; margin: 24px 0 10px; }
+  .block > p.lead { font-size: 14px; color: var(--c-text-label); margin: 0 0 16px; }
+  .sw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  .sw { border: 1px solid var(--c-border); border-radius: var(--r-base); overflow: hidden; }
+  .sw__c { height: 56px; }
+  .sw__b { padding: 8px 10px; font-size: 12px; }
+  .sw__b b { display: block; font-size: 13px; }
+  .sw__b code { color: var(--c-text-label); font-family: Manrope, monospace; }
+  table.spec { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.spec th { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--c-border); color: var(--c-text-label); font-weight: 600; font-size: 13px; }
+  table.spec td { padding: 8px 10px; border-bottom: 1px solid var(--c-border); vertical-align: top; }
+  table.spec code { font-family: Manrope, monospace; background: var(--c-page); border-radius: 4px; padding: 1px 5px; }
+  .demo { border: 1px dashed var(--c-border); border-radius: var(--r-base); padding: 20px; background: var(--c-page); margin-bottom: 12px; }
+  .no { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--c-border); font-size: 14px; }
+  .no__n { width: 26px; height: 26px; flex: none; border-radius: 50%; background: #FFECEC; color: var(--c-error); display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+  .toc { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+  .toc a { font-size: 14px; padding: 8px 10px; border-radius: var(--r-base); background: var(--c-page); }
+</style>
+</head>
+<body>
+
+<header data-header></header>
+
+<main class="container" style="padding-top:24px;padding-bottom:64px">
+<div class="doc">
+
+  <h1 class="page-title">Hệ thống thiết kế — Vé máy bay Bookese</h1>
+  <p class="text-body-small-regular u-text-label" style="margin:0 0 20px">
+    Trang tham chiếu cho đội thiết kế và đội front-end. Mọi giá trị lấy từ
+    <b>Đặc tả giao diện sản phẩm Vé máy bay · Bookese.com v1.0</b>, §3 – §5 và §20 – §21.
+  </p>
+
+  <div class="block">
+    <div class="toc">
+      <a href="#mau">Bảng màu</a><a href="#chu">Kiểu chữ</a><a href="#kichthuoc">Kích thước</a>
+      <a href="#nut">Nút</a><a href="#onhap">Ô nhập</a><a href="#gia">Quy cách giá</a>
+      <a href="#xu">Khối xu</a><a href="#thanhphan">33 thành phần</a>
+      <a href="#hangve">Tên hạng vé</a><a href="#dichvu">Chi phí gọi dữ liệu</a>
+      <a href="#khong">36 điều cấm</a><a href="#dongbay">Dòng chuyến bay 108px</a><a href="#huyhieu">Huy hiệu · hãng khai thác</a><a href="#giayto">Giấy tờ · thẻ hội viên</a><a href="#khonglam">Hệ thống không làm được</a>
+    </div>
+  </div>
+
+  <!-- ============ MÀU ============ -->
+  <section class="block" id="mau">
+    <h2>1. Bảng màu (§3.1)</h2>
+    <p class="lead">📐 Lấy trực tiếp từ CSS thật của hệ thống Bookese đang chạy. Đây là hiện trạng, không phải đề xuất.</p>
+
+    <h3>Màu chính</h3>
+    <div class="sw-grid">
+      <div class="sw"><div class="sw__c" style="background:#D6EEFF"></div><div class="sw__b"><b>Nhạt nhất</b><code>#D6EEFF</code><br>Nền huy hiệu · dải tiêu đề bảng</div></div>
+      <div class="sw"><div class="sw__c" style="background:#83D5FF"></div><div class="sw__b"><b>Nhạt</b><code>#83D5FF</code><br>Viền dải tiêu đề bảng</div></div>
+      <div class="sw"><div class="sw__c" style="background:#0064FD"></div><div class="sw__b"><b>Chính</b><code>#0064FD</code><br>Nút chính · liên kết</div></div>
+      <div class="sw"><div class="sw__c" style="background:#084DC5"></div><div class="sw__b"><b>Đậm</b><code>#084DC5</code><br>Di chuột · chữ trên dải</div></div>
+    </div>
+
+    <h3>Trung tính</h3>
+    <div class="sw-grid">
+      <div class="sw"><div class="sw__c" style="background:#F2F2F7"></div><div class="sw__b"><b>Nền nút vô hiệu</b><code>#F2F2F7</code></div></div>
+      <div class="sw"><div class="sw__c" style="background:#E2E2EF"></div><div class="sw__b"><b>Viền và đường kẻ</b><code>#E2E2EF</code><br>Phân cách chuẩn toàn hệ thống</div></div>
+      <div class="sw"><div class="sw__c" style="background:#BDBDCE"></div><div class="sw__b"><b>Viền ô tích</b><code>#BDBDCE</code></div></div>
+      <div class="sw"><div class="sw__c" style="background:#9494A4"></div><div class="sw__b"><b>Chữ mờ nhất</b><code>#9494A4</code></div></div>
+      <div class="sw"><div class="sw__c" style="background:#575764"></div><div class="sw__b"><b>Nhãn, chữ gợi ý</b><code>#575764</code></div></div>
+      <div class="sw"><div class="sw__c" style="background:#43434B"></div><div class="sw__b"><b>Chữ phụ</b><code>#43434B</code><br>"Đã bao gồm thuế và phí"</div></div>
+      <div class="sw"><div class="sw__c" style="background:#121314"></div><div class="sw__b"><b>Chữ chính và GIÁ TIỀN</b><code>#121314</code></div></div>
+    </div>
+
+    <h3>Nền và trạng thái</h3>
+    <div class="sw-grid">
+      <div class="sw"><div class="sw__c" style="background:#F2F4F8"></div><div class="sw__b"><b>Nền trang</b><code>#F2F4F8</code><br>Cũng là màu 2 hình tròn ở cột tóm tắt</div></div>
+      <div class="sw"><div class="sw__c" style="background:#F8FAFF"></div><div class="sw__b"><b>Nền nhấn nhẹ</b><code>#F8FAFF</code><br>Cột tổng tiền trong bảng</div></div>
+      <div class="sw"><div class="sw__c" style="background:#FF383C"></div><div class="sw__b"><b>Lỗi</b><code>#FF383C</code></div></div>
+      <div class="sw"><div class="sw__c" style="background:#20BA46"></div><div class="sw__b"><b>Thành công</b><code>#20BA46</code></div></div>
+      <div class="sw"><div class="sw__c" style="background:#0088FF"></div><div class="sw__b"><b>Thông tin</b><code>#0088FF</code></div></div>
+      <div class="sw"><div class="sw__c" style="background:#ECBD00"></div><div class="sw__b"><b>Sao xếp hạng</b><code>#ECBD00</code></div></div>
+    </div>
+
+    <h3>Bảy trạng thái ghế (§3.1)</h3>
+    <div class="legend" id="legend" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px"></div>
+
+    <div class="notice notice--error" style="margin-top:20px">
+      <span aria-hidden="true">🔴</span>
+      <span><b>Ba điều bắt buộc.</b> ① Màu giá tiền là <b>đen #121314</b>, không phải màu thương hiệu.
+      ② <b>Không có chế độ tối</b> — hệ thống có biến nhưng chưa bao giờ bật và không có nút chuyển.
+      ③ Mã nguồn còn sót biến màu cũ (<code>--primary: #0bf</code>, <code>--input-default-border-color: #94b6a9</code>) —
+      <b>không được tham chiếu</b>.</span>
+    </div>
+  </section>
+
+  <!-- ============ CHỮ ============ -->
+  <section class="block" id="chu">
+    <h2>2. Kiểu chữ (§3.2)</h2>
+    <p class="lead">Cỡ gốc 16px · <b>Inter</b> cho nội dung · <b>Manrope</b> cho khung sườn: thanh đầu trang, <b>giá tiền</b>, biểu mẫu, nút, bảng.</p>
+    <table class="spec">
+      <thead><tr><th>Dùng ở đâu</th><th>Tên lớp trong mã nguồn</th><th>Cỡ / độ đậm</th><th>Mẫu</th></tr></thead>
+      <tbody>
+        <tr><td>Tên trang</td><td><code>text-h4-bold</code></td><td>24 / 700</td><td class="text-h4-bold">Hà Nội → TP. HCM</td></tr>
+        <tr><td>Tiêu đề khối · <b>giá trên dòng chuyến bay</b></td><td><code>text-body-large-semibold</code></td><td>18 / 600</td><td class="text-body-large-semibold">Thông tin hành khách</td></tr>
+        <tr><td>Giá trong bảng và cột tóm tắt</td><td>Manrope</td><td>16 / 600</td><td class="price price--table">VND 1.252.181</td></tr>
+        <tr><td>Tên hãng, tiêu đề phụ</td><td><code>text-body-semibold</code></td><td>16 / 600</td><td class="text-body-semibold">Vietnam Airlines</td></tr>
+        <tr><td>Nội dung thường</td><td><code>text-body-medium</code> · <code>text-body-regular</code></td><td>16 / 500 · 400</td><td class="text-body-regular">Bay thẳng · 2h10'</td></tr>
+        <tr><td>Nhãn biểu mẫu</td><td><code>text-body-small-semibold</code></td><td>14 / 600 · <code>#575764</code></td><td class="text-body-small-semibold">Số điện thoại</td></tr>
+        <tr><td>"Đã bao gồm thuế và phí"</td><td><code>text-body-small-medium</code></td><td>14 / 500 · <code>#43434B</code></td><td class="price__note">Đã bao gồm thuế và phí</td></tr>
+        <tr><td>Chú thích dưới giá</td><td><code>text-label-large-medium</code></td><td>12 / 500 · <code>#43434B</code></td><td class="text-label-large-medium">Còn 9 chỗ</td></tr>
+        <tr><td>Chữ mờ nhất</td><td><code>text-label-large-regular</code></td><td>12 / 400 · <code>#9494A4</code></td><td class="text-label-large-regular">Hạng Du khách</td></tr>
+      </tbody>
+    </table>
+    <div class="notice notice--warn" style="margin-top:16px">
+      <span aria-hidden="true">⚠️</span>
+      <span><b>Một lỗi chính tả phải giữ nguyên.</b> Lớp <code>tw-text-lable-medium-regular</code>
+      (viết sai <i>label</i> thành <i>lable</i>) đang dùng rộng rãi trong mã nguồn = 14px/400.
+      Nếu đội phát triển viết đúng chính tả thì <b>không ăn style</b>. Ghi chú này để bạn không báo lỗi nhầm.</span>
+    </div>
+  </section>
+
+  <!-- ============ KÍCH THƯỚC ============ -->
+  <section class="block" id="kichthuoc">
+    <h2>3. Bo góc, đổ bóng, kích thước (§3.3 – §3.5)</h2>
+    <table class="spec">
+      <tbody>
+        <tr><td>Bo góc chuẩn</td><td><b>8px</b> — nút, ô nhập, hộp chọn, thẻ, ảnh</td></tr>
+        <tr><td>Hộp tìm kiếm và hộp thoại</td><td>16px</td></tr>
+        <tr><td>Tooltip và huy hiệu nhỏ · thông báo nổi · thẻ số dư xu</td><td>6px · 4px · 20px</td></tr>
+        <tr><td><b>Đổ bóng</b></td><td>🔴 Thẻ và dòng danh sách <b>KHÔNG đổ bóng</b>. Phân tách bằng đường kẻ <code>#E2E2EF</code>.
+          Bóng chỉ dùng cho <b>4 thứ</b>: hộp tìm kiếm · hộp thoại · tooltip · thông báo nổi</td></tr>
+        <tr><td>Khoảng cách</td><td>Thang 4px. Hay dùng 4 · 8 · 12 · 16 · 24. Padding thẻ 16 hoặc 24</td></tr>
+        <tr><td>Thanh đầu trang</td><td>81px máy tính · 72px điện thoại · dính · nền trắng · <b>không viền, không bóng</b></td></tr>
+        <tr><td>Khung chứa</td><td>Tối đa 1312px · nội dung thực 1216px</td></tr>
+        <tr><td>Ô nhập</td><td>48px trong hộp tìm kiếm · 52px trong biểu mẫu · hộp chọn 44px · nhiều dòng 134px</td></tr>
+        <tr><td>Nút</td><td>Chính 48px cao (120px hoặc toàn chiều ngang) · phụ 40px cao (129px)</td></tr>
+        <tr><td>Ba cột</td><td>Bộ lọc <b>320px</b> · danh sách <b>880px</b> · tóm tắt <b>286px</b> dính ở <code>top: 96px</code></td></tr>
+        <tr><td>Thanh dính đáy điện thoại</td><td>76px · <b>nền đặc</b>, không trong suốt</td></tr>
+        <tr><td>Điểm ngắt</td><td>sm 640 · md 768 · lg 1024 · xl 1280 · 2xl 1536</td></tr>
+      </tbody>
+    </table>
+    <div class="notice notice--info" style="margin-top:16px">
+      <span aria-hidden="true">💡</span>
+      <span>Phong cách tổng thể của Bookese là <b>"phẳng, dùng đường kẻ"</b>, không phải "thẻ nổi có bóng".
+      Nếu bản thiết kế của bạn có nhiều bóng đổ thì nó đang đi lệch.</span>
+    </div>
+  </section>
+
+  <!-- ============ NÚT ============ -->
+  <section class="block" id="nut">
+    <h2>4. Nút (§4.3)</h2>
+    <div class="demo" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#fff">
+      <button class="btn btn--primary" type="button">Chọn chuyến</button>
+      <button class="btn btn--primary" type="button" disabled>Vô hiệu</button>
+      <button class="btn btn--primary btn--busy" type="button" style="min-width:190px"><span class="spinner"></span> Đang kiểm tra giá và chỗ…</button>
+      <button class="btn btn--secondary" type="button">Đổi</button>
+      <button class="btn btn--link" type="button">Xem tất cả các mức giá</button>
+      <button class="btn btn--icon" type="button" aria-label="Đóng">✕</button>
+    </div>
+    <table class="spec">
+      <tbody>
+        <tr><td><b>Chính</b></td><td>Nền <code>#0064FD</code> · chữ trắng · bo 8px · cao 48px · 14/600. Di chuột <code>#084DC5</code>. Vô hiệu: nền <code>#F2F2F7</code>, chữ <code>#9494A4</code></td></tr>
+        <tr><td><b>Phụ</b></td><td>Viền <code>#E2E2EF</code> · nền trắng · chữ <code>#121314</code> · cao 40px · bo 8px</td></tr>
+        <tr><td><b>Liên kết</b></td><td>Không nền · chữ <code>#0064FD</code> · di chuột <code>#084DC5</code> + gạch chân</td></tr>
+        <tr><td><b>Chỉ biểu tượng</b></td><td>Không nền · vùng chạm tối thiểu 40×40px</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ Ô NHẬP ============ -->
+  <section class="block" id="onhap">
+    <h2>5. Ô nhập (§4.4)</h2>
+    <div class="demo" style="background:#fff">
+      <div class="form-grid">
+        <div class="field">
+          <label class="field__label req" for="dm1">Họ</label>
+          <input class="input" id="dm1" placeholder="Ví dụ: NGUYEN">
+        </div>
+        <div class="field">
+          <label class="field__label req" for="dm2">Số căn cước công dân</label>
+          <input class="input input--error" id="dm2" value="0011990012">
+          <span class="field__error">Số căn cước công dân gồm đúng 12 chữ số</span>
+        </div>
+        <div class="field">
+          <label class="field__label" for="dm3">Loại giấy tờ</label>
+          <select class="select" id="dm3"><option>Chọn loại</option><option>Căn cước công dân</option><option>Hộ chiếu</option></select>
+        </div>
+        <div class="field">
+          <label class="field__label" for="dm4">Yêu cầu đặc biệt</label>
+          <div class="textarea-wrap">
+            <textarea class="textarea" id="dm4" maxlength="500" placeholder="Nhập nội dung (không bắt buộc)"></textarea>
+            <span class="charcount">0 / 500</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table class="spec">
+      <tbody>
+        <tr><td>Nhãn</td><td>🔴 Đặt <b>PHÍA TRÊN</b> ô nhập, 14/600 <code>#575764</code>, cách 9px. <b>Không dùng nhãn nổi</b></td></tr>
+        <tr><td>Khi được chọn</td><td><b>Viền chuyển sang màu đen</b></td></tr>
+        <tr><td>Khi lỗi</td><td>Viền <code>#FF383C</code> + thông báo ngay dưới ô</td></tr>
+        <tr><td>Bắt buộc</td><td>Nhãn kèm dấu <code>*</code> màu <code>#FF383C</code></td></tr>
+        <tr><td>Chip đếm ký tự</td><td>Viền và chữ <code>#108A00</code>, chuyển <code>#FF383C</code> khi đầy</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ GIÁ ============ -->
+  <section class="block" id="gia">
+    <h2>6. Quy cách hiển thị giá (§5) — quy tắc quan trọng nhất</h2>
+
+    <h3>Định dạng bắt buộc (RB1)</h3>
+    <table class="spec">
+      <tbody>
+        <tr><td>Tiền</td><td><b><code>VND</code> đứng trước, cách một dấu cách, dấu <b>chấm</b> phân cách nghìn</b><br>
+          <span class="price price--table">VND 1.252.181</span><br>
+          <span class="u-text-error">❌ 1.252.181đ &nbsp; ❌ 1,252,181 VND &nbsp; ❌ 1.252.181 VNĐ</span></td></tr>
+        <tr><td>Xu</td><td>Số trước, đơn vị sau — <code>12.000 Xu</code></td></tr>
+        <tr><td>Giá gốc khi giảm</td><td>14/400, đỏ <code>#FF383C</code>, gạch ngang, đặt <b>PHÍA TRÊN</b> giá mới<br>
+          <span class="price__was">VND 1.480.000</span><span class="price price--row">VND 1.252.181</span></td></tr>
+        <tr><td>Ngày</td><td><code>20/08/2026</code> · kiểu Bookese <code>T5, 20 tháng 8</code> · lịch <code>Tháng 8, 2026</code></td></tr>
+        <tr><td>Giờ · thời lượng</td><td>24 giờ <code>07:00</code> · thời lượng có dấu nháy <code>2h10'</code></td></tr>
+        <tr><td>Hạ cánh hôm sau</td><td><code>01:10</code> <span class="plus1">+1</span> — nhãn màu <code>#FF383C</code>, <b>bắt buộc có</b></td></tr>
+        <tr><td>Mã sân bay</td><td>Luôn viết hoa — <code>HAN</code> · <code>SGN</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Cấu trúc giá hai dòng (RB10)</h3>
+    <div class="demo" style="background:#fff">
+      <div style="max-width:360px">
+        <div class="sum-row"><span class="sum-row__k">Giá vé</span><span class="sum-row__v">VND 5.000.000</span></div>
+        <div class="sum-row"><span class="sum-row__k">Thuế &amp; phí</span><span class="sum-row__v">VND 920.000</span></div>
+        <hr class="u-divider" style="margin:8px 0">
+        <div class="sum-total"><span class="sum-total__k">TỔNG</span><span class="sum-total__v">VND 5.920.000</span></div>
+        <div class="sum-note">Đã bao gồm thuế và phí</div>
+      </div>
+    </div>
+    <p class="text-body-small-regular" style="margin:0 0 12px">
+      Dòng <b>Thuế &amp; phí</b> gồm <b>ba thứ</b>: thuế · phí sân bay · <b>phí dịch vụ Bookese</b>
+      (nội địa 50.000đ/khách/chặng · quốc tế 150.000đ/khách/chiều).
+      Phí dịch vụ <b>chỉ tách thành dòng riêng trong bảng tách chi tiết</b>, không bao giờ trên màn bán hàng.
+    </p>
+    <div class="notice notice--error">
+      <span aria-hidden="true">🔴</span>
+      <span><b>Ba điều kiện bắt buộc đi kèm.</b> ① Bảng tách chi tiết <b>luôn mở được</b> từ mọi chỗ có giá, chỉ một cú chạm ⓘ.
+      ② <b>Số tiền không được đổi ở bước sau</b> — số ở màn kết quả phải bằng đúng số ở màn thanh toán. Đây là lời hứa cốt lõi của sản phẩm.
+      ③ Trên hóa đơn thì tách bạch tuyệt đối.</span>
+    </div>
+
+    <h3>Giá hiển thị là giá cho MỘT khách (RB9)</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="demo" style="background:#fff;border-color:var(--c-success)">
+        <div class="text-body-small-semibold" style="color:var(--c-success);margin-bottom:8px">ĐÚNG</div>
+        <span class="price price--row">VND 1.252.181</span><span class="price__per">/khách</span>
+        <div class="price__note">Đã bao gồm thuế và phí</div>
+      </div>
+      <div class="demo" style="background:#fff;border-color:var(--c-error)">
+        <div class="text-body-small-semibold" style="color:var(--c-error);margin-bottom:8px">SAI</div>
+        <span class="price price--row">VND 3.480.000</span>
+        <div class="price__note">Tổng cho 2 khách</div>
+      </div>
+    </div>
+    <p class="text-body-small-regular u-text-label" style="margin:8px 0 0">
+      Tổng tiền cho toàn bộ hành khách <b>chỉ xuất hiện ở hai chỗ</b>: cột tóm tắt đơn hàng ở M4, và bảng tách chi tiết giá.
+    </p>
+  </section>
+
+  <!-- ============ XU ============ -->
+  <section class="block" id="xu">
+    <h2>7. Khối xu (§5.4 · RB12)</h2>
+    <p class="lead">Xu là khoản <b>NHẬN SAU</b>, không phải giảm giá. Số tiền khách trả không đổi dù ở hạng nào.
+      Xu chỉ được cộng <b>sau khi chuyến bay đã hoàn thành</b>.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="demo" style="background:#fff">
+        <div class="text-body-small-semibold" style="margin-bottom:10px">Đã đăng nhập</div>
+        <div class="coin" style="border-top:0;margin:0;padding:0">
+          <div class="coin__title"><span aria-hidden="true">🪙</span> Xu nhận sau chuyến bay</div>
+          <div class="coin__meta">Hạng Du khách</div>
+          <div class="coin__meta">12.000 × 3 khách × 2 chặng</div>
+          <div class="coin__value">72.000 Xu</div>
+        </div>
+      </div>
+      <div class="demo" style="background:#fff">
+        <div class="text-body-small-semibold" style="margin-bottom:10px">Chưa đăng nhập</div>
+        <div class="coin--guest">🪙 Đăng nhập để nhận tới 36.000 Xu sau chuyến bay — <a href="#">Đăng nhập</a></div>
+        <p class="text-label-large-regular" style="margin:6px 0 0">Tính theo mức hạng Thành viên, có chữ "tới".</p>
+      </div>
+    </div>
+
+    <table class="spec" style="margin-top:16px">
+      <thead><tr><th>Hạng thành viên</th><th>Xu / khách / chặng nội địa</th><th>Quốc tế / chiều</th></tr></thead>
+      <tbody>
+        <tr><td>Khách vãng lai</td><td>0</td><td>0</td></tr>
+        <tr><td>Thành viên</td><td>6.000</td><td>18.000</td></tr>
+        <tr><td>Du khách</td><td>12.000</td><td>36.000</td></tr>
+        <tr><td>Đại lý · Đại sứ</td><td>15.000</td><td>45.000</td></tr>
+      </tbody>
+    </table>
+
+    <div class="notice notice--error" style="margin-top:16px">
+      <span aria-hidden="true">🔴</span>
+      <span><b>Bốn điều tuyệt đối không làm với khối này.</b>
+      ① Không đặt trong khối tính tiền — luôn nằm <b>dưới</b> dòng Tổng, sau một đường kẻ ngăn.
+      ② Không có dấu trừ.
+      ③ Không dùng chữ <i>"giảm"</i>, <i>"tiết kiệm"</i>, <i>"ưu đãi"</i>, <i>"chiết khấu"</i>.
+      ④ Luôn kèm cụm <b>"sau chuyến bay"</b>.</span>
+    </div>
+  </section>
+
+  <!-- ============ THÀNH PHẦN ============ -->
+  <section class="block" id="thanhphan">
+    <h2>8. 33 thành phần (§4)</h2>
+
+    <h3>15 thành phần DÙNG LẠI — không vẽ mới</h3>
+    <table class="spec">
+      <tbody>
+        <tr><td>1</td><td>Hộp tìm kiếm (nền trắng, bo 16px, có bóng, nhãn trên ô nhập)</td><td>M1 · M2</td></tr>
+        <tr><td>2</td><td>Lịch chọn ngày (hai tháng cạnh nhau, "Tháng 8, 2026")</td><td>M1</td></tr>
+        <tr><td>3</td><td>Popover bộ đếm số khách</td><td>M1</td></tr>
+        <tr><td>4</td><td>Cột bộ lọc 320px</td><td>M2</td></tr>
+        <tr><td>5</td><td><b>Tooltip tách chi tiết giá 240px</b></td><td>M2 · M3 · M4</td></tr>
+        <tr><td>6</td><td>Dải tiêu đề bảng <code>#D6EEFF</code> + viền <code>#83D5FF</code></td><td>M3 · M4</td></tr>
+        <tr><td>7</td><td>Khối gấp mở của trang thanh toán</td><td>M4</td></tr>
+        <tr><td>8</td><td><b>Cột tóm tắt kiểu vé xé 286px</b></td><td>M4</td></tr>
+        <tr><td>9</td><td>Ô nhập · hộp chọn · ô nhiều dòng có bộ đếm ký tự</td><td>M4</td></tr>
+        <tr><td>10</td><td>Hộp thoại bo 16px · tấm trượt từ dưới lên trên điện thoại</td><td>M4 · M6</td></tr>
+        <tr><td>11</td><td>Thông báo nổi góc trên phải 312×64px</td><td>Mọi màn</td></tr>
+        <tr><td>12</td><td>Thanh dính đáy điện thoại 76px</td><td>M3</td></tr>
+        <tr><td>13</td><td>Ba hộp thoại hủy đơn</td><td>M6</td></tr>
+        <tr><td>14</td><td>Nút chính 48px · nút phụ 40px · nút liên kết</td><td>Mọi màn</td></tr>
+        <tr><td>15</td><td>Mẫu trạng thái rỗng (tiêu đề + dòng phụ + nút)</td><td>M2 · M6</td></tr>
+      </tbody>
+    </table>
+
+    <h3>18 thành phần MỚI — phải dựng</h3>
+    <table class="spec">
+      <tbody>
+        <tr><td>1</td><td><b>Dòng chuyến bay</b> — dùng nhiều nhất, 5/7 màn hình</td><td>Trung bình</td></tr>
+        <tr><td>2</td><td><b>Bảng hạng vé</b></td><td>Trung bình</td></tr>
+        <tr><td>3</td><td>Dải giá 7 ngày lân cận</td><td>Thấp</td></tr>
+        <tr><td>4</td><td>Đồng hồ đếm ngược</td><td>Thấp</td></tr>
+        <tr><td>5</td><td><b>Sơ đồ chỗ ngồi</b></td><td class="u-text-error">🔴 Cao</td></tr>
+        <tr><td>6</td><td>Khối nhập một hành khách</td><td>Trung bình</td></tr>
+        <tr><td>7</td><td>Bộ chọn sân bay</td><td>Trung bình</td></tr>
+        <tr><td>8</td><td>Nhãn trạng thái hãng bay</td><td>Thấp</td></tr>
+        <tr><td>9</td><td>Ô mã giảm giá</td><td>Thấp</td></tr>
+        <tr><td>10</td><td>Khối yêu cầu hóa đơn</td><td>Thấp</td></tr>
+        <tr><td>11</td><td>Khối xu nhận được</td><td>Thấp</td></tr>
+        <tr><td>12</td><td><b>Ma trận hành khách × chặng bay</b> — dịch vụ thêm ở M4</td><td class="u-text-error">🔴 Cao</td></tr>
+        <tr><td>13</td><td><b>Dãy thẻ chọn hành khách</b> — trong sơ đồ ghế</td><td>Trung bình</td></tr>
+        <tr><td>14</td><td><b>Thanh chỉ báo chặng</b> <span class="badge badge--info">mới</span> — đa chặng, ở M2</td><td>Trung bình</td></tr>
+        <tr><td>15</td><td><b>Hộp chọn chặng có tiến độ</b> — đa chặng, ở M4</td><td>Trung bình</td></tr>
+        <tr><td>16</td><td><b>Huy hiệu dòng chuyến bay</b> <span class="badge badge--info">mới</span> — nhóm A/B/C ở M2</td><td>Trung bình</td></tr>
+        <tr><td>17</td><td><b>Bảng hướng dẫn nhập họ tên</b> <span class="badge badge--info">mới</span> — có ảnh hộ chiếu mẫu, ở M4</td><td>Trung bình</td></tr>
+        <tr><td>18</td><td><b>Bộ chọn hạng vé trên dòng kết quả</b> <span class="badge badge--info">mới</span> — ở M2</td><td>Trung bình</td></tr>
+      </tbody>
+    </table>
+    <p class="text-body-small-regular u-text-label" style="margin:12px 0 0">
+      Thành phần <b>9, 10, 11</b> hiện luồng đặt phòng cũng đang thiếu — đã có nhãn tiếng Việt trong hệ thống nhưng chưa có giao diện.
+      Nên dựng thành <b>thành phần dùng chung cho cả hai luồng</b>, không phải chỉ cho vé máy bay.
+    </p>
+  </section>
+
+  <!-- ============ TÊN HẠNG VÉ ============ -->
+  <section class="block" id="hangve">
+    <h2>8b. Tên hạng vé — cách dựng (§10.3 · RB16)</h2>
+    <p class="lead">Hệ thống nguồn cung <b>không có trường riêng</b> tên là "tên hạng vé". Nó trả về hai mã kỹ thuật —
+      <b>hạng đặt chỗ</b> (một ký tự: T · R · U · B) và <b>mã giá</b> (chuỗi thường nhúng tên thương hiệu:
+      <code>T6VNRF</code> · <code>U1_DLX</code> · <code>B1_Skyboss</code>).
+      Bookese tự quản một bảng ánh xạ và dựng tên theo công thức <b>Tên hạng vé (mã)</b>.</p>
+
+    <div class="notice notice--error" style="margin-bottom:16px">
+      <span aria-hidden="true">🔴</span>
+      <span><b>Vì sao luôn để mã trong ngoặc.</b> Bảng ánh xạ do Bookese tự quản nên có thể sai hoặc thiếu khi hãng đổi mã.
+      Mã trong ngoặc là phần <b>luôn đúng</b> vì đến thẳng từ hệ thống hãng — khách đối chiếu với vé thật hoặc gọi tổng đài thì có căn cứ.</span>
+    </div>
+
+    <h3>Ba trạng thái phải thiết kế</h3>
+    <table class="spec">
+      <thead><tr><th>Trường hợp</th><th>Hiển thị</th><th>Mẫu trong bản dựng</th></tr></thead>
+      <tbody>
+        <tr><td>Có trong bảng ánh xạ</td><td>Tên hạng vé (mã)</td>
+            <td><span class="fare-name-line">Phổ thông tiết kiệm (T)</span><br><span class="u-text-faint" style="font-size:12px">chuyến VN213</span></td></tr>
+        <tr><td>Không có trong bảng</td><td>Hạng {mã} + dòng mô tả thuộc tính bên dưới</td>
+            <td><span class="fare-name-line">Hạng W9</span><span class="fare-name__attrs">Hãng chưa công bố ký gửi · Không hoàn</span><span class="u-text-faint" style="font-size:12px">chuyến VU102</span></td></tr>
+        <tr><td>Không có cả mã</td><td>Chỉ hiện dòng mô tả thuộc tính</td>
+            <td><span class="fare-name__attrs" style="margin-top:0">Không ký gửi · Không hoàn</span><span class="u-text-faint" style="font-size:12px">chuyến VJ199</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Sáu vị trí phải hiển thị</h3>
+    <table class="spec">
+      <tbody>
+        <tr><td>M2 dòng chuyến bay</td><td>Dòng đầu trong khối viền trái, <b>trên</b> dòng hành lý</td></tr>
+        <tr><td>M3 bảng hạng vé</td><td>🔴 Cột đầu tiên</td></tr>
+        <tr><td>M4 khối ① Chuyến bay đã chọn</td><td>Dưới số hiệu chuyến và loại tàu bay</td></tr>
+        <tr><td>M4 cột tóm tắt</td><td>Dưới tên hãng</td></tr>
+        <tr><td>M5 xác nhận</td><td>Trong khối hành trình</td></tr>
+        <tr><td>M6 lịch sử đặt chỗ</td><td>Trong chi tiết đơn</td></tr>
+      </tbody>
+    </table>
+    <p class="text-body-small-regular u-text-error" style="margin:12px 0 0">
+      🔴 Ô tên hạng vé <b>co giãn theo nội dung</b>, không cố định chiều rộng.
+      Tên dài nhất gặp trong thực tế khoảng 28 ký tự — "Phổ thông đặc biệt linh hoạt (D)".
+    </p>
+  </section>
+
+  <!-- ============ DỊCH VỤ THÊM · CHI PHÍ GỌI DỮ LIỆU ============ -->
+  <section class="block" id="dichvu">
+    <h2>8c. Dịch vụ thêm — chi phí gọi dữ liệu (§11.6 · RB19 · RB20)</h2>
+    <p class="lead">Mỗi lần hỏi nhà cung cấp về hành lý, ghế hoặc suất ăn đều <b>tốn một lượt gọi có tính phí</b>.
+      Ba loại × hai chiều = tối đa 6 lượt cho một đơn — và tỷ lệ bỏ dở ở màn thanh toán thường trên 30%.
+      Vì vậy khối chỉ hỏi khi khách <b>thật sự muốn xem</b>.</p>
+
+    <h3>Năm cấp thông tin hạng vé — bốn cấp đầu MIỄN PHÍ (§10.4.2)</h3>
+    <p class="lead">Khảo sát trực tiếp trang đối tác có theo dõi lượt gọi mạng. Toàn bộ dữ liệu hạng vé
+      — tên hạng, mã hạng chỗ, giá, số chỗ, hành lý, nhãn hoàn vé — <b>đã nằm trong kết quả tìm kiếm</b>.</p>
+    <table class="spec">
+      <thead><tr><th>Cấp</th><th>Khách làm gì</th><th>Thấy được gì</th><th>Lượt gọi</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>Nhìn dòng kết quả</td><td>Giá hạng rẻ nhất · tên hạng vé · hành lý · nhãn hoàn vé</td><td class="u-text-success"><b>0</b></td></tr>
+        <tr><td>1</td><td>Chạm hàng biểu tượng tiện ích</td><td>Bảng nổi "Thông tin hạng vé"</td><td class="u-text-success"><b>0</b></td></tr>
+        <tr><td>2</td><td>Bấm vào giá (có mũi ▾)</td><td>Danh sách toàn bộ hạng vé — <b>đổi hạng ngay tại đây</b></td><td class="u-text-success"><b>0</b></td></tr>
+        <tr><td>3</td><td>Mở panel chi tiết</td><td>Hành trình · bảng tách giá · các hạng vé khác</td><td class="u-text-success"><b>0</b></td></tr>
+        <tr><td>4</td><td>Bấm <b>Điều kiện vé</b> của một hạng</td><td>Hộp thoại toàn văn quy định của hãng</td><td class="u-text-error">🔴 <b>1 — mỗi hạng vé một lượt</b></td></tr>
+      </tbody>
+    </table>
+    <div class="notice notice--warn" style="margin-top:12px">
+      <span aria-hidden="true">⚠️</span>
+      <span><b>Đính chính bản trước.</b> Một lượt gọi phủ hết các <b>chặng</b>, nhưng chỉ của <b>MỘT hạng vé</b>.
+      Khách so sánh điều kiện của ba hạng cùng một chuyến bay là <b>ba lượt</b>.</span>
+    </div>
+
+    <h3>Ba nơi tốn lượt gọi — và cách chặn</h3>
+    <table class="spec">
+      <thead><tr><th>Nơi</th><th>Quy tắc</th><th>Điều cấm</th></tr></thead>
+      <tbody>
+        <tr><td><b>Điều kiện vé</b> (M3)</td>
+            <td>🔴 Thuộc về <b>TỪNG HẠNG VÉ</b>, mỗi hạng một liên kết đặt cạnh hạng đó.
+                Mở panel chi tiết = <b>0 lượt</b>. Đệm theo phiên: mở lại hạng đã xem = 0 lượt</td>
+            <td>§21-14 · §21-19 · §21-21 · RB18 · RB25</td></tr>
+        <tr><td><b>Dịch vụ thêm</b> (M4)</td>
+            <td>🔴 Không tải khi mở khối. Gọi <b>theo chặng</b>, không theo hành khách. Chỉ tải chặng đang xem</td>
+            <td>§21-10 · RB19</td></tr>
+        <tr><td><b>Đa chặng</b></td>
+            <td>🔴 Không có nút "áp dụng cho tất cả các chặng" — nút đó buộc phải tải hết N chặng.
+                Ô "áp dụng cho tất cả" chỉ hoạt động <b>trong phạm vi một chặng</b>, giữa các hành khách</td>
+            <td>§21-13 · §7.4</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Chi phí tăng tuyến tính theo số chặng (§7.4)</h3>
+    <table class="spec">
+      <thead><tr><th>Số chặng</th><th>Lượt gọi tối đa cho dịch vụ thêm</th><th>So với một chiều</th></tr></thead>
+      <tbody>
+        <tr><td>1 (một chiều)</td><td>3</td><td>—</td></tr>
+        <tr><td>2 (khứ hồi)</td><td>6</td><td>×2</td></tr>
+        <tr><td>4</td><td>12</td><td>×4</td></tr>
+        <tr><td>6 (tối đa)</td><td><b>18</b></td><td class="u-text-error">×6</td></tr>
+      </tbody>
+    </table>
+    <p class="text-body-small-regular u-text-success" style="margin:8px 0 0">
+      ✅ Điều kiện vé thì <b>ngược lại</b> — không nhân theo số chặng. Hệ thống nhận danh sách chuyến bay
+      trong một lượt gọi, nên dù 4 chặng vẫn chỉ 1 lượt.
+    </p>
+
+    <h3>Bảng chi phí theo hành vi (§11.6.2)</h3>
+    <table class="spec">
+      <thead><tr><th>Hành vi của khách</th><th>Số lượt gọi</th></tr></thead>
+      <tbody>
+        <tr><td>Mở trang thanh toán · xem khối Dịch vụ thêm (chưa bấm gì)</td><td class="u-text-success"><b>0</b></td></tr>
+        <tr><td>Bấm "Xem gói hành lý" / "Chọn ghế" / "Xem dịch vụ"</td><td><b>1</b> — chỉ chiều đang xem</td></tr>
+        <tr><td>Chuyển sang tab chiều về</td><td><b>1</b></td></tr>
+        <tr><td>Đóng rồi mở lại · bấm "Sửa" · đổi lựa chọn · tích "Áp dụng cho tất cả"</td><td class="u-text-success"><b>0</b> — dùng bản đã lưu trong phiên</td></tr>
+      </tbody>
+    </table>
+    <p class="text-body-small-regular u-text-label" style="margin:12px 0 0">
+      Trang <a href="thanh-toan.html">M4 · Thanh toán</a> có <b>bộ đếm lượt gọi</b> ở cuối khối ③ để đối chiếu trực tiếp với bảng này.
+    </p>
+
+    <h3>Bốn cách làm SAI và hậu quả (§11.6.5)</h3>
+    <table class="spec">
+      <tbody>
+        <tr><td>Tải cả ba loại ngay khi mở trang thanh toán</td><td class="u-text-error">Nhân 6 lần chi phí, kể cả với khách bỏ dở</td></tr>
+        <tr><td>Gọi riêng cho từng hành khách</td><td class="u-text-error">Nhân theo số hành khách</td></tr>
+        <tr><td>Tải lại mỗi lần đóng mở khối</td><td class="u-text-error">Khách hay mở đi mở lại để so sánh — nhân 3–5 lần</td></tr>
+        <tr><td>Tải cả hai chiều cùng lúc</td><td class="u-text-error">Nhân 2 lần với khách chỉ mua một chiều</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 11 ĐIỀU CẤM ============ -->
+  <section class="block" id="khong">
+    <h2>9. Ba mươi sáu điều tuyệt đối không được làm (§21)</h2>
+    <div class="no"><span class="no__n">1</span><span>Ô tên hạng vé có <b>chiều rộng cố định</b> — tên dài ngắn rất khác nhau giữa các hãng, ô phải co giãn (RB16)</span></div>
+    <div class="no"><span class="no__n">2</span><span>Bất kỳ <b>ô tích sẵn</b> nào cho dịch vụ có phí — ranh giới đạo đức và pháp lý (RB14)</span></div>
+    <div class="no"><span class="no__n">3</span><span><b>Vòng xoay tải trơn</b> ở bước tạo đặt chỗ và xuất vé — đây là lúc khách lo lắng nhất</span></div>
+    <div class="no"><span class="no__n">4</span><span><b>Giá tổng của toàn bộ hành khách</b> trên dòng chuyến bay — giá là giá cho một khách (RB9)</span></div>
+    <div class="no"><span class="no__n">5</span><span><b>Thanh tiến trình các bước</b> — luồng đặt phòng không có (RB2)</span></div>
+    <div class="no"><span class="no__n">6</span><span><b>Định dạng giá kiểu <code>1.252.181đ</code></b> — Bookese dùng <code>VND 1.252.181</code> (RB1)</span></div>
+    <div class="no"><span class="no__n">7</span><span><b>Đổ bóng trên thẻ hoặc dòng danh sách</b> — phong cách phẳng dùng đường kẻ (RB4)</span></div>
+    <div class="no"><span class="no__n">8</span><span>Dòng <b>"Phí dịch vụ Bookese" riêng</b> trên màn hình bán hàng — đã gộp vào Thuế &amp; phí (RB10)</span></div>
+    <div class="no"><span class="no__n">9</span><span><b>Xu đặt trong khối tính tiền</b>, có dấu trừ, hoặc gọi là "giảm giá" (RB12)</span></div>
+    <div class="no"><span class="no__n">10</span><span><b>Tải dữ liệu hành lý / ghế / suất ăn ngay khi mở khối Dịch vụ thêm</b> — nhân tới 6 lần chi phí, kể cả với khách bỏ dở (RB19)</span></div>
+    <div class="no"><span class="no__n">11</span><span><b>Khối Dịch vụ thêm không cho chọn theo từng hành khách</b> — đơn nhiều khách sẽ không biết mua cho ai (RB20)</span></div>
+    <div class="no"><span class="no__n">12</span><span><b>Vẽ cứng đúng hai chiều "đi" và "về"</b> — hành trình có thể tới 6 chặng (RB21)</span></div>
+    <div class="no"><span class="no__n">13</span><span><b>Nút "áp dụng cho tất cả các chặng"</b> ở khối Dịch vụ thêm — buộc phải tải hết N chặng, đúng thứ đang tránh (§7.4)</span></div>
+    <div class="no"><span class="no__n">14</span><span><b>Tự tải điều kiện vé khi mở panel chi tiết</b> — khách so sánh 5 chuyến là tốn 5 lượt (RB18)</span></div>
+    <div class="no"><span class="no__n">15</span><span><b>Gộp ba loại dịch vụ thêm thành một dòng ở cột tóm tắt</b> — khách không đối chiếu được thứ mình vừa chọn (RB22)</span></div>
+    <div class="no"><span class="no__n">16</span><span><b>Bỏ ô ngày hết hạn giấy tờ</b> — bắt buộc với hộ chiếu, thiếu là không đặt được (RB23)</span></div>
+    <div class="no"><span class="no__n">17</span><span>Nói <b>"đã cộng dặm"</b> sau khi nhập thẻ hội viên — Bookese không xác minh được số thẻ, chỉ được nói <b>"đã gửi cho hãng"</b> (RB24)</span></div>
+    <div class="no"><span class="no__n">18</span><span>Đặt <b>thẻ hội viên hãng bay cạnh hạng thành viên Bookese</b> — khách hiểu nhầm dặm bay và xu là một</span></div>
+    <div class="no"><span class="no__n">19</span><span><b>Một khối điều kiện vé chung cho cả chuyến bay</b> — mỗi hạng vé có điều kiện khác nhau (RB25)</span></div>
+    <div class="no"><span class="no__n">20</span><span><b>Bắt khách mở panel chi tiết mới đặt được</b> — hạng rẻ nhất đã chọn sẵn ở dòng kết quả (RB26)</span></div>
+    <div class="no"><span class="no__n">21</span><span><b>Tải trước điều kiện vé của các hạng khách chưa bấm</b> — gấp ba chi phí cho thứ khách không hỏi</span></div>
+    <div class="no"><span class="no__n">22</span><span>Ô <b>"tên trên giấy tờ khác tên đặt vé"</b> — tên trên vé bắt buộc trùng giấy tờ, mở ô cho nhập lệch là tự tạo đơn hỏng (RB28)</span></div>
+    <div class="no"><span class="no__n">23</span><span><b>Lồng khối gấp mở bên trong thẻ hành khách</b> — thẻ đã là một khối rồi (RB28)</span></div>
+    <div class="no"><span class="no__n">24</span><span><b>Bỏ giá từng chặng ở màn thanh toán</b> — khách không đối chiếu được với thứ vừa chọn ở M2 (RB27)</span></div>
+    <div class="no"><span class="no__n">25</span><span>Nhãn <b>Giá sắp tăng · Chỉ hôm nay · 12 người đang xem</b> — bịa dữ liệu, khách quay lại một lần là mất niềm tin vĩnh viễn (RB29)</span></div>
+    <div class="no"><span class="no__n">26</span><span><b>Đồng hồ đếm ngược ở dòng kết quả</b> — áp lực giả; đồng hồ chỉ có ở M4 nơi chỗ thật sự đang bị giữ (RB29)</span></div>
+    <div class="no"><span class="no__n">27</span><span>Hiện tên <b>"Pacific Airlines"</b> thay cho <b>"Vietnam Airlines"</b> — khách mua vé VNA, nhưng phải ghi chú hãng điều hành (RB30)</span></div>
+    <div class="no"><span class="no__n">28</span><span>Dùng <b>ảnh hộ chiếu của người thật</b> làm minh họa — vi phạm dữ liệu cá nhân, phải tự dựng ảnh mẫu (RB31)</span></div>
+    <div class="no"><span class="no__n">29</span><span>Áp hệ thiết kế trang khách hàng lên <b>màn hình quản trị</b> — hai hệ khác hẳn nhau (RB32)</span></div>
+    <div class="no"><span class="no__n">30</span><span>Thêm <b>tab thứ năm</b> vào trang lịch sử đặt chỗ — trang đang chạy chỉ có bốn tab (RB33)</span></div>
+    <div class="no"><span class="no__n">31</span><span>Thêm <b>cột thứ chín</b> vào bảng quản trị — bảng hiện vừa khít màn hình</span></div>
+    <div class="no"><span class="no__n">32</span><span><b>Dịch thông điệp lỗi gốc</b> trong nhật ký kỹ thuật — gửi cho đối tác phải dịch ngược</span></div>
+    <div class="no"><span class="no__n">33</span><span><b>Hàng biểu tượng tiện ích</b> trên dòng kết quả — tốn 28px mỗi dòng để nói lại đúng thứ hàng 3 đã viết bằng chữ</span></div>
+    <div class="no"><span class="no__n">34</span><span>Thanh <b>"Xem hành trình và các hạng vé"</b> riêng một hàng — 56px × 50 kết quả = 2.800px cho việc cả dòng đã làm được</span></div>
+    <div class="no"><span class="no__n">35</span><span><b>Logo hãng dựng thành khối màu đặc 82px</b> — logo 32px là đủ, khối 82px đẩy dòng cao gấp ba</span></div>
+    <div class="no" style="border-bottom:0"><span class="no__n">36</span><span>Hiện <b>"Còn 32 chỗ"</b> — chỉ hiện số chỗ khi ≤ 5, còn lại là nhiễu</span></div>
+  </section>
+
+  <!-- ============ DÒNG CHUYẾN BAY ============ -->
+  <section class="block" id="dongbay">
+    <h2>9d. Dòng chuyến bay — ba hàng, cao 108px (§9.4 · RB36)</h2>
+    <p class="lead">🔴 Mục này được viết lại <b>sau khi dựng thử</b>. Bản trước xếp mọi thứ thành khối
+      chồng nhau, ra một dòng cao <b>~570px</b> — màn hình 1080px chỉ thấy hai chuyến, 50 kết quả là
+      cuộn 25 lần. Bản này gói lại còn <b>108px</b>, thấy <b>5–6 chuyến</b> mỗi màn hình.</p>
+
+    <table class="spec">
+      <thead><tr><th>Hàng</th><th>Nội dung</th><th>Cao</th></tr></thead>
+      <tbody>
+        <tr><td><b>1</b></td><td>Logo 32px · hãng · số hiệu · tàu bay · huy hiệu · số chỗ (chỉ khi ≤5)</td><td>20px <span class="u-text-faint">(+18px nếu có dòng điều hành bởi)</span></td></tr>
+        <tr><td><b>2</b></td><td>Giờ đi — dải thời lượng — giờ đến · giá bên phải</td><td>36px</td></tr>
+        <tr><td><b>3</b></td><td>Hạng vé · xách tay · ký gửi · hoàn vé · xu · nút Chọn bên phải</td><td>20px</td></tr>
+        <tr><td></td><td>Padding 16px trên + 16px dưới</td><td>32px</td></tr>
+        <tr><td></td><td><b>Tổng</b></td><td><b>~108px</b> (126px khi có dòng điều hành bởi)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Mười thứ đã cắt và cắt đi đâu</h3>
+    <table class="spec">
+      <thead><tr><th>Bản trước</th><th>Cao</th><th>Bản này</th><th>Đi đâu</th></tr></thead>
+      <tbody>
+        <tr><td>Logo khối vuông 82px</td><td>82</td><td>32px, bo 6px</td><td>—</td></tr>
+        <tr><td>Tên hãng và số hiệu hai dòng</td><td>44</td><td>Một dòng, ngăn bằng ·</td><td>—</td></tr>
+        <tr><td>Huy hiệu chiếm dòng riêng</td><td>40</td><td>Nối tiếp tên hãng cùng hàng</td><td>—</td></tr>
+        <tr><td>Dải giờ bay có đường kẻ và chấm tròn</td><td>90</td><td>36px, kẻ 1px, máy bay 14px</td><td>—</td></tr>
+        <tr><td>Khối hạng vé bốn dòng</td><td>110</td><td>Một dòng, ngăn bằng ·</td><td>—</td></tr>
+        <tr><td>Hàng sáu biểu tượng tiện ích</td><td>28</td><td class="u-text-error">🔴 Bỏ hẳn</td><td>Panel chi tiết — chúng lặp lại đúng thứ hàng 3 đã nói bằng chữ</td></tr>
+        <tr><td>"Đã bao gồm thuế và phí" dòng riêng</td><td>22</td><td>Rút thành <code>· gồm thuế</code> 12px</td><td>—</td></tr>
+        <tr><td>"Giá người lớn — xem chi tiết…"</td><td>44</td><td class="u-text-error">🔴 Bỏ khỏi dòng</td><td>Tooltip ⓘ cạnh giá — nơi đã có bảng tách giá theo loại khách</td></tr>
+        <tr><td>Nút Chọn chuyến cao 56px</td><td>56</td><td>36px, nhãn rút còn <b>Chọn</b></td><td>—</td></tr>
+        <tr><td>Thanh "Xem hành trình và các hạng vé ▾"</td><td>56</td><td class="u-text-error">🔴 Bỏ hẳn</td><td>Cả dòng bấm được; còn một mũi ⌄ 16px</td></tr>
+        <tr><td><b>Cộng</b></td><td><b>~570</b></td><td><b>~108</b></td><td class="u-text-success"><b>giảm 81%</b></td></tr>
+      </tbody>
+    </table>
+    <p class="text-body-small-regular u-text-success" style="margin:12px 0 0">
+      ✅ <b>Không mất một thông tin nào.</b> Tám trong mười là gói lại; hai thứ bị bỏ khỏi dòng đều đã có chỗ khác nói kỹ hơn.
+    </p>
+
+    <h3>Cả dòng bấm được (§9.4.4)</h3>
+    <table class="spec">
+      <tbody>
+        <tr><td>Bất kỳ đâu trên dòng</td><td>Mở panel chi tiết</td></tr>
+        <tr><td>Nút <b>Chọn</b></td><td>Đặt thẳng hạng đang chọn — không mở panel</td></tr>
+        <tr><td>Giá có mũi <b>▾</b></td><td>Mở danh sách hạng vé</td></tr>
+        <tr><td>Biểu tượng <b>ⓘ</b></td><td>Mở tooltip tách giá theo loại khách</td></tr>
+        <tr><td>Tên hạng vé ở hàng 3</td><td>Mở bảng nổi "Thông tin hạng vé"</td></tr>
+      </tbody>
+    </table>
+    <p class="text-body-small-regular u-text-error" style="margin:12px 0 0">
+      ⚠️ Bốn vùng con phải <b>chặn sự kiện lan lên dòng cha</b>, nếu không bấm Chọn sẽ vừa đặt vé vừa bung panel.
+    </p>
+
+    <h3>Điện thoại — hai hàng, ~96px (§9.4.5)</h3>
+    <table class="spec">
+      <tbody>
+        <tr><td>Logo</td><td>28px</td></tr>
+        <tr><td>Tên hãng</td><td>Rút gọn: <i>Vietravel Airlines → Vietravel</i></td></tr>
+        <tr><td>Tàu bay · nút Chọn</td><td class="u-text-error">🔴 Ẩn — chạm cả dòng để mở panel, chọn trong panel</td></tr>
+        <tr><td>Chip xu</td><td>Chỉ hiện khi đã đăng nhập</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ HUY HIỆU ============ -->
+  <section class="block" id="huyhieu">
+    <h2>9c. Huy hiệu trên dòng chuyến bay (§9.4.1 · RB29)</h2>
+    <p class="lead">Danh sách 50 chuyến giống hệt nhau thì khách không biết bắt đầu từ đâu.
+      🔴 Toàn bộ huy hiệu tính từ <b>tập kết quả hiện có</b> — không tốn thêm lượt gọi nào.</p>
+
+    <div class="demo" style="background:#fff;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <span class="bdg bdg--ok">🏷 Rẻ nhất</span>
+      <span class="bdg bdg--info">⚡ Nhanh nhất</span>
+      <span class="bdg bdg--ok">📉 Thấp nhất 7 ngày</span>
+      <span class="bdg bdg--ok">🏷 Rẻ nhất buổi sáng</span>
+      <span class="bdg bdg--ok">💰 Rẻ hơn trung bình 15%</span>
+      <span class="bdg bdg--warn">⭐ Đáng chọn nhất</span>
+      <span class="bdg bdg--info">✈ Bay thẳng duy nhất buổi tối</span>
+    </div>
+
+    <table class="spec">
+      <thead><tr><th>Nhóm</th><th>Nội dung</th><th>Số lượng</th><th>Vị trí</th></tr></thead>
+      <tbody>
+        <tr><td><b>A</b> — huy hiệu so sánh</td><td>Xét theo thứ tự ưu tiên, gắn cái đầu tiên đúng rồi <b>dừng</b></td><td class="u-text-error">🔴 Tối đa <b>1</b></td><td>Trên dòng giờ bay, sát mép trái</td></tr>
+        <tr><td><b>B</b> — nhãn thuộc tính</td><td>Chỉ là dữ kiện: có ký gửi · còn ≤5 chỗ · hoàn được</td><td>Tối đa 3</td><td>Trong khối viền trái</td></tr>
+        <tr><td><b>C</b> — chip xu</td><td>🪙 +12.000 Xu theo hạng thành viên</td><td>1, <b>luôn đứng cuối</b></td><td>Trong khối viền trái</td></tr>
+      </tbody>
+    </table>
+    <p class="text-body-small-regular u-text-error" style="margin:12px 0 0">
+      🔴 Tính lại khi <b>đổi hạng vé</b> (đổi sang hạng đắt hơn thì "Rẻ nhất" phải biến mất)
+      và khi <b>lọc lại danh sách</b> — nhãn cũ trên tập kết quả mới là nói sai.
+    </p>
+
+    <h3>Bảy nhãn TUYỆT ĐỐI KHÔNG được dùng</h3>
+    <table class="spec">
+      <tbody>
+        <tr><td class="u-text-error">⏰ Giá sắp tăng · Chỉ hôm nay</td><td>Không kiểm chứng được — giá vé do hãng quyết, Bookese không biết trước</td></tr>
+        <tr><td class="u-text-error">🔥 12 người đang xem chuyến này</td><td>Bịa dữ liệu xã hội</td></tr>
+        <tr><td class="u-text-error">Đồng hồ đếm ngược ở dòng kết quả</td><td>Áp lực giả. Đồng hồ chỉ có ở M4 vì ở đó chỗ <b>thật sự</b> đang bị giữ</td></tr>
+        <tr><td class="u-text-error">Hot · Deal khủng · Siêu rẻ</td><td>Nói mà không chứng minh được bằng số</td></tr>
+        <tr><td class="u-text-error">Còn 2 chỗ khi hãng không trả số chỗ thật</td><td>Chỉ hiện khi có dữ liệu thật</td></tr>
+        <tr><td class="u-text-error">"Rẻ nhất" gắn cho nhiều hơn một chuyến</td><td>Sai nghĩa. Đồng giá thì gắn cho chuyến khởi hành sớm nhất</td></tr>
+        <tr><td class="u-text-error">Nhãn không đổi khi khách lọc lại</td><td>Nhãn cũ trên tập kết quả mới là nói sai</td></tr>
+      </tbody>
+    </table>
+    <div class="notice notice--warn" style="margin-top:12px">
+      <span aria-hidden="true">⚠️</span>
+      <span>Đây là chỗ dễ đánh mất thứ Bookese đang xây. Sản phẩm nhắm vào <b>khách quay lại</b> —
+      một nhãn "giá sắp tăng" mà giá hôm sau rẻ hơn thì khách đó không quay lại nữa.
+      Mọi huy hiệu phải đúng theo <b>nghĩa đen</b> và kiểm chứng được từ chính màn hình đó.</span>
+    </div>
+
+    <h3>Hãng bán vé và hãng khai thác (§9.4.2 · RB30)</h3>
+    <div class="demo" style="background:#fff">
+      <div class="airline">
+        <span class="airline__logo" style="background:#1B3A6B">VN</span>
+        <span><span class="airline__name">Vietnam Airlines</span><br>
+        <span class="airline__meta">VN6025 · Airbus A320</span>
+        <span class="opnote">(điều hành bởi Pacific Airlines)</span></span>
+      </div>
+    </div>
+    <table class="spec">
+      <tbody>
+        <tr><td>Tên hãng và logo</td><td>🔴 Theo <b>hãng bán vé</b> — Pacific hiện thành <b>Vietnam Airlines</b> (§21-27)</td></tr>
+        <tr><td>Dòng ghi chú</td><td>🔴 <b>Bắt buộc</b> khi hai hãng khác nhau: <i>(điều hành bởi …)</i> · 13/400 <code>#575764</code></td></tr>
+        <tr><td>Hai hãng trùng nhau</td><td><b>Ẩn hẳn</b> — phần lớn chuyến bay rơi vào trường hợp này</td></tr>
+        <tr><td>Hiển thị ở đâu</td><td>Mọi nơi có tên chuyến bay: M2 · M3 · M4 khối ① · M5 · M6 · vé PDF</td></tr>
+        <tr><td>Bộ lọc hãng</td><td>Lọc theo hãng bán vé — chọn Vietnam Airlines phải ra cả chuyến do Pacific khai thác</td></tr>
+      </tbody>
+    </table>
+    <p class="text-body-small-regular u-text-label" style="margin:12px 0 0">
+      Khách mua vé mang tên Vietnam Airlines nhưng làm thủ tục ở quầy Pacific và lên máy bay sơn màu Pacific.
+      Không báo trước là khách hoang mang và gọi tổng đài — đúng loại cuộc gọi tránh được bằng một dòng chữ.
+    </p>
+  </section>
+
+  <!-- ============ GIẤY TỜ VÀ THẺ HỘI VIÊN ============ -->
+  <section class="block" id="giayto">
+    <h2>9b. Giấy tờ tùy thân và thẻ hội viên (§11.4.1 – §11.4.3 · RB23 · RB24)</h2>
+
+    <h3>Khối giấy tờ — bốn ô hiển thị (RB23)</h3>
+    <p class="lead">Bản đặc tả trước chỉ vẽ loại giấy tờ và số giấy tờ. Thiếu <b>ngày hết hạn</b>,
+      <b>quốc tịch</b> và <b>nơi cấp</b> — cả ba đều có trong hệ thống nguồn cung.</p>
+    <table class="spec">
+      <thead><tr><th>Ô</th><th>Bắt buộc</th><th>Kiểu</th><th>Ghi chú</th></tr></thead>
+      <tbody>
+        <tr><td>Loại giấy tờ</td><td class="u-text-success">✅ khi khai giấy tờ</td><td>Hộp chọn</td><td>Hộ chiếu · Căn cước công dân</td></tr>
+        <tr><td>Số giấy tờ</td><td class="u-text-success">✅ khi khai giấy tờ</td><td>Ô chữ</td><td>Tối đa 15 ký tự. Căn cước: <b>đúng 12 chữ số</b></td></tr>
+        <tr><td><b>Ngày hết hạn</b></td><td class="u-text-error">✅ khi khai — <b>trừ căn cước</b></td><td>Lịch</td><td>Phải sau hôm nay. Hộ chiếu: cảnh báo mốc 6 tháng</td></tr>
+        <tr><td><b>Quốc tịch</b></td><td>🟡 Không bắt buộc kỹ thuật · <b>bắt buộc trên giao diện với chặng quốc tế</b></td><td>Hộp chọn quốc gia</td><td>Mặc định Việt Nam</td></tr>
+        <tr><td>Nơi cấp</td><td class="u-text-error">❌ Không hiển thị</td><td>—</td><td>Hệ thống tự đặt bằng quốc tịch — giảm một ô mà không mất dữ liệu</td></tr>
+        <tr><td>Ngày cấp</td><td class="u-text-error">❌ Không hiển thị</td><td>—</td><td>Hệ thống có nhận nhưng hãng không dùng — hỏi thêm là làm phiền</td></tr>
+      </tbody>
+    </table>
+    <div class="notice notice--warn" style="margin-top:12px">
+      <span aria-hidden="true">⚠️</span>
+      <span><b>Vì sao quốc tịch nên bắt buộc ở giao diện dù hệ thống cho phép bỏ trống.</b>
+      Chặng quốc tế phải khai thông tin hành khách trước chuyến bay cho nhà chức trách nước đến.
+      Thiếu quốc tịch thì hồ sơ bị trả lại <b>sau khi đã xuất vé</b> — lúc đó phải gọi khách xin bổ sung.
+      Chặn ngay ở ô nhập rẻ hơn nhiều.</span>
+    </div>
+    <table class="spec" style="margin-top:16px">
+      <thead><tr><th>Trường hợp</th><th>Cách xử lý</th></tr></thead>
+      <tbody>
+        <tr><td>Chặng <b>nội địa</b></td><td>Khối đóng sẵn, nhãn "không bắt buộc"</td></tr>
+        <tr><td>Chặng <b>quốc tế</b></td><td>Khối mở sẵn, nhãn "bắt buộc"</td></tr>
+        <tr><td>Chọn <b>Căn cước công dân</b></td><td>🔴 Ẩn ô ngày hết hạn · số chỉ nhận 12 chữ số · nơi cấp mặc định Việt Nam</td></tr>
+        <tr><td>Chọn <b>Hộ chiếu</b></td><td>Hiện ô ngày hết hạn kèm cảnh báo mốc 6 tháng (tính sẵn ngày cụ thể)</td></tr>
+        <tr><td>Khách đã đăng nhập</td><td>Điền sẵn từ hồ sơ đã lưu</td></tr>
+        <tr><td>Tên trên giấy tờ</td><td class="u-text-error">❌ Không có ô riêng (§21-22) — tên trên vé <b>bắt buộc trùng</b> tên giấy tờ; hệ thống tự sao chép</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Thẻ hội viên hãng bay — MỘT Ô, không phải một khối (§11.4.2)</h3>
+    <table class="spec">
+      <tbody>
+        <tr><td>Hãng</td><td>Hộp chọn. 🔴 Mặc định là <b>hãng khai thác chặng đầu tiên</b></td></tr>
+        <tr><td>Số thẻ</td><td>Ô chữ và số. Bắt buộc nếu đã chọn hãng</td></tr>
+        <tr><td>Hạng thẻ</td><td class="u-text-error">❌ Không hiển thị — hãng tự tra theo số thẻ</td></tr>
+        <tr><td>Hình thức</td><td>🔴 <b>MỘT Ô trong lưới</b>, không phải một khối gấp mở. Một hãng → nhãn ghi thẳng tên hãng. Nhiều hãng → hộp chọn hãng gắn liền ô số thẻ</td></tr>
+        
+        <tr><td>Không xác minh được</td><td>🔴 Không dấu tích xanh, không hứa "đã cộng dặm". Chỉ ghi <b>"đã gửi cho hãng"</b></td></tr>
+        <tr><td>Đa chặng nhiều hãng</td><td>Một thẻ mỗi hành khách + ghi chú <i>"Thẻ chỉ áp dụng cho chặng do {hãng} khai thác."</i></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Bổ sung sau khi đã đặt (§11.4.3)</h3>
+    <p class="lead">Rất nhiều khách chỉ nhớ ra số thẻ sau khi đặt xong. Hệ thống nguồn cung có
+      <b>đường riêng</b> cho việc này — không dùng thì khách buộc phải gọi tổng đài.
+      Bổ sung thẻ hay giấy tờ <b>không đụng tới giá, không đụng tới chỗ đã giữ</b>.</p>
+    <table class="spec">
+      <tbody>
+        <tr><td><b>M5</b> xác nhận</td><td>Dải nhắc <i>"Bạn có thẻ hội viên hãng bay?"</i> + nút <b>Thêm thẻ hội viên</b></td></tr>
+        <tr><td><b>M6</b> chi tiết đơn</td><td>Nút <b>Thêm / sửa thẻ hội viên</b> và <b>Bổ sung giấy tờ</b> ở <b>mỗi hành khách</b></td></tr>
+        <tr><td>Hạn chót</td><td>Trước giờ khởi hành. Sau đó ẩn nút, hiện <i>"Liên hệ trực tiếp hãng để bổ sung dặm."</i></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ GIỚI HẠN DỮ LIỆU ============ -->
+  <section class="block" id="khonglam">
+    <h2>10. Những gì hệ thống không làm được (§22)</h2>
+    <p class="lead">Đọc kỹ trước khi đề xuất thêm bất kỳ tính năng nào. Đây là giới hạn thật của hệ thống nguồn cung.</p>
+    <table class="spec">
+      <thead><tr><th>Muốn hiển thị</th><th>Có dữ liệu?</th><th>Ghi chú cho thiết kế</th></tr></thead>
+      <tbody>
+        <tr><td><b>Tên hạng vé</b></td><td class="u-text-error">⚠️</td><td>Không có trường riêng, nhưng <b>dựng được từ mã giá + bảng ánh xạ</b> (§10.3). Hiển thị ở <b>cả 6 màn</b>. Ô nhãn phải <b>co giãn</b></td></tr>
+        <tr><td>Danh mục hành lý / suất ăn / sơ đồ ghế</td><td class="u-text-success">✅</td><td>🔴 Nhưng <b>mỗi lượt hỏi đều tốn phí</b> — chỉ gọi khi khách bấm nút, theo chiều bay, có đệm phiên (RB19 · §11.6)</td></tr>
+        <tr><td>Hành lý xách tay và ký gửi</td><td class="u-text-error">⚠️</td><td>Chuỗi <b>tự do</b>, <b>có thể rỗng</b>. Cần hai trạng thái rỗng khác nhau. <b>Không</b> thiết kế thanh trượt lọc theo số kg</td></tr>
+        <tr><td>Điều kiện hoàn / đổi chi tiết</td><td class="u-text-error">⚠️</td><td>Phải mở panel mới có; là <b>văn bản tự do</b> — khối không thể là bảng cấu trúc cố định, chiều cao thay đổi</td></tr>
+        <tr><td>Thông báo tự động khi hãng đổi lịch</td><td class="u-text-error">❌</td><td>Hệ thống phải tự hỏi định kỳ ⟶ <b>M5 biến thể B và C là BẮT BUỘC</b></td></tr>
+        <tr><td>Hạn mức công nợ với nhà cung cấp</td><td class="u-text-error">❌</td><td>Không thiết kế đồng hồ số dư ở M7</td></tr>
+        <tr><td>Phát thải CO₂</td><td class="u-text-error">⚠️</td><td>Có nhưng không rõ đơn vị đo — chưa dùng</td></tr>
+        <tr><td>Sơ đồ chỗ ngồi thật</td><td class="u-text-success">✅</td><td>Đủ dữ liệu vẽ chính xác từng ghế</td></tr>
+        <tr><td>Xem trước số tiền hoàn và phí hoàn</td><td class="u-text-success">✅</td><td><b>Điểm mạnh nhất</b> — khai thác ở M6</td></tr>
+        <tr><td>Cảnh báo đổi sân bay · hạ cánh hôm sau</td><td class="u-text-success">✅</td><td>🔴 <b>Bắt buộc hiển thị</b></td></tr>
+        <tr><td>Giá tách theo người lớn / trẻ em / em bé</td><td class="u-text-success">✅</td><td>Rất đầy đủ — khai thác triệt để trong bảng tách giá</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+</main>
+
+<div class="toaster"></div>
+
+<script src="assets/app.js"></script>
+<script src="assets/data.js"></script>
+<script>
+(function () {
+  BK.mountHeader('vmb');
+  document.getElementById('legend').innerHTML = BK.SEAT_LEGEND.map(function (l) {
+    return '<span class="legend__i"><span class="legend__sw" style="border-color:' + l.v +
+      (l.k === 'taken' ? ';background:var(--seat-taken-bg)' : '') + '"></span>' + l.label + '</span>';
+  }).join('');
+  BK.mountProto([]);
+})();
+</script>
+</body>
+</html>

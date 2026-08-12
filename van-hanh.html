@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M7 · Quản lý đơn vé máy bay — Bookese Admin</title>
+<!-- 🔴 §14.1 · RB32 · §21-29 — KHU QUẢN TRỊ DÙNG HỆ THIẾT KẾ RIÊNG.
+     Trang này CỐ Ý KHÔNG nạp tokens.css và components.css của trang khách hàng:
+     không #0064FD, không Inter/Manrope, không bo 12px, không thẻ không bóng. -->
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body>
+
+<div class="adm">
+  <!-- ===================== §14.2 · VỊ TRÍ TRONG TRÌNH ĐƠN QUẢN TRỊ =====================
+       🔴 Phương án A — đổi "Quản lý đặt phòng" thành nhóm hai mục con, giống hệt cách
+       "Quản lý nội dung" và "Quản lý tài khoản" đang làm. Không phát minh gì mới.
+       ================================================================================ -->
+  <nav class="adm__nav">
+    <span class="adm__brand">Bookese Admin</span>
+    <a href="#">Quản lý chỗ nghỉ</a>
+    <a href="#">Danh sách yêu thích</a>
+    <span class="adm__group">Quản lý đơn hàng</span>
+    <a href="#" class="adm__sub">Đơn lưu trú</a>
+    <a href="#" class="adm__sub active">Đơn vé máy bay</a>
+    <a href="#">Quản lý khách hàng</a>
+    <a href="#">Quản lý doanh thu</a>
+    <a href="#">Quản lý đánh giá</a>
+    <span class="adm__group">Quản lý nội dung</span>
+    <a href="#" class="adm__sub">Danh sách thị trường</a>
+    <a href="#" class="adm__sub">Danh sách khu vực</a>
+    <span class="adm__group">Quản lý tài khoản</span>
+    <a href="#" class="adm__sub">Tài khoản nội bộ</a>
+    <a href="#" class="adm__sub">Tài khoản chỗ nghỉ</a>
+    <a href="#" id="navOp">Quản lý thao tác</a>
+    <a href="#">Quản lý thanh toán</a>
+    <a href="#">Quản lý xu</a>
+    <a href="#">Quản lý khuyến mãi</a>
+  </nav>
+
+  <div class="adm__main">
+    <!-- Thanh mảnh tiêu đề — giữ nguyên khung đang chạy -->
+    <div class="page-bar">
+      <div class="container-fluid">
+        <h1 id="pageH1">Quản lý đơn vé máy bay</h1>
+        <div class="breadcrumb-admin" id="pageCrumb">Trang chủ · Quản lý đơn hàng · Đơn vé máy bay · /manager-booking-flight</div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+
+      <!-- ===================== §14.7 · BẢNG THEO DÕI VẬN HÀNH =====================
+           BỐN chỉ số, không hơn. Chỉ số thứ hai là chỉ số DUY NHẤT có ngưỡng bằng 0.
+           ======================================================================== -->
+      <div class="metric-tiles" id="metrics"></div>
+
+      <!-- ===================== §14.3 · BẢNG DANH SÁCH ĐƠN VÉ MÁY BAY =====================
+           Khung đang chạy: thẻ [ô tìm kiếm + bộ lọc] → [thanh tab] → [dòng đếm]
+           → [bảng 8 cột] → [phân trang]. Giữ nguyên toàn bộ.
+           ================================================================================= -->
+      <div class="card" style="margin-top:16px">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-xxl-6">
+              <label class="form-label" for="q">Tìm kiếm</label>
+              <div class="input-group">
+                <!-- 🔴 Phải tìm được theo SỐ VÉ ĐIỆN TỬ: hãng và khách đều nhắc tới đơn bằng số vé -->
+                <input class="form-control" id="q" placeholder="Tìm theo mã đặt chỗ, số vé, tên khách hoặc email">
+                <span class="input-group-text">🔍</span>
+              </div>
+            </div>
+            <div class="col-xxl-6">
+              <label class="form-label">Bộ lọc</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <select class="form-select" style="width:auto;min-width:150px">
+                  <option>Ngày đặt</option><option>Ngày khởi hành</option><option>Ngày xuất vé</option>
+                </select>
+                <!-- Ant Design DatePicker — thành phần đã có, KHÔNG vẽ mới -->
+                <span class="ant-picker" style="width:150px"><input placeholder="Từ ngày" readonly><span class="ant-picker-suffix">📅</span></span>
+                <span class="ant-picker" style="width:150px"><input placeholder="Đến ngày" readonly><span class="ant-picker-suffix">📅</span></span>
+                <select class="form-select" style="width:auto;min-width:170px" id="fAl">
+                  <option value="">Lọc theo hãng bay</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- §14.3 · Thanh tab trạng thái — cùng cơ chế tab của đơn phòng, đổi nhãn -->
+        <div style="padding:0 16px">
+          <div class="Tab__Header" id="tabs"></div>
+        </div>
+
+        <div style="padding:0 16px">
+          <div class="count-line" id="countLine"></div>
+          <div class="table-responsive">
+            <!-- 🔴 §21-31 — ĐÚNG TÁM CỘT. Bảng hiện vừa khít màn hình;
+                 thêm cột thứ chín là bắt cuộn ngang. Thứ cần thêm thì đưa vào trang chi tiết. -->
+            <table class="Table">
+              <thead class="Table__Head"><tr>
+                <th>Mã đặt chỗ</th><th>Tên khách đặt</th><th>Hành trình</th><th>Ngày khởi hành</th>
+                <th>Hãng · số hiệu</th><th>Ngày đặt</th><th>Trạng thái</th><th class="text-end">Tổng tiền</th>
+              </tr></thead>
+              <tbody class="Table__Body" id="rows"></tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <button class="page-link" type="button">«</button>
+            <button class="page-link active" type="button">1</button>
+            <button class="page-link" type="button">2</button>
+            <button class="page-link" type="button">3</button>
+            <button class="page-link" type="button">…</button>
+            <button class="page-link" type="button">17</button>
+            <button class="page-link" type="button">»</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== §14.4 · TRANG CHI TIẾT MỘT ĐƠN ===================== -->
+      <div id="detail"></div>
+
+      <!-- ===================== §14.5 · NHẬT KÝ THAO TÁC ===================== -->
+      <div id="oplog" class="u-hidden"></div>
+
+      <div class="adm__footer">2026 © Bookese.</div>
+    </div>
+  </div>
+</div>
+
+<div class="toaster"></div>
+
+<script src="assets/app.js"></script>
+<script src="assets/data.js"></script>
+<script>
+(function () {
+  /* 🔴 §14.1 — KHU QUẢN TRỊ dùng định dạng giá HẬU TỐ `5.071.743 VND`,
+     trái với `VND 5.071.743` của trang khách. Ngoại lệ CÓ CHỦ ĐÍCH:
+     nhân viên vận hành đã quen mắt, đổi chỉ gây nhầm. */
+  var money = BK.moneyAdmin;
+
+  /* ---------- §14.7 · Bốn chỉ số ---------- */
+  var METRICS = [
+    { l: 'Tỷ lệ xuất vé thành công', v: '99,4%', th: 'ngưỡng < 99% · thời gian thực', alarm: false },
+    { l: 'Đã thu tiền, chưa có vé',  v: '3',     th: 'ngưỡng > 0 · thời gian thực',   alarm: true },
+    { l: 'Lệch giá tìm kiếm ↔ đặt',  v: '1,2%',  th: 'ngưỡng > 2% · hằng ngày',       alarm: false },
+    { l: 'Phản hồi chậm nhất',       v: '5,1s',  th: 'ngưỡng > 4s · Vietjet Air',     alarm: true }
+  ];
+  function drawMetrics() {
+    document.getElementById('metrics').innerHTML = METRICS.map(function (m) {
+      return '<div class="metric-tile' + (m.alarm ? ' metric-tile--alarm' : '') + '">' +
+        '<div class="small text-muted">' + m.l + '</div>' +
+        '<div class="metric-tile__v' + (m.alarm ? ' text-danger' : '') + '">' + m.v + '</div>' +
+        '<div class="small text-muted">' + m.th + '</div></div>';
+    }).join('');
+  }
+
+  /* ---------- §14.3 · Tab trạng thái ---------- */
+  var TABS = [
+    { id: 'all',     label: 'Tất cả' },
+    { id: 'pending', label: 'Chờ thanh toán' },
+    { id: 'issued',  label: 'Đã xuất vé' },
+    /* 🔴 Tab quan trọng nhất của cả màn hình — hiện SỐ ĐƠN ngay trên nhãn và chuyển ĐỎ khi > 0.
+       Đây là tình huống đã cầm tiền của khách mà chưa giao được hàng; nó không được phép
+       nằm im trong một tab trông giống mọi tab khác. */
+    { id: 'nopnr',   label: 'Đã thu tiền, chưa có vé', alarm: true },
+    { id: 'refund',  label: 'Yêu cầu hoàn / đổi' },
+    { id: 'done',    label: 'Đã hoàn thành' },
+    { id: 'cancel',  label: 'Đã hủy' },
+    { id: 'changed', label: 'Đã đổi vé' }
+  ];
+
+  var ORDERS = [
+    { code: 'ABCDEF', tab: 'nopnr', who: 'Nguyễn Văn A', route: 'HAN → SGN → HAN', dep: '20/08/2026',
+      al: 'VN', no: 'VN213 · VN6025', booked: '07/08/2026', st: ['Đã thu tiền, chưa có vé', 'bg-danger'],
+      total: 6592500, pax: { adt: 2, chd: 1, inf: 1 }, waited: '11 phút', failing: true, op: 'Pacific Airlines' },
+    { code: 'KLMNOP', tab: 'nopnr', who: 'Trần Thị B', route: 'SGN → PQC', dep: '21/08/2026',
+      al: 'VJ', no: 'VJ333', booked: '09/08/2026', st: ['Đã thu tiền, chưa có vé', 'bg-danger'],
+      total: 2180000, pax: { adt: 2 }, waited: '6 phút', failing: true },
+    { code: 'QRSTUV', tab: 'nopnr', who: 'Lê Văn C', route: 'DAD → HAN', dep: '23/08/2026',
+      al: 'VU', no: 'VU210', booked: '09/08/2026', st: ['Đã thu tiền, chưa có vé', 'bg-danger'],
+      total: 1180000, pax: { adt: 1 }, waited: '2 phút', failing: true },
+    { code: 'WXYZAB', tab: 'pending', who: 'Phạm Thị D', route: 'HAN → DAD', dep: '25/08/2026',
+      al: 'VN', no: 'VN165', booked: '10/08/2026', st: ['Chờ thanh toán', 'bg-warning'],
+      total: 1980000, pax: { adt: 2 }, hold: '04:12' },
+    { code: 'CDEFGH', tab: 'issued', who: 'Hoàng Văn E', route: 'SGN → CXR', dep: '26/08/2026',
+      al: 'VJ', no: 'VJ640', booked: '08/08/2026', st: ['Đã xuất vé', 'bg-success'],
+      total: 820000, pax: { adt: 1 } },
+    { code: 'IJKLMN', tab: 'refund', who: 'Đỗ Thị F', route: 'HAN → SGN', dep: '19/08/2026',
+      al: 'VN', no: 'VN213', booked: '05/08/2026', st: ['Yêu cầu hoàn', 'bg-warning'],
+      total: 1285362, pax: { adt: 1 }, submitted: '08/08/2026' },
+    { code: 'OPQRST', tab: 'changed', who: 'Vũ Văn G', route: 'HAN → HUI', dep: '18/08/2026',
+      al: 'VN', no: 'VN1543', booked: '01/08/2026', st: ['Đã đổi vé', 'bg-info'],
+      total: 2240000, pax: { adt: 2 } },
+    { code: 'UVWXYZ', tab: 'done', who: 'Bùi Thị H', route: 'SGN → DAD', dep: '14/04/2026',
+      al: 'VJ', no: 'VJ620', booked: '02/04/2026', st: ['Đã hoàn thành', 'bg-secondary'],
+      total: 1640000, pax: { adt: 2 } },
+    { code: 'ABCXYZ', tab: 'cancel', who: 'Ngô Văn I', route: 'HAN → HUI', dep: '03/03/2026',
+      al: 'VN', no: 'VN1543', booked: '20/02/2026', st: ['Đã hủy', 'bg-secondary'],
+      total: 1120000, pax: { adt: 1 } }
+  ];
+
+  var curTab = 'nopnr', curCode = 'ABCDEF';
+
+  document.getElementById('fAl').innerHTML = '<option value="">Lọc theo hãng bay</option>' +
+    Object.keys(BK.AIRLINES).map(function (k) { return '<option>' + BK.AIRLINES[k].name + '</option>'; }).join('');
+
+  function tabRows() {
+    return curTab === 'all' ? ORDERS : ORDERS.filter(function (o) { return o.tab === curTab; });
+  }
+
+  function drawTabs() {
+    var nAlarm = ORDERS.filter(function (o) { return o.tab === 'nopnr'; }).length;
+    document.getElementById('tabs').innerHTML = TABS.map(function (t) {
+      var label = t.label + (t.alarm ? ' (' + nAlarm + ')' : '');
+      var cls = 'Tab__Header__Tab__Item' +
+        (curTab === t.id ? ' Tab__Header__Tab__Item--active' : '') +
+        (t.alarm && nAlarm > 0 ? ' Tab__Header__Tab__Item--alarm' : '');
+      return '<button class="' + cls + '" type="button" data-tab="' + t.id + '">' + label + '</button>';
+    }).join('');
+  }
+
+  function drawRows() {
+    var list = tabRows();
+    document.getElementById('countLine').textContent = list.length + ' đơn vé máy bay';
+    document.getElementById('rows').innerHTML = list.map(function (o) {
+      var al = BK.AIRLINES[o.al];
+      return '<tr data-code="' + o.code + '"' + (o.code === curCode ? ' class="is-open"' : '') + '>' +
+        '<td class="Table__Body__Row__Content"><span class="fw-semibold">' + o.code + '</span><br>' +
+          '<button class="btn btn-outline-primary btn-sm" type="button" style="margin-top:4px" data-open="' + o.code + '">Xem chi tiết</button></td>' +
+        '<td class="Table__Body__Row__Content">' + o.who + '</td>' +
+        '<td class="Table__Body__Row__Content">' + o.route + '</td>' +
+        '<td class="Table__Body__Row__Content">' + o.dep + '</td>' +
+        '<td class="Table__Body__Row__Content">' + al.name + '<br><span class="small text-muted">' + o.no + '</span></td>' +
+        '<td class="Table__Body__Row__Content">' + o.booked + '</td>' +
+        '<td class="Table__Body__Row__Content"><span class="badge ' + o.st[1] + '">' + o.st[0] + '</span>' +
+          (o.waited ? '<br><span class="small text-danger">chờ ' + o.waited + '</span>' : '') +
+          (o.hold ? '<br><span class="small text-muted">còn ' + o.hold + '</span>' : '') + '</td>' +
+        /* 🔴 §14.3 cột 8 — định dạng HẬU TỐ */
+        '<td class="Table__Body__Row__Content text-end fw-semibold">' + money(o.total) + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  /* ==================================================================
+     §14.4 — TRANG CHI TIẾT: giữ cấu trúc ba thẻ của đơn phòng, THÊM ba thẻ
+     ================================================================== */
+  function drawDetail() {
+    var o = ORDERS.filter(function (x) { return x.code === curCode; })[0] || tabRows()[0];
+    if (!o) { document.getElementById('detail').innerHTML = ''; return; }
+    var al = BK.AIRLINES[o.al];
+
+    document.getElementById('detail').innerHTML =
+
+      /* ---- Thẻ 1 · Thông tin đơn ---- */
+      '<div class="card"><div class="card-header">Thông tin đơn ' + o.code +
+        '<span class="badge ' + o.st[1] + '" style="margin-left:8px">' + o.st[0] + '</span></div>' +
+        '<div class="card-body"><div class="row">' +
+          '<div class="col-xxl-6"><table class="Table"><tbody>' +
+            row('Mã đặt chỗ', '<b>' + o.code + '</b>') +
+            row('Tình trạng', o.st[0]) +
+            row('Ngày đặt', o.booked) +
+            row('Ngày khởi hành', o.dep) +
+          '</tbody></table></div>' +
+          '<div class="col-xxl-6"><table class="Table"><tbody>' +
+            row('Số chặng', String(o.no.split(' · ').length)) +
+            row('Người lớn', String(o.pax.adt || 0)) +
+            row('Trẻ em', String(o.pax.chd || 0)) +
+            row('Em bé', String(o.pax.inf || 0)) +
+          '</tbody></table></div>' +
+        '</div></div></div>' +
+
+      /* ---- Thẻ 2 · Thông tin khách đặt ---- */
+      '<div class="card"><div class="card-header">Thông tin khách đặt</div>' +
+        '<div class="card-body"><table class="Table"><tbody>' +
+          row('Họ và Tên', o.who) +
+          row('Số điện thoại', '0912 345 678') +
+          row('Email', 'a.nguyen@email.com') +
+          row('Xuất hoá đơn VAT', 'Không') +
+          row('Yêu cầu đặc biệt', '—') +
+        '</tbody></table></div></div>' +
+
+      /* ---- Thẻ 3 · Danh sách hành khách (MỚI) ---- */
+      '<div class="card"><div class="card-header">Danh sách hành khách</div>' +
+        '<div class="card-body table-responsive"><table class="Table">' +
+          '<thead class="Table__Head"><tr><th>Họ tên</th><th>Loại khách</th><th>Giấy tờ</th>' +
+          '<th>Số vé điện tử</th><th>Thẻ hội viên</th><th>Dịch vụ đã mua</th></tr></thead>' +
+          '<tbody class="Table__Body">' +
+          (o.failing
+            ? '<tr><td class="Table__Body__Row__Content">NGUYEN VAN A</td><td class="Table__Body__Row__Content">Người lớn</td>' +
+              '<td class="Table__Body__Row__Content">CCCD 001199001234</td>' +
+              '<td class="Table__Body__Row__Content text-danger">chưa xuất</td>' +
+              '<td class="Table__Body__Row__Content">VN 5901234567</td>' +
+              '<td class="Table__Body__Row__Content">🧳 23kg · 💺 12A</td></tr>'
+            : '<tr><td class="Table__Body__Row__Content">NGUYEN VAN A</td><td class="Table__Body__Row__Content">Người lớn</td>' +
+              '<td class="Table__Body__Row__Content">CCCD 001199001234</td>' +
+              '<td class="Table__Body__Row__Content">738-2401234567</td>' +
+              '<td class="Table__Body__Row__Content">VN 5901234567</td>' +
+              '<td class="Table__Body__Row__Content">🧳 23kg · 💺 12A</td></tr>') +
+        '</tbody></table></div></div>' +
+
+      /* ---- Thẻ 4 · Hành trình (MỚI) ---- */
+      '<div class="card"><div class="card-header">Hành trình</div>' +
+        '<div class="card-body table-responsive"><table class="Table">' +
+          '<thead class="Table__Head"><tr><th>Chặng</th><th>Hãng · số hiệu</th><th>Tàu bay</th>' +
+          '<th>Giờ</th><th>Nhà ga</th><th>Hạng vé</th></tr></thead><tbody class="Table__Body">' +
+          '<tr><td class="Table__Body__Row__Content">HAN → SGN</td>' +
+            '<td class="Table__Body__Row__Content">' + al.name + ' · VN213</td>' +
+            '<td class="Table__Body__Row__Content">Airbus A321</td>' +
+            '<td class="Table__Body__Row__Content">07:00 – 09:10</td>' +
+            '<td class="Table__Body__Row__Content">T1 → T3</td>' +
+            '<td class="Table__Body__Row__Content">Phổ thông tiết kiệm (T)</td></tr>' +
+          (o.op
+            /* §9.4.9 · RB30 — hãng khai thác khác hãng bán vé thì phải ghi rõ,
+               vì khách làm thủ tục ở quầy Pacific và CS cần biết trước */
+            ? '<tr><td class="Table__Body__Row__Content">SGN → HAN</td>' +
+              '<td class="Table__Body__Row__Content">' + al.name + ' · VN6025<br>' +
+                '<span class="small text-danger">(điều hành bởi ' + o.op + ')</span></td>' +
+              '<td class="Table__Body__Row__Content">Airbus A320</td>' +
+              '<td class="Table__Body__Row__Content">13:25 – 15:35</td>' +
+              '<td class="Table__Body__Row__Content">T3 → T1</td>' +
+              '<td class="Table__Body__Row__Content">Phổ thông tiết kiệm (K)</td></tr>' : '') +
+        '</tbody></table></div></div>' +
+
+      /* ---- Thẻ 5 · Đơn giá ---- */
+      '<div class="card"><div class="card-header">Đơn giá</div>' +
+        '<div class="card-body"><table class="Table"><tbody>' +
+          row('Giá vé', money(4436000)) +
+          row('Thuế &amp; phí sân bay', money(1209100)) +
+          /* Ở khu quản trị phí dịch vụ TÁCH RIÊNG — khác trang khách (RB10 chỉ áp cho màn bán hàng) */
+          row('Phí dịch vụ Bookese', money(300000)) +
+          row('Dịch vụ thêm', money(647400)) +
+          '<tr><td class="Table__Body__Row__Content fw-semibold">Tổng giá</td>' +
+          '<td class="Table__Body__Row__Content fw-semibold">' + money(o.total) + '</td></tr>' +
+        '</tbody></table></div></div>' +
+
+      /* ---- Thẻ 6 · Nhật ký kỹ thuật (MỚI — thẻ quan trọng nhất) ---- */
+      '<div class="card"><div class="card-header">Nhật ký kỹ thuật' +
+        '<span class="small text-muted" style="margin-left:auto;font-weight:400">Thông điệp gốc giữ nguyên văn</span></div>' +
+        '<div class="card-body table-responsive"><table class="Table log">' +
+          '<thead class="Table__Head"><tr><th>Thời gian</th><th>Lệnh đã gọi</th><th>Mã theo dõi</th>' +
+          '<th>Kết quả</th><th>Thông điệp gốc</th><th></th></tr></thead><tbody class="Table__Body">' +
+          logRows(o) +
+        '</tbody></table>' +
+        /* ⚠️ Nguyên văn thông điệp lỗi là thứ DUY NHẤT dùng được khi phải gọi đối tác.
+           Dịch sang tiếng Việt cho đẹp thì lúc gửi cho nhà cung cấp lại phải dịch ngược
+           — và dịch sai thì mất thêm một vòng trao đổi. (§21-32) */
+        '<p class="small text-muted" style="margin:10px 0 0">🔴 Thông điệp gốc <b>không dịch, không rút gọn</b> — ' +
+        'đây là thứ duy nhất dùng được khi phải gửi cho nhà cung cấp.</p>' +
+        '</div></div>' +
+
+      /* ---- §14.6 · Dải nút thao tác ---- */
+      '<div class="card"><div class="card-header">Thao tác</div><div class="card-body">' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+          (o.tab === 'nopnr' ? '<button class="btn btn-primary" type="button" data-act="Thử xuất vé lại">Thử xuất vé lại</button>' : '') +
+          '<button class="btn btn-outline-primary" type="button" data-act="Gửi lại email xác nhận">Gửi lại email xác nhận</button>' +
+          (o.tab === 'issued' || o.tab === 'done'
+            ? '<button class="btn btn-outline-primary" type="button" data-act="Tải mặt vé dạng văn bản">Tải mặt vé dạng văn bản</button>' : '') +
+          '<button class="btn btn-outline-secondary" type="button" data-act="Ghi chú nội bộ">Ghi chú nội bộ</button>' +
+          (o.tab === 'refund' ? '<button class="btn btn-warning" type="button" data-act="Duyệt yêu cầu hoàn">Duyệt yêu cầu hoàn</button>' : '') +
+          '<button class="btn btn-outline-warning" type="button" data-act="Tặng xu bù đắp">Tặng xu bù đắp</button>' +
+          (o.tab === 'nopnr' || o.tab === 'pending'
+            ? '<button class="btn btn-danger" type="button" data-act="Hủy đặt chỗ">Hủy đặt chỗ</button>' : '') +
+        '</div>' +
+        '<p class="small text-muted" style="margin:12px 0 0">' +
+          '<b>Thẩm quyền nhân viên CSKH:</b> tặng xu bù đắp và bù chênh lệch giá theo hạn mức quy định nội bộ. ' +
+          'Trên hạn mức phải chuyển cấp duyệt và <b>ghi rõ người duyệt vào nhật ký thao tác</b>.</p>' +
+        '<p class="small text-muted" style="margin:6px 0 0">Mặt vé dạng văn bản là bản thuần theo định dạng ' +
+          'nhân viên phòng vé quen đọc — dán thẳng được vào email gửi hãng, không phải PDF đẹp.</p>' +
+      '</div></div>';
+  }
+
+  function row(k, v) {
+    return '<tr><td class="Table__Body__Row__Content text-muted" style="width:190px">' + k + '</td>' +
+           '<td class="Table__Body__Row__Content">' + v + '</td></tr>';
+  }
+
+  function logRows(o) {
+    var L = o.failing
+      ? [['22:47:19', 'book',   '8f21c09f', 'Thành công', 'PNR ' + o.code + ' created'],
+         ['22:47:24', 'issue',  '8f21c0a4', 'Thất bại',   '06019: FlightSeatNotAvailable (RBD K)'],
+         ['22:48:02', 'issue',  '8f21c0b7', 'Thất bại',   '06019: FlightSeatNotAvailable (RBD K)'],
+         ['22:52:40', 'retrieve', '8f21c0c2', 'Thành công', 'status=TICKETING_FAILED queued=manual']]
+      : [['22:47:19', 'book',   '9a03d1c0', 'Thành công', 'PNR ' + o.code + ' created'],
+         ['22:47:24', 'issue',  '9a03d1e6', 'Thành công', 'eticket=738-2401234567'],
+         ['22:47:31', 'retrieve', '9a03d1f2', 'Thành công', 'status=TICKETED']];
+    return L.map(function (r) {
+      var ok = r[3] === 'Thành công';
+      return '<tr><td class="Table__Body__Row__Content">' + r[0] + '</td>' +
+        '<td class="Table__Body__Row__Content"><code>' + r[1] + '</code></td>' +
+        '<td class="Table__Body__Row__Content">' + r[2] + '</td>' +
+        '<td class="Table__Body__Row__Content ' + (ok ? 'text-success' : 'text-danger') + '">' + r[3] + '</td>' +
+        '<td class="Table__Body__Row__Content"><span class="log__raw">' + r[4] + '</span></td>' +
+        /* Có nút SAO CHÉP CẢ DÒNG — để dán thẳng vào email gửi đối tác */
+        '<td class="Table__Body__Row__Content"><button class="btn btn-outline-secondary btn-sm" type="button" ' +
+          'data-copy="' + r.join('  ').replace(/"/g, '&quot;') + '">Sao chép</button></td></tr>';
+    }).join('');
+  }
+
+  /* ==================================================================
+     §14.5 — NHẬT KÝ THAO TÁC: DÙNG LẠI /manager-operation, KHÔNG DỰNG MỚI.
+     Trang đó đã chạy với hơn 1.100 bản ghi; chỉ cần thêm một giá trị
+     "Vé máy bay" vào bộ lọc Module.
+     ================================================================== */
+  var OPLOG = [
+    ['CEO Admin',   'Vé máy bay', 'Sửa',  'Thử xuất vé lại đơn #ABCDEF — kết quả: thành công', '11/08/2026 09:12'],
+    ['Trần Minh',   'Vé máy bay', 'Sửa',  'Duyệt hoàn vé #IJKLMN',       '11/08/2026 08:47'],
+    ['Trần Minh',   'Vé máy bay', 'Thêm', 'Tặng xu bù đắp cho khách của đơn #ABCDEF — lý do: chậm xuất vé', '11/08/2026 08:40'],
+    ['Lê Thu',      'Vé máy bay', 'Sửa',  'Sửa tên hành khách 2 của đơn #ABCDEF',              '10/08/2026 17:20'],
+    ['Lê Thu',      'Vé máy bay', 'Sửa',  'Gửi lại email xác nhận đơn #CDEFGH',                '10/08/2026 16:58'],
+    ['CEO Admin',   'Chỗ nghỉ',   'Sửa',  'Cập nhật thông tin OTA của chỗ nghỉ #1741578629 - Legacy Hoi An Resort', '10/08/2026 16:46'],
+    ['Trần Minh',   'Vé máy bay', 'Xoá',  'Hủy đặt chỗ #WXYZAB — lý do: khách yêu cầu',        '10/08/2026 15:03']
+  ];
+
+  function drawOpLog() {
+    document.getElementById('oplog').innerHTML =
+      '<div class="card"><div class="card-header">Quản lý thao tác · <code>/manager-operation</code>' +
+        '<span class="small text-muted" style="margin-left:auto;font-weight:400">1.147 bản ghi</span></div>' +
+      '<div class="card-body">' +
+        '<p class="small text-muted" style="margin:0 0 12px">✅ §14.5 — trang này <b>đã có sẵn và đang chạy</b>. ' +
+        'Chỉ cần thêm một giá trị <b>Vé máy bay</b> vào bộ lọc Module. <b>Không dựng trang nhật ký riêng.</b></p>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">' +
+          '<select class="form-select" style="width:auto;min-width:170px" id="opModule">' +
+            '<option>Module: Tất cả</option><option selected>Module: Vé máy bay</option>' +
+            '<option>Module: Chỗ nghỉ</option><option>Module: Khách hàng</option></select>' +
+          '<select class="form-select" style="width:auto;min-width:170px"><option>Người thao tác</option></select>' +
+          '<select class="form-select" style="width:auto;min-width:150px"><option>Hành động</option></select>' +
+          '<button class="btn btn-outline-primary" type="button" data-act="Xuất file nhật ký">Xuất file</button>' +
+        '</div>' +
+        '<div class="table-responsive"><table class="Table">' +
+          '<thead class="Table__Head"><tr><th>Người thao tác</th><th>Hạng mục</th><th>Hành động</th>' +
+          '<th>Nội dung</th><th>Thời gian thay đổi</th></tr></thead><tbody class="Table__Body" id="opRows"></tbody>' +
+        '</table></div>' +
+        '<p class="small text-muted" style="margin:12px 0 0">🔴 Mọi thao tác <b>chạm vào tiền</b> hoặc ' +
+        '<b>chạm vào vé</b> đều phải để lại vết ở đây — không có ngoại lệ, kể cả thao tác của quản trị viên cao nhất.</p>' +
+      '</div></div>';
+    drawOpRows();
+  }
+  function drawOpRows() {
+    var sel = document.getElementById('opModule');
+    var only = sel && /Vé máy bay/.test(sel.value) ? 'Vé máy bay' : null;
+    document.getElementById('opRows').innerHTML = OPLOG
+      .filter(function (r) { return !only || r[1] === only; })
+      .map(function (r) {
+        return '<tr>' + r.map(function (c, i) {
+          return '<td class="Table__Body__Row__Content"' + (i === 3 ? '' : ' style="white-space:nowrap"') + '>' + c + '</td>';
+        }).join('') + '</tr>';
+      }).join('');
+  }
+
+  /* ---------- Sự kiện ---------- */
+  document.getElementById('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-tab]'); if (!b) return;
+    curTab = b.getAttribute('data-tab');
+    var first = tabRows()[0];
+    curCode = first ? first.code : '';
+    drawTabs(); drawRows(); drawDetail();
+  });
+  document.getElementById('rows').addEventListener('click', function (e) {
+    var tr = e.target.closest('[data-code]'); if (!tr) return;
+    curCode = tr.getAttribute('data-code');
+    drawRows(); drawDetail();
+    document.getElementById('detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.body.addEventListener('click', function (e) {
+    var c = e.target.closest('[data-copy]');
+    if (c) {
+      if (navigator.clipboard) navigator.clipboard.writeText(c.getAttribute('data-copy'));
+      BK.toast('Đã sao chép cả dòng nhật ký'); return;
+    }
+    var a = e.target.closest('[data-act]');
+    if (a) {
+      /* 🔴 §14.5 — mọi thao tác chạm vào tiền hoặc vé đều ghi vào nhật ký thao tác */
+      OPLOG.unshift(['Trần Minh', 'Vé máy bay', 'Sửa',
+        a.getAttribute('data-act') + ' đơn #' + curCode, '11/08/2026 hôm nay']);
+      if (document.getElementById('opRows')) drawOpRows();
+      BK.toast(a.getAttribute('data-act') + ' — đã ghi vào nhật ký thao tác');
+    }
+  });
+  document.body.addEventListener('change', function (e) {
+    if (e.target.id === 'opModule') drawOpRows();
+  });
+  document.getElementById('navOp').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('oplog').classList.remove('u-hidden');
+    document.getElementById('oplog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  drawMetrics(); drawTabs(); drawRows(); drawDetail(); drawOpLog();
+  document.getElementById('oplog').classList.add('u-hidden');
+
+  /* ---------- Chuyển trạng thái để trình bày ---------- */
+  BK.onProtoState = function (id) {
+    if (id === 'alarm') location.reload();
+    if (id === 'ok') {
+      METRICS[1].v = '0'; METRICS[1].alarm = false;
+      METRICS[3].v = '2,4s'; METRICS[3].alarm = false;
+      ORDERS = ORDERS.filter(function (o) { return o.tab !== 'nopnr'; });
+      curTab = 'issued'; curCode = 'CDEFGH';
+      drawMetrics(); drawTabs(); drawRows(); drawDetail();
+      BK.toast('Không có đơn kẹt vé — mọi chỉ số dưới ngưỡng');
+    }
+    if (['nopnr', 'pending', 'issued', 'refund', 'changed'].indexOf(id) > -1) {
+      curTab = id;
+      var f = tabRows()[0]; curCode = f ? f.code : '';
+      drawTabs(); drawRows(); drawDetail();
+    }
+    if (id === 'oplog') {
+      document.getElementById('oplog').classList.remove('u-hidden');
+      document.getElementById('oplog').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+  BK.mountProto([
+    { id: 'alarm',   label: 'Có cảnh báo' },
+    { id: 'ok',      label: 'Bình thường' },
+    { id: 'nopnr',   label: 'Chưa có vé' },
+    { id: 'pending', label: 'Chờ thanh toán' },
+    { id: 'refund',  label: 'Yêu cầu hoàn' },
+    { id: 'oplog',   label: 'Nhật ký thao tác' }
+  ]);
+})();
+</script>
+</body>
+</html>

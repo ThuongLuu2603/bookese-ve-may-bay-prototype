@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M5 · Xác nhận — Bookese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<style>
+  .wrap { max-width: 760px; margin-inline: auto; }
+  .sec { background: #fff; border-radius: var(--r-base); padding: 24px; margin-bottom: 16px; }
+  .hero-ok { text-align: center; padding: 32px 24px 24px; }
+  .hero-ok__icon { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 12px; font-size: 30px; }
+  .todo { margin: 0; padding-left: 20px; line-height: 1.9; font-size: 14px; color: var(--c-text-secondary); }
+  .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .hotels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .hotel__img { height: 116px; border-radius: var(--r-base); background: linear-gradient(135deg, var(--c-primary-lightest), var(--c-primary-light)); margin-bottom: 10px; }
+  @media (max-width: 767px) { .actions, .hotels { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header data-header></header>
+
+<main class="container" style="padding-top:24px;padding-bottom:64px">
+  <div class="wrap">
+
+    <!-- ==========================================================
+         M5 — BIẾN THỂ A · ĐÃ XUẤT VÉ THÀNH CÔNG (§12.1)
+         ========================================================== -->
+    <div data-variant="A">
+      <div class="sec hero-ok">
+        <div class="hero-ok__icon" style="background:#E7F8ED;color:var(--c-success)">✓</div>
+        <h1 class="text-h4-bold" style="margin:0 0 20px">Đặt vé thành công</h1>
+        <div class="text-label-large-regular" style="letter-spacing:.12em">MÃ ĐẶT CHỖ</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:6px">
+          <span class="pnr">ABCDEF</span>
+          <button class="btn btn--secondary" type="button" style="min-width:96px"
+                  onclick="navigator.clipboard&&navigator.clipboard.writeText('ABCDEF');BK.toast('Đã sao chép mã đặt chỗ')">Sao chép</button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2 class="text-body-large-semibold" style="margin:0 0 12px">Số vé điện tử</h2>
+        <table class="tickets">
+          <tr><td>NGUYEN VAN A <span class="text-label-large-regular">· Người lớn</span></td><td>738-2401234567</td></tr>
+          <tr><td>NGUYEN MINH KHOI <span class="text-label-large-regular">· Trẻ em</span></td><td>738-2401234568</td></tr>
+          <tr><td>NGUYEN BAO AN <span class="text-label-large-regular">· Em bé</span></td><td>738-2401234569</td></tr>
+        </table>
+      </div>
+
+      <!-- Dùng lại thành phần khối ① của M4 -->
+      <div class="sec">
+        <h2 class="text-body-large-semibold" style="margin:0 0 4px">Hành trình</h2>
+        <div style="display:flex;gap:12px;padding:16px 0;border-bottom:1px solid var(--c-border)">
+          <span class="airline__logo" style="background:#1B3A6B">VN</span>
+          <div style="flex:1;font-size:14px;line-height:1.6">
+            <b>Chiều đi · Hà Nội → TP. Hồ Chí Minh</b><br>
+            T5, 20 tháng 8 · 07:00 – 09:10 · 2h10'<br>
+            Vietnam Airlines · VN213 · Airbus A321 · Nhà ga 1 → Nhà ga 3<br>
+            <!-- §10.3 · vị trí 5/6 — tên hạng vé trong khối hành trình -->
+            <span class="fare-name-line">Phổ thông tiết kiệm (T)</span> · Bay thẳng<br>
+            <span class="u-text-secondary">🎒 Xách tay 10kg · 🧳 Ký gửi 23kg · 💺 12A, 12B</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;padding:16px 0">
+          <span class="airline__logo" style="background:#008C4A">VU</span>
+          <div style="flex:1;font-size:14px;line-height:1.6">
+            <b>Chiều về · TP. Hồ Chí Minh → Hà Nội</b><br>
+            T7, 22 tháng 8 · 05:35 – 07:50 · 2h15'<br>
+            Vietravel Airlines · VU302 · Airbus A321<br>
+            <!-- §9.4.2 · RB30 — chuyến này không liên danh nên ẩn dòng ghi chú, đúng quy tắc -->
+
+            <span class="fare-name-line">Eco (E)</span> · Bay thẳng<br>
+            <span class="u-text-secondary">🎒 Xách tay 7kg · <span class="fl-amen__none">🧳 Không kèm hành lý ký gửi</span> · 💺 1A</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2 class="text-body-large-semibold" style="margin:0 0 12px">Việc cần làm tiếp theo</h2>
+        <ul class="todo">
+          <li>Có mặt tại sân bay trước 60 phút (chặng nội địa) / 180 phút (quốc tế)</li>
+          <li>Mang theo giấy tờ tùy thân đã dùng khi đặt vé</li>
+          <li>Tên trên vé phải khớp với giấy tờ</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="actions">
+          <button class="btn btn--secondary" type="button" style="height:48px">Tải vé PDF</button>
+          <button class="btn btn--secondary" type="button" style="height:48px">Gửi lại email</button>
+          <button class="btn btn--secondary" type="button" style="height:48px">Thêm vào lịch</button>
+        </div>
+      </div>
+
+      <!-- §11.4.3 · RB24 — BỔ SUNG THẺ HỘI VIÊN SAU KHI ĐẶT.
+           Rất nhiều khách chỉ nhớ ra số thẻ sau khi đặt xong. Hệ thống nguồn cung có
+           đường riêng cho việc này — không dùng thì khách buộc phải gọi tổng đài.
+           Chỉ hiện nếu chưa nhập ở M4. -->
+      <div class="sec" id="secMember">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:20px" aria-hidden="true">✈</span>
+          <div style="flex:1;min-width:220px">
+            <b class="text-body-semibold">Bạn có thẻ hội viên hãng bay?</b>
+            <p class="text-body-small-regular u-text-label" style="margin:4px 0 0">
+              Thêm ngay để được cộng dặm cho chuyến này. Bổ sung được cho tới trước giờ khởi hành.
+            </p>
+          </div>
+          <button class="btn btn--secondary" type="button" id="btnAddMember" style="height:48px">Thêm thẻ hội viên</button>
+        </div>
+      </div>
+
+      <!-- §5.4 · Khối xu ở màn xác nhận.
+           ⚠️ §21-18 — KHÔNG đặt cạnh khối thẻ hội viên hãng bay: dặm bay (của hãng)
+           và xu (của Bookese) là hai thứ khác nhau, đặt cạnh nhau khách hiểu nhầm. -->
+      <div class="sec" style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:22px" aria-hidden="true">🪙</span>
+        <span class="text-body-medium">Hạng <b>Du khách</b> — bạn sẽ nhận <b>72.000 Xu</b> sau khi hoàn tất chuyến bay</span>
+      </div>
+
+      <!-- Chỉ hiện với khách CHƯA đăng nhập -->
+      <div class="sec" data-guest style="border:1px solid var(--c-primary-light);background:var(--c-primary-lightest)">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:20px" aria-hidden="true">✦</span>
+          <div style="flex:1;min-width:220px">
+            <b class="text-body-semibold" style="color:var(--c-primary-dark)">Tạo tài khoản Bookese trong 10 giây</b>
+            <p class="text-body-small-regular" style="margin:4px 0 0;color:var(--c-primary-dark)">
+              Chuyến này lẽ ra đã cho bạn 72.000 xu. Tạo tài khoản để lần sau không phải nhập lại thông tin hành khách và không bỏ lỡ xu.
+            </p>
+          </div>
+          <button class="btn btn--primary" type="button">Tạo tài khoản</button>
+        </div>
+      </div>
+
+      <!-- 🔴 §12.1 · KHỐI QUAN TRỌNG NHẤT VỀ MẶT KINH DOANH.
+           Toàn bộ lý do Bookese làm vé máy bay là để khách đặt tiếp chỗ nghỉ.
+           Đừng thu nhỏ, đừng đẩy xuống nơi không ai cuộn tới. -->
+      <div class="sec">
+        <h2 class="text-body-large-semibold" style="margin:0 0 4px">🏨 Đã có chỗ nghỉ tại TP. Hồ Chí Minh chưa?</h2>
+        <p class="text-body-small-regular u-text-label" style="margin:0 0 16px">Đặt cùng Bookese để gom xu về một tài khoản.</p>
+        <div class="hotels">
+          <article><div class="hotel__img"></div>
+            <b class="text-body-semibold">Khách sạn Quận 1</b>
+            <div class="text-label-large-regular">★ 4,6 · 1,2km tới trung tâm</div>
+            <div class="price price--table" style="margin-top:4px">VND 1.180.000</div>
+            <div class="price__note">Đã bao gồm thuế và phí</div>
+          </article>
+          <article><div class="hotel__img"></div>
+            <b class="text-body-semibold">Căn hộ Thảo Điền</b>
+            <div class="text-label-large-regular">★ 4,8 · 6,4km tới trung tâm</div>
+            <div class="price price--table" style="margin-top:4px">VND 940.000</div>
+            <div class="price__note">Đã bao gồm thuế và phí</div>
+          </article>
+          <article><div class="hotel__img"></div>
+            <b class="text-body-semibold">Resort ven sông</b>
+            <div class="text-label-large-regular">★ 4,4 · 9,1km tới trung tâm</div>
+            <div class="price price--table" style="margin-top:4px">VND 1.650.000</div>
+            <div class="price__note">Đã bao gồm thuế và phí</div>
+          </article>
+        </div>
+        <button class="btn btn--primary btn--block" type="button" style="margin-top:16px">Xem chỗ nghỉ tại TP. Hồ Chí Minh</button>
+      </div>
+    </div>
+
+    <!-- ==========================================================
+         M5 — BIẾN THỂ B · ĐÃ THANH TOÁN, ĐANG XUẤT VÉ (§12.2)
+         🔴 BẮT BUỘC PHẢI VẼ — không phải trường hợp hiếm.
+         Hệ thống nguồn cung KHÔNG có thông báo tự động (§22.2-②).
+         ========================================================== -->
+    <div data-variant="B" class="u-hidden">
+      <div class="sec hero-ok">
+        <div class="hero-ok__icon" style="background:#FFF6DA;color:#8A6300">⏳</div>
+        <h1 class="text-h4-bold" style="margin:0 0 8px">Đã nhận thanh toán — đang xuất vé</h1>
+        <p class="text-body-regular u-text-secondary" style="margin:0 auto;max-width:460px">
+          Chúng tôi đã nhận <b>VND 6.247.400</b> của bạn. Vé đang được xuất, thường mất dưới 2 phút.
+        </p>
+      </div>
+
+      <div class="sec">
+        <div class="sum-row"><span class="sum-row__k">Mã đặt chỗ</span><span class="sum-row__v">ABCDEF</span></div>
+        <div class="sum-row"><span class="sum-row__k">Số tiền đã thanh toán</span><span class="sum-row__v">VND 6.247.400</span></div>
+        <div class="progress" style="margin:16px 0 8px"><div class="progress__fill"></div></div>
+        <p class="text-body-small-regular u-text-label" style="margin:0" id="pollNote">Đang kiểm tra… lần tới sau 5 giây</p>
+      </div>
+
+      <div class="sec">
+        <p class="text-body-regular" style="margin:0 0 16px">
+          Trang này tự cập nhật. Bạn có thể đóng — chúng tôi sẽ gửi vé qua <b>email</b> và <b>Zalo</b> ngay khi xong.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn btn--secondary" href="tel:0782221131" style="height:48px">📞 078 222 1131</a>
+          <button class="btn btn--secondary" type="button" style="height:48px">💬 Chat với Bookese</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================
+         M5 — BIẾN THỂ C · CẦN HỖ TRỢ (§12.3) — sau 10 phút chưa có vé
+         Ba nguyên tắc: không im lặng · không đổ lỗi cho hãng ·
+         nêu sẵn hai phương án bồi hoàn.
+         ========================================================== -->
+    <div data-variant="C" class="u-hidden">
+      <div class="sec hero-ok">
+        <div class="hero-ok__icon" style="background:#FFECEC;color:var(--c-error)">⚠</div>
+        <h1 class="text-h4-bold" style="margin:0 0 8px">Đơn hàng của bạn đang được xử lý</h1>
+        <p class="text-body-regular u-text-secondary" style="margin:0 auto;max-width:520px">
+          Chúng tôi đã nhận thanh toán nhưng chưa xuất được vé. Nhân viên Bookese đang xử lý và sẽ liên hệ bạn
+          <b>trong vòng 30 phút</b>.
+        </p>
+      </div>
+
+      <div class="sec">
+        <div class="sum-row"><span class="sum-row__k">Mã đặt chỗ</span><span class="sum-row__v">ABCDEF</span></div>
+        <div class="sum-row"><span class="sum-row__k">Số tiền đã thanh toán</span><span class="sum-row__v">VND 6.247.400</span></div>
+        <div class="sum-row"><span class="sum-row__k">Thời điểm thanh toán</span><span class="sum-row__v">20/08/2026 · 22:47</span></div>
+      </div>
+
+      <div class="sec">
+        <h2 class="text-body-large-semibold" style="margin:0 0 12px">Bạn sẽ được chọn một trong hai phương án</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="border:1px solid var(--c-border);border-radius:var(--r-base);padding:16px">
+            <b class="text-body-semibold">Đặt lại chuyến tương đương</b>
+            <p class="text-body-small-regular u-text-label" style="margin:6px 0 0">Bookese bù toàn bộ chênh lệch giá, bạn không trả thêm đồng nào.</p>
+          </div>
+          <div style="border:1px solid var(--c-border);border-radius:var(--r-base);padding:16px">
+            <b class="text-body-semibold">Hoàn 100% tiền</b>
+            <p class="text-body-small-regular u-text-label" style="margin:6px 0 0">Hoàn đủ tiền vé và phí dịch vụ ngay trong ngày.</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+          <a class="btn btn--primary" href="tel:0782221131" style="height:48px;flex:1">📞 078 222 1131</a>
+          <button class="btn btn--secondary" type="button" style="height:48px;flex:1">💬 Chat ngay</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- §11.4.3 — hộp thoại thêm thẻ hội viên, mỗi hành khách một thẻ riêng -->
+<div class="overlay" id="dlgMember" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="memT">
+    <div class="dialog__head">
+      <span class="dialog__title" id="memT">Thêm thẻ hội viên hãng bay</span>
+      <button class="btn btn--icon dialog__x" type="button" data-close aria-label="Đóng">✕</button>
+    </div>
+    <div class="dialog__body" id="memBody"></div>
+    <div class="dialog__foot">
+      <button class="btn btn--secondary" type="button" data-close>Để sau</button>
+      <button class="btn btn--primary" type="button" id="memSend" style="height:40px">Gửi cho hãng</button>
+    </div>
+  </div>
+</div>
+
+<div class="toaster"></div>
+
+<script src="assets/app.js"></script>
+<script src="assets/data.js"></script>
+<script>
+(function () {
+  BK.mountHeader('vmb');
+
+  function show(v) {
+    ['A', 'B', 'C'].forEach(function (k) {
+      document.querySelector('[data-variant="' + k + '"]').classList.toggle('u-hidden', k !== v);
+    });
+    window.scrollTo({ top: 0 });
+  }
+
+  /* §12.2 — trang tự làm mới, giãn dần 5 → 15 → 30 → 60 giây, tối đa 10 phút */
+  var steps = [5, 15, 30, 60], si = 0;
+  setInterval(function () {
+    var n = document.getElementById('pollNote');
+    if (!n) return;
+    si = Math.min(si + 1, steps.length - 1);
+    n.textContent = 'Đang kiểm tra… lần tới sau ' + steps[si] + ' giây';
+  }, 4000);
+
+  /* §11.4.3 — thêm thẻ hội viên sau khi đặt, mỗi hành khách một thẻ riêng */
+  var alOpts = Object.keys(BK.AIRLINES).map(function (k) {
+    return '<option value="' + k + '"' + (k === 'VN' ? ' selected' : '') + '>' + BK.AIRLINES[k].name + '</option>';
+  }).join('');
+
+  document.getElementById('btnAddMember').addEventListener('click', function () {
+    document.getElementById('memBody').innerHTML = BK.PASSENGERS.map(function (p, i) {
+      return '<div class="' + (i ? 'paxcard' : 'paxcard') + '" style="margin-bottom:12px">' +
+        '<div class="paxcard__head"><b>' + p.name + '</b> <span class="badge badge--muted">' + p.type + '</span></div>' +
+        '<div class="form-grid">' +
+          '<div class="field"><label class="field__label">Hãng</label>' +
+            '<select class="select">' + alOpts + '</select></div>' +
+          '<div class="field"><label class="field__label">Số thẻ</label>' +
+            '<input class="input" placeholder="Ví dụ: 5901234567"></div>' +
+        '</div></div>';
+    }).join('') +
+    '<p class="notice notice--tip" style="margin:0"><span aria-hidden="true">ⓘ</span>' +
+      '<span>Bookese không kiểm tra được số thẻ — vui lòng nhập đúng theo thẻ của bạn. ' +
+      'Bổ sung được cho tới trước giờ khởi hành.</span></p>';
+    BK.openDialog('#dlgMember');
+  });
+
+  document.getElementById('memSend').addEventListener('click', function () {
+    BK.closeDialog('#dlgMember');
+    /* 🔴 §21-17 — CHỈ ĐƯỢC NÓI "đã gửi cho hãng". Không dấu tích xanh,
+       không hứa "đã cộng dặm" vì Bookese không xác minh được số thẻ. */
+    BK.toast('Đã gửi cho hãng');
+    document.getElementById('secMember').innerHTML =
+      '<div style="display:flex;gap:12px;align-items:center">' +
+        '<span style="font-size:20px" aria-hidden="true">✈</span>' +
+        '<div><b class="text-body-semibold">Đã gửi thẻ hội viên cho hãng</b>' +
+        '<p class="text-body-small-regular u-text-label" style="margin:4px 0 0">' +
+        'Việc cộng dặm do hãng hàng không quyết định. Bạn có thể sửa lại trong ' +
+        '<a href="lich-su.html">Lịch sử đặt chỗ</a> cho tới trước giờ khởi hành.</p></div></div>';
+  });
+
+  BK.onProtoState = function (id) {
+    if (id === 'A' || id === 'B' || id === 'C') show(id);
+    if (id === 'flown') {
+      /* §11.4.3 — sau giờ bay thì ẨN nút, hiện chữ liên hệ hãng */
+      document.getElementById('secMember').innerHTML =
+        '<div style="display:flex;gap:12px;align-items:center">' +
+          '<span style="font-size:20px" aria-hidden="true">✈</span>' +
+          '<span class="text-body-small-regular u-text-label">Chuyến bay đã khởi hành — ' +
+          'liên hệ trực tiếp hãng để bổ sung dặm.</span></div>';
+      BK.toast('Đã qua giờ khởi hành — nút thêm thẻ bị ẩn');
+    }
+    if (id === 'member') {
+      document.querySelectorAll('[data-guest]').forEach(function (e) { e.classList.add('u-hidden'); });
+      BK.toast('Ẩn khối mời tạo tài khoản — khách đã đăng nhập');
+    }
+  };
+  BK.mountProto([
+    { id: 'A', label: 'A · Đã xuất vé' },
+    { id: 'B', label: 'B · Đang xuất vé' },
+    { id: 'C', label: 'C · Cần hỗ trợ' },
+    { id: 'member', label: 'Khách đã đăng nhập' },
+    { id: 'flown', label: 'Đã qua giờ bay' }
+  ]);
+})();
+</script>
+</body>
+</html>
